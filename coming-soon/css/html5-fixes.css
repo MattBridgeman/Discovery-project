@@ -1,0 +1,8 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/* HTML display rule for section article etc */
+
+article, aside, canvas, details, figcaption, figure,footer, header, hgroup, menu, nav, section, summary {
+display: block;	
+}

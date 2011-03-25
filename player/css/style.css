@@ -1,0 +1,244 @@
+@CHARSET "UTF-8";
+/* Matthew Bridgeman */
+/* generic fixes */
+img {
+	border:0 none;
+}
+
+a:link, a:visited {
+	outline: none;
+	color:#dadbd5;
+	text-decoration:none;
+	text-shadow:1px 1px 0 #222;
+}
+a:hover {
+	color:#fff;
+}
+/* header */
+#header-wrapper {
+	background:url("images/player/player-grad.jpg") repeat-x scroll left top #F1F1F1;
+border-bottom:1px solid #222;
+top:0;
+height:89px;
+left:0;
+position:fixed;
+width:100%;
+overflow:hidden;
+}
+#logo-link {
+	background:url("images/discovery-logo.png") no-repeat scroll left top transparent;
+display:block;
+height:90px;
+text-indent:-3000px;
+}
+/* player */
+#player-container {
+	bottom:0;
+	height:89px;
+	left:0;
+	position:fixed;
+	width:100%;
+	background: url("images/player/player-grad.jpg") #f1f1f1 repeat-x top left scroll;
+
+	border-top: 1px solid #222;
+}
+#player-wrapper {
+	
+	
+}
+#play-functions {
+	float:left;
+	width:250px;
+}
+.optional-functions {
+	float:right;
+	width:250px;
+}
+#playSliderContainer{
+	float:left; padding:36px;
+}
+.box {
+	padding: 10px;
+}
+.player-box {
+	height:50px;
+	padding:20px;
+}
+
+#volumeContainer {
+	float:left;
+}
+#volumeSliderContainer {
+	background:none repeat scroll 0 0 #FAFBF5;
+	border:1px solid #B3B5AF;
+	bottom:70px;
+	padding:5px 16px;
+	position:fixed;
+	left: 167px;
+}
+/* player links */
+a#prev-btn {
+	text-indent:-9999px;
+	height:50px;
+	width:49px;
+	background: url("images/player/prev-track.jpg") no-repeat top left scroll;
+	display:block;
+	float:left;
+}
+a:hover#prev-btn {
+	background-position: center left ;
+}
+a:active#prev-btn {
+	background-position: bottom left ;
+}
+a#repeat-btn {
+	text-indent:-9999px;
+	height:50px;
+	width:49px;
+	background: url("images/player/repeat-btn.jpg") no-repeat top left scroll;
+	display:block;
+	float:left;
+}
+a:hover#repeat-btn {
+	background-position: center left ;
+}
+a:active#repeat-btn, a#repeat-btn.on {
+	background-position: bottom left ;
+}
+a#next-btn {
+	text-indent:-9999px;
+	height:50px;
+	width:49px;
+	background: url("images/player/next-track.jpg") no-repeat top left scroll;
+	display:block;
+	float:left;
+}
+a:hover#next-btn{
+	background-position: center left ;
+}
+a:active#next-btn {
+	background-position: bottom left ;
+}
+a#volume-btn {
+	text-indent:-9999px;
+	height:50px;
+	width:50px;
+	background: url("images/player/volume-btn.jpg") no-repeat top left scroll;
+	display:block;
+	float:left;
+}
+a:hover#volume-btn{
+	background-position: center bottom ;
+}
+.sc-scrubber {
+	display:none !important;
+}
+/* main menu */
+.menu-inner {
+	height:300px;
+	
+}
+.main-wrapper {
+	padding-top:90px;
+}
+#main-navigation ul {
+	list-style-type:none;
+	margin:0;
+}
+.white-wrapper {
+border-right:1px solid #222222;
+	
+}
+.white-padding {
+	padding:20px 0;
+}
+/* main content */
+#content-header {
+	background:#29282b;
+}
+/* search */
+#search-input, #main-search-input {
+background:none repeat scroll 0 0 rgba(255, 255, 255, 0.5);
+border:1px solid #999999;
+color:#444444;
+font-family:helvetica neue;
+font-size:20px;
+height:39px;
+padding:5px;
+width:300px;
+}
+#search-label, #main-search-label {
+	text-indent:-9999px;
+	float:left;
+}
+#search {
+	padding-top: 22px;
+}
+.submit {
+background:url("images/search-up.png") repeat scroll center top transparent;
+border:1px solid #999999;
+color:#444444;
+font-family:helvetica neue;
+font-size:20px;
+height:52px;
+
+padding:5px;
+text-indent:-9999px;
+width:110px;
+}
+.submit:hover {
+	background-position: center;
+}
+.submit:active {
+	background-position: bottom center;
+}
+#search_error {
+	color:#333333;
+	text-shadow:1px 1px 0 #FFFFFF;
+	}
+.logo-wrap {
+	float:left;
+	width:340px;
+	padding:0 5px;
+}
+#logout-link {
+	color:#444;
+	text-shadow:1px 1px 0 #fff;
+}
+#the-content {
+	background: #fafbf5;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-border-radius: 5px;
+	border-radius: 5px;
+	padding-bottom:50px;
+	margin-bottom:80px;
+}
+#the-content ul {
+	list-style-type:none;
+	padding:3px;
+}
+#the-content a {
+	color: #666;
+	text-shadow:1px 1px 0 #fff;
+}
+#the-content ul li
+	{
+		padding:3px;
+	}
+#the-content ul li:nth-child(even) {
+background:none repeat scroll 0 0 #F1F1F1;
+border-bottom:1px solid #DADBD5;
+	
+	}
+#the-content ul li:nth-child(odd) {
+	background:none repeat scroll 0 0 #FFFFFF;
+border-bottom:1px solid #DADBD5;
+}
+#the-content ul li:hover {
+	background:none repeat scroll 0 0 #cafdee;
+}
+#main-form {
+	
+	margin-left: 20px;
+}

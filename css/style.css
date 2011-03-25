@@ -1,0 +1,73 @@
+@CHARSET "UTF-8";
+@import url("webfontkit/stylesheet.css");
+
+img {
+	border:0 none;
+}
+
+a {
+	outline: none;
+	text-decoration:none;
+}
+
+body  {
+	background-image:url('images/bg-body.gif');
+	background-repeat:repeat;
+	font-size: 18px;
+    font-family: 'DroidSerifRegular', serif;
+	font-size-adjust: 0.55;
+	font-weight: lighter;
+	font-style: normal;
+	line-height:normal;
+	color: #444;
+	line-height: 1.5;  /*unitless for proper inheritance*/
+	padding:0;
+	margin:0;
+	text-shadow:#fff 1px 1px 1px;
+}
+
+.container {
+	width:850px;
+	margin: 0 auto;
+}
+#mainHead {
+	display:block;
+	width:380px;
+	float:left;
+	margin-top: 75px;
+}
+#mainHead h1 {
+	background-image: url('images/discovery-main.png');
+	background-position: top left;
+	background-repeat:none;
+	display:block;
+	width:330px;
+	height:460px;
+	text-indent: -9999px;
+	margin-bottom: 0;
+}
+#mainSection {
+	float: left;
+	display: block;
+	width: 470px;
+	margin-top: 62px;
+	border-bottom: 2px dotted #72655E;
+	padding-bottom: 20px;
+}
+#mainSection h1 {
+	border-bottom: 2px dotted #72655E;
+	margin-bottom: 20px;
+}
+a#facebookBtn {
+	display:block;
+	width:251px;
+	height:48px;
+	background-image:url('images/facebook-btn.png');
+	background-repeat:none;
+	background-position:top left;
+	margin:0 auto;
+	text-indent:-9999px;
+}
+#mainAside {
+	
+}

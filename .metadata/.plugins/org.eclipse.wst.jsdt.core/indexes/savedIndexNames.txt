@@ -1,0 +1,2 @@
+INDEX VERSION 1.122+/Applications/MAMP/htdocs/lynda/btb-sandbox/OOP - chapter5/public/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
+1551685420.index

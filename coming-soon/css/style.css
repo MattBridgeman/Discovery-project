@@ -1,0 +1,10 @@
+@CHARSET "UTF-8";
+#coming-soon {
+	width: 400px;
+	margin:0 auto;
+	height: 600px;
+}
+body {
+	background: #f1f1f1 url("bg-body.gif");
+	height:100%;
+}
