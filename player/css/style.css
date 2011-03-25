@@ -1,4 +1,5 @@
 @CHARSET "UTF-8";
+@import url("../../css/webfontkit/stylesheet.css");
 /* Matthew Bridgeman */
 /* generic fixes */
 img {
@@ -14,6 +15,32 @@ a:link, a:visited {
 a:hover {
 	color:#fff;
 }
+
+body {
+  font-family: helvetica neue, helvetica, arial, sans-serif;
+  font-weight:lighter;
+  margin: 0 auto;	
+  background: #e3e3e3;
+  color: #dadbd5;
+  text-shadow:1px 1px 0 #222;
+}
+
+h1 {
+ border-bottom:1px dotted #000000;
+padding:20px;
+}
+
+h2 {
+	color:#666;
+	text-shadow: 1px 1px 0 #fff;
+}
+
+.footer {
+  border-top: 1px dotted #000;
+  padding: 10px 0;
+  text-align: right;
+}
+
 /* header */
 #header-wrapper {
 	background:url("images/player/player-grad.jpg") repeat-x scroll left top #F1F1F1;
@@ -33,14 +60,12 @@ text-indent:-3000px;
 }
 /* player */
 #player-container {
-	bottom:0;
-	height:89px;
-	left:0;
-	position:fixed;
-	width:100%;
-	background: url("images/player/player-grad.jpg") #f1f1f1 repeat-x top left scroll;
-
-	border-top: 1px solid #222;
+	bottom: 0;
+	height: 50px;
+	left: 0;
+	position: fixed;
+	width: 100%;
+	background: #29282B;
 }
 #player-wrapper {
 	
@@ -55,26 +80,19 @@ text-indent:-3000px;
 	width:250px;
 }
 #playSliderContainer{
-	float:left; padding:36px;
-}
-.box {
-	padding: 10px;
-}
-.player-box {
-	height:50px;
-	padding:20px;
+	padding: 18px 0;
 }
 
 #volumeContainer {
 	float:left;
 }
 #volumeSliderContainer {
-	background:none repeat scroll 0 0 #FAFBF5;
-	border:1px solid #B3B5AF;
-	bottom:70px;
-	padding:5px 16px;
-	position:fixed;
-	left: 167px;
+	background: none repeat scroll 0 0 #FAFBF5;
+	border: 1px solid #B3B5AF;
+	bottom: 50px;
+	padding: 5px 16px;
+	position: fixed;
+	left: 147px;
 }
 /* player links */
 a#prev-btn {
@@ -146,8 +164,6 @@ a:hover#volume-btn{
 	margin:0;
 }
 .white-wrapper {
-border-right:1px solid #222222;
-	
 }
 .white-padding {
 	padding:20px 0;
@@ -206,7 +222,7 @@ width:110px;
 	text-shadow:1px 1px 0 #fff;
 }
 #the-content {
-	background: #fafbf5;
+	background:#fff;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-border-radius: 5px;

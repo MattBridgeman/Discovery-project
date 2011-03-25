@@ -33,10 +33,13 @@ $(document).ready(function() {
 	var homeLink = $('.home_link');
 	//play elements
 	var repeatBtn = $("#repeat-btn");
+	var volumeBtn = $("#volume-btn");
 	var volumeSlider = $("#volumeSlider");
 	var volumeSliderContainer = $("#volumeSliderContainer");
 	var playSlider = $("#playSlider");
 	var prevBtn = $('#prev-btn');
+	var nextBtn = $('#prev-btn');
+	var playPause = $('#play-pause');
 	//dynamic RHS elements
 	var scTrack = $('a.track-load');
 	
@@ -45,7 +48,7 @@ $(document).ready(function() {
 	var nextTrack;
 	var amount = $("#amount");
 	var mySlider = $("#mySlider");
-	var loading = $('a.loading');
+	var loading;
 	var playPos;
 	var isLoaded = false;
 	var isPlaying = false;
@@ -57,6 +60,7 @@ $(document).ready(function() {
 	var loadedSeconds;
 	var currentTrack;
 	var playList = new Array();
+	var firstPlay = true;
 	//elements to hide
 	errors.hide();
 	volumeSliderContainer.hide();
@@ -120,6 +124,9 @@ $(document).ready(function() {
 	scTrack.live('click',function(event){
 		  event.preventDefault();
 		  currentPlaying ++;
+		  if (firstPlay) {
+			  playPause.click();
+		  }
 		  thePlayer.api_load(this.href);
 		});
 	
@@ -129,8 +136,7 @@ $(document).ready(function() {
 	  },
 	  function () {
 		volumeSliderContainer.fadeOut('fast');
-	  }
-	});
+	  });
 	
 	//buttons
 	playSlider.slider({
@@ -253,7 +259,7 @@ $(document).bind('onMediaTimeUpdate.scPlayer', function(event){
 });
 
 $(document).bind('onPlayerInit.scPlayer', function(event){
-	loading.removeClass('loading').addClass('loaded');
+	$('a.loading').removeClass('loading').addClass('loaded');
 });
 
 soundcloud.addEventListener('onMediaPlay.scPlayer', function(player, data) {

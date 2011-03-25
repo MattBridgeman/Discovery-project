@@ -50,8 +50,19 @@ if(empty($code)) {
 <!-- css -->
 <!-- fixes for html5 for older browsers -->
 <link href="css/ui-lightness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css">
-<!-- fluid grid-system -->
-<link href="css/grid.css" rel="stylesheet" type="text/css">
+<!-- The 1140px Grid -->
+<link rel="stylesheet" href="css/1140/1140.css" type="text/css" media="screen" />
+
+<!--[if lte IE 9]>
+<link rel="stylesheet" href="css/ie.css" type="text/css" media="screen" />
+<![endif]-->
+
+<!-- Make minor type adjustments for 1024 monitors -->
+<link rel="stylesheet" href="css/1140/smallerscreen.css" media="only screen and (max-width: 1023px)" />
+<!-- Resets grid for mobile -->
+<link rel="stylesheet" href="css/1140/mobile.css" media="handheld, only screen and (max-width: 767px)" />
+<!-- Put your layout here -->
+<link rel="stylesheet" href="css/1140/layout.css" type="text/css" media="screen" />
 <!-- style -->
 <link href="css/style.css" rel="stylesheet" type="text/css">
 <link href="css/sc/sc-player-minimal.css" rel="stylesheet" type="text/css">
@@ -105,9 +116,9 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<div class="container_12">
-
-	<div id="player-object" class="grid_12">
+<div class="container">
+<div class="row">
+	<div id="player-object" class="twelvecol">
 	  <!-- <object height="81" width="100%" id="discoveryPlayer" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
 	    <param name="movie" value="http://player.soundcloud.com/player.swf?url=http%3A%2F%2Fsoundcloud.com%2Fspawn%2Fstonedeep&enable_api=true&object_id=discoveryPlayer"></param>
 	    <param name="allowscriptaccess" value="always"></param>
@@ -117,16 +128,15 @@ $(document).ready(function() {
 	</div>
 	
 	  <div class="clear"></div>
-	  <div id="header-wrapper">
+	  <!-- <div id="header-wrapper">
 	  		<header id="main-header">
 	  			<div class="logo-wrap" id="logo">
 	  				<a class="home_link" id="logo-link" href="#">Discovery</a>
 	  			</div>
-	  			<div class="grid_6 player-box" id="searching">
+	  			<div class="sixcol player-box" id="searching">
 	  				<form action="#" method="post">
 						<label class="" id="search-label" for="search-input">search</label>
-						<input class="" type="text" placeholder="Search" name="search" id="search-input">
-						
+						<input role="search" type="text" placeholder="Search" name="search" id="search-input">
 						<input class="submit"  type="submit" name="submit" id="submit" value="Discover">
 					<label class="error" id="search_error">Please enter a search</label>
 					</form>
@@ -137,11 +147,11 @@ $(document).ready(function() {
 	  			<div class="clear"></div>
 	  		</header>
 	  		<div class="clear"></div>
-	  </div>
+	  </div>  -->
 	  <div class="clear"></div>
 	  
 	  <div class="main-wrapper">
-	<section id="main-menu" class="grid_3">
+	<section id="main-menu" class="threecol">
 		<div class="white-wrapper white-padding">
 		<nav id="main-navigation" class="menu-inner">
 			<ul>	
@@ -171,7 +181,7 @@ $(document).ready(function() {
 		</div>
 		<div class="clear"></div>
 	</section>
-	<section id="main-content" class="grid_9 menu-inner">
+	<section id="main-content" class="ninecol last menu-inner">
 	<div class="white-wrapper">
 	
 	<div id="the-content">
@@ -212,7 +222,7 @@ $(document).ready(function() {
 		</div>
 		
 	  </div>
-	  <div class="grid_6" id="playSliderContainer"><div id="playSlider"></div></div>
+	  <div class="sixcol" id="playSliderContainer"><div id="playSlider"></div></div>
 	   <div class="optional-functions">
 		  <div class="player-box">
 		  <a id="repeat-btn" class="off" href="#">repeat</a>
@@ -223,6 +233,7 @@ $(document).ready(function() {
 	  <div class="clear"></div>
 	  </footer>
 	  
+</div>
 </div>
 <div id="fb-root"></div>
 </body>
