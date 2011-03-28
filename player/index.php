@@ -79,17 +79,36 @@ if(empty($code)) {
 <script src="js/jquery-soundcloud-controls.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	var facebookBtn = $('#facebookBtn');
 	var redirect = '<?php echo $dialog_url; ?>';
+	var name;
+	var fb_id;
+	var email;
 	window.fbAsyncInit = function() {
 	    FB.init({appId: '154550127940245', status: true, cookie: true,
 	             xfbml: true});
 	    FB.getLoginStatus(function(response) {
   		  if (!response.session) {
-  				//user is not connected
+  			//user is not connected
   			top.location.href=redirect;
   		  } else {
 			//they are logged in
+			fb_id = response.session.uid;
+  			FB.api('/me', function(response) {
+  	  			console.log(response);
+  				name = response.name;
+  				email = response.email;
+  			});
+
+  			var dataString = 'fb_id=' + fb_id + '&name=' + name + '&email =' + email;
+	        
+		     $.ajax({
+			      type: "POST",
+			      url: "bin/process.php",
+			      data: dataString,
+			      success: function(msg) {
+			    	 console.log(msg);
+		          }
+		     });
   		  }
   		});
 	  };
