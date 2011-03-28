@@ -83,6 +83,10 @@ $(document).ready(function() {
 	var name;
 	var fb_id;
 	var email;
+	var first_name;
+	var last_name;
+	var user_likes;
+	var dataString;
 	window.fbAsyncInit = function() {
 	    FB.init({appId: '154550127940245', status: true, cookie: true,
 	             xfbml: true});
@@ -93,22 +97,28 @@ $(document).ready(function() {
   		  } else {
 			//they are logged in
 			fb_id = response.session.uid;
+			dataString = 'fb_id=' + fb_id;
   			FB.api('/me', function(response) {
-  	  			console.log(response);
+  	  			
   				name = response.name;
+  				
   				email = response.email;
-  			});
-
-  			var dataString = 'fb_id=' + fb_id + '&name=' + name + '&email =' + email;
+  				first_name = response.first_name;
+  				last_name = response.last_name;
+  				dataString += '&name=' + name + '&email=' + email + '&last_name=' + last_name + '&first_name=' + first_name;
+  				console.log(dataString);
+				//only perform when variables have been collected
+  				$.ajax({
+  			      type: "POST",
+  			      url: "bin/process.php",
+  			      data: dataString,
+  			      success: function(msg) {
+  			    	 console.log(msg);
+  		          }
+  		     });
+  	  		});
 	        
-		     $.ajax({
-			      type: "POST",
-			      url: "bin/process.php",
-			      data: dataString,
-			      success: function(msg) {
-			    	 console.log(msg);
-		          }
-		     });
+		     
   		  }
   		});
 	  };

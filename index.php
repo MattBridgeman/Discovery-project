@@ -31,7 +31,7 @@ $app_id = 154550127940245;
 $app_secret = "08751756393722bcc0ec3ad06a20d12f";
 $my_url = curPageURL(); 
 $code = $_REQUEST["code"];
-
+$scope = "email,user_likes";
 // Create our Application instance.
 $facebook = new Facebook(array(
   'appId' => $app_id,
@@ -41,7 +41,7 @@ $facebook = new Facebook(array(
 
     if(empty($code)) {
 		$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
-		. $app_id . "&redirect_uri=" . urlencode($my_url."player/");
+		. $app_id . "&scope=". $scope ."&redirect_uri=" . urlencode($my_url."player/");
 		$redirect = "" . $dialog_url . "";
 	}   
 
