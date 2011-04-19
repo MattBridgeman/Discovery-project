@@ -20,18 +20,21 @@ $app_id = 154550127940245;
 $app_secret = "08751756393722bcc0ec3ad06a20d12f";
 $my_url = curPageURL(); 
 $code = $_REQUEST["code"];
-
+$anon = "";
 // Create our Application instance.
 $facebook = new Facebook(array(
   'appId' => $app_id,
   'secret' => $app_secret,
   'cookie' => true,
 ));
-
-if(empty($code)) {
-	$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
-	. $app_id . "&redirect_uri=" . urlencode($my_url."player/");
-	$redirect = "" . $dialog_url . "";
+if(isset($_GET['anon'])) {
+	$anon = $_GET['anon'];
+} else {
+	if(empty($code)) {
+		$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
+		. $app_id . "&redirect_uri=" . urlencode($my_url."player/");
+		$redirect = "" . $dialog_url . "";
+	}
 }
 ?>
 <!DOCTYPE HTML>
@@ -50,6 +53,8 @@ if(empty($code)) {
 <!-- css -->
 <!-- fixes for html5 for older browsers -->
 <link href="css/ui-lightness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css">
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/sc/sc-player-minimal.css" rel="stylesheet" type="text/css">
 <!-- The 1140px Grid -->
 <link rel="stylesheet" href="css/1140/1140.css" type="text/css" media="screen" />
 
@@ -64,19 +69,15 @@ if(empty($code)) {
 <!-- Put your layout here -->
 <link rel="stylesheet" href="css/1140/layout.css" type="text/css" media="screen" />
 <!-- style -->
-<link href="css/style.css" rel="stylesheet" type="text/css">
-<link href="css/sc/sc-player-minimal.css" rel="stylesheet" type="text/css">
+
 <link REL="SHORTCUT ICON" HREF="../css/images/favicon.ico">
 <!-- javascript -->
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <!-- further HTML5 and new technologies fixes-->
-<script src="js/modernizr-1.6.min.js" type="text/javascript"></script>
+<script src="js/modernizr-1.7.min.js" type="text/javascript"></script>
 <!-- jQuery UI elements -->
 <script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript"></script>
-<!-- soundcloud controls -->
-<script type="text/javascript" src="js/soundcloud.player.api.js"></script>
 
-<script src="js/jquery-soundcloud-controls.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	var redirect = '<?php echo $dialog_url; ?>';
@@ -87,6 +88,37 @@ $(document).ready(function() {
 	var last_name;
 	var user_likes;
 	var dataString;
+	var urlString = "";
+	var info;
+	var first_name = $('input#first-name-input');
+	var last_name = $('input#last-name-input');
+	var email = $('input#email-input');
+	var nickname = $('input#nickname-input');
+	var account_submit = $('input#account-submit');
+	var windowBox = $('#window');
+	var winHeight = $('body').height();
+	 windowBox.css({
+		 "height" : winHeight
+   });
+	var window_head = $('#window-head');
+	var window_body = $('#window-body');
+	var window_a = $('#window-a');
+	windowBox.hide();
+	var inputs = new Array();
+	var inputField = function (inputBox) {
+		
+		this.inputBox = inputBox;
+		
+	}
+	var nameField = new inputField(nickname);
+	var emailField = new inputField(email);
+	var firstField = new inputField(first_name);
+	var lastField = new inputField(last_name);
+	inputs.push(nameField);
+	inputs.push(emailField);
+	inputs.push(firstField);
+	inputs.push(lastField);
+	<?php if ($anon == "") { ?>
 	window.fbAsyncInit = function() {
 	    FB.init({appId: '154550127940245', status: true, cookie: true,
 	             xfbml: true});
@@ -111,11 +143,14 @@ $(document).ready(function() {
   				$.ajax({
   			      type: "POST",
   			      url: "bin/process.php",
-  			      data: dataString,
+  			      data: "?callback=?&"+dataString,
   			      success: function(msg) {
   			    	 console.log(msg);
+  			    	 info = msg;
+  			    	loop_info();
   		          }
   		     });
+  	  		     
   	  		});
 	        
 		     
@@ -128,10 +163,119 @@ $(document).ready(function() {
   	      '//connect.facebook.net/en_US/all.js';
   	    document.getElementById('fb-root').appendChild(e);
   	  }());
-	 
+	 <?php } else {
+	 	$usersIP = strval($_SERVER["REMOTE_ADDR"]);
+	 ?>
+	 	dataString = "&ip=<?php echo $usersIP;  ?>"+"";
+	 	
+	 	urlString = "bin/process.php?callback=?"+dataString+"";
+		//only perform when variables have been collected
+		console.log(urlString);
+		$.getJSON(urlString,{}, function(data) {
+		
+			if (data == "") { 
+				//alert("no data");
+			} else {
+				//alert("data");
+				console.log(data);
+				info = data;
+				loop_info();
+			}
+		});
+		
+	 <?php } ?>
+	 function loop_info() {
+		 for (var i = 0, l = info.length; i < l; i++) {
+				var first_n = info[i].first_name;
+				var last_n = info[i].last_name;
+				var nick_n = info[i].name;
+				var email_n = info[i].email;
+				if (first_n != "NULL" && first_n != "") {
+					firstField.inputBox.val(first_n);
+				}
+				if (last_n != "NULL" && last_n != "") {
+					lastField.inputBox.val(last_n);
+				}
+				if (nick_n != "NULL" && nick_n != "") {
+					console.log(true);
+					nameField.inputBox.val(nick_n);
+				}
+				if (email_n != "NULL" && email_n != "") {
+					emailField.inputBox.val(email_n);
+				}
+			}
+	 }
+	 console.log("<?php echo $code; ?>");
+	 account_submit.click(function(e) {
+			e.preventDefault();
+			account_info();
+			windowBox.fadeIn();
+	});
+	window_a.click(function(e) {
+			windowBox.fadeOut();
+	});
+	function account_info() {
+		var stopped = false;
+		if (!stopped) {
+			for (var i = 0, l = inputs.length; i < l; i++) {
+				if (inputs[i].inputBox.val() == "") {
+					stopped = true;
+					inputs[i].inputBox.focus();
+					inputs[i].inputError.show();
+					inputs[i].inputBox.css({'border' : '1px solid red'});
+				} else {
+					inputs[i].inputBox.css({'border' : '1px solid #999'});
+				}
+		}
+		}
+		if (!stopped) {
+			dataString = "&nickname=" + nameField.inputBox.val() + "&email=" + emailField.inputBox.val() + "&first_name=" + firstField.inputBox.val() + "&last_name=" + lastField.inputBox.val() + "<?php echo "&login="; if ($anon != ""){ echo $usersIP; echo "&anon=1"; echo "\""; } else { echo "\""; ?>+fb_id<?php }?>;
+			urlString = "bin/process.php?callback=?"+dataString;
+			console.log(urlString);
+			//only perform when variables have been collected
+			$.getJSON(urlString,{}, function(data) {
+			
+				if (data == "") { 
+					//alert("no data");
+				} else {
+					//alert("data");
+					console.log(data);
+				}
+			});
+		}
+	 }
+	 function ajax_query(dataString) {
+		 var ret;
+		 /* $.ajax({
+			      type: "POST",
+			      url: "bin/process.php",
+			      data: "?callback=?&"+dataString,
+			      success: function(msg) {
+			    	 ret=msg;
+			    	 console.log(msg);
+		          }
+		     }); */
+
+		     urlString = "bin/process.php?callback=?"+dataString;
+		     console.log(urlString);
+				//only perform when variables have been collected
+				$.getJSON(urlString,{}, function(data) {
+				
+					if (data == "") { 
+						//alert("no data");
+					} else {
+						//alert("data");
+						console.log(data);
+					}
+				});
+	     return ret;
+	 }
 });
 </script>
+<!-- soundcloud controls -->
+<script type="text/javascript" src="js/soundcloud.player.api.js"></script>
 <script src="js/sc-player.js" type="text/javascript"></script>
+<script src="js/jquery-soundcloud-controls.js" type="text/javascript"></script>
 
 <script type="text/javascript">    
 	var _gaq = _gaq || [];
@@ -157,72 +301,53 @@ $(document).ready(function() {
 	</div>
 	
 	  <div class="clear"></div>
-	  <!-- <div id="header-wrapper">
-	  		<header id="main-header">
-	  			<div class="logo-wrap" id="logo">
-	  				<a class="home_link" id="logo-link" href="#">Discovery</a>
-	  			</div>
-	  			<div class="sixcol player-box" id="searching">
-	  				<form action="#" method="post">
-						<label class="" id="search-label" for="search-input">search</label>
-						<input role="search" type="text" placeholder="Search" name="search" id="search-input">
-						<input class="submit"  type="submit" name="submit" id="submit" value="Discover">
-					<label class="error" id="search_error">Please enter a search</label>
-					</form>
-	  			</div>
-	  			<div class="optional-functions">
-	  			<div class="player-box"><a id="logout-link" href="logout.php?logout=true">logout</a></div>
-	  			</div>
-	  			<div class="clear"></div>
-	  		</header>
-	  		<div class="clear"></div>
-	  </div>  -->
-	  <div class="clear"></div>
 	  
 	  <div class="main-wrapper">
 	<section id="main-menu" class="threecol">
 		<div class="white-wrapper white-padding">
 		<nav id="main-navigation" class="menu-inner">
 			<ul>	
-					<li><a class="home_link" href="#">home</a></li>
-					<li><a href="#" id="profile-btn">profile</a></li>
+					<li><a id="home_link" href="#main-content">home</a></li>
+					<li><a id="profile_link" href="#profile-content">profile</a></li>
 					
-					<li><span>my music</span>
+					<!-- <li><a href="#my-music">my music</span>
 						<ul>
 						<li><a href="#">my tracks</a></li>
 						<li><a href="#">favourites</a></li>
 						<li><a href="#">discovered</a></li>
 						</ul>
-					</li>
+					</li> -->
 					
-					<li><a href="#">now playing</a></li>
+					<li><a id="playing_link" href="#playing-content">now playing</a></li>
 					
-					<li><span>searches</span>
-						<ul id="ul-searches">
+					<li><a id="searches_link" href="#searches-content">searches</a>
+						<!-- <ul id="ul-searches">
 						<li><a href="#">dystopia</a></li>
 						<li><a href="#">favourites</a></li>
 						<li><a href="#">discovered</a></li>
-						</ul>
+						</ul>-->
 					</li>
+					<li><a id="account_link" href="#account-content">account</a></li>
+					<li><a id="logout_link" href="logout.php?<?php if ($anon != "") { echo "anon=1"; }?>">Logout</a></li>
 			</ul>
+			<div class="clear"></div>
 		</nav>
-		<div class="clear"></div>
+		
 		</div>
 		<div class="clear"></div>
 	</section>
 	<section id="main-content" class="ninecol last menu-inner">
 	<div class="white-wrapper">
-	
-	<div id="the-content">
-<div id="content-header"><h1>Home</h1></div>
+	<div class="the-content">
+<div class="content-header"><h1 class="header">Home</h1></div>
 <div id="main-form" class="wrap">
 <form action="#" method="post">
-						<label class="" id="main-search-label" for="main-search-input">search</label>
-						<input class="" type="text" placeholder="Search" name="search" id="main-search-input">
-						
-						<input class="submit"  type="submit" name="submit" id="main-submit" value="Discover">
-					<label class="main-error" id="search_error">Please enter a search</label>
-	</form>				
+	<label class="" id="main-search-label" for="main-search-input">search</label>
+	<input class="" type="text" placeholder="Search" name="search" id="main-search-input">
+	<ul class="ul-float"><li id="type"><a href="#">type of search</a><ul id="subMenu"><li><a id="track-type" href="#">tracks</a></li><li><a id="artist-type" href="#">artists</a></li><li><a id="genre-type" href="#">Genre</a></li></ul></li></ul>
+	<input class="submit"  type="submit" name="submit" id="main-submit" value="Discover">
+	<label class="main-error" id="search_error">Please enter a search</label>
+</form>
 <h2></h2>
 </div>
 
@@ -230,13 +355,71 @@ $(document).ready(function() {
 </div>
 	</div>
 	</section>
+	<section id="profile-content" class="ninecol last menu-inner">
+	<div class="the-content">
+	<div class="content-header">
+	<h1 class="header">Profile</h1>
 	
-	<div class="clear"></div>
+	</div>
+	<div class="wrap">
+	
+	</div>
+	</div>
+	</section>
+	<section id="playing-content" class="ninecol last menu-inner">
+	<div class="the-content">
+	<div class="content-header">
+	<h1 class="header">Now Playing</h1>
+	</div>
+	<div class="wrap">
+	</div>
+	</div>
+	</section>
+	<section id="searches-content" class="ninecol last menu-inner">
+	<div class="the-content">
+	<div class="content-header">
+	<h1 class="header">Searches</h1>
+	
+	</div>
+	<div class="wrap">
+	</div>
+	</div>
+	</section>
+	<section id="account-content" class="ninecol last menu-inner">
+	<div class="the-content">
+	<div class="content-header">
+	<h1 class="header">Account Settings</h1>
+	</div>
+	<div class="wrap">
+		<form action="#" method="post">
+		<label class="account-label" id="account-name-label" for="first-name-input">First Name</label>
+		<input class="textbox" type="text" value="" name="first-name" id="first-name-input">
+		<label class="account-label" id="account-last-label" for="last-name-input">Last Name</label>
+		<input class="textbox" type="text" value="" name="last-name" id="last-name-input">
+		<label class="account-label" id="account-email-label" for="email-input">Email</label>
+		<input class="textbox" type="email" value="" name="email" id="email-input">
+		<label class="account-label" id="nickname-label" for="nickname-input">Nickname</label>
+		<input class="textbox" type="text" value="" name="name" id="nickname-input">
+		<input class="submit"  type="submit" name="account-submit" id="account-submit" value="save">
+		<div class="clear"></div>
+		</form>
+	</div>
+	</div>
+	</section>
+	<br style="clear:both;"/>
 	<!-- close up the main wrapper -->
 	</div>
+	
+</div>
+</div>
+
 	  <footer id="player-container">
+	  <div class="container">
+	  <div class="row">
+	  <div id="more-options"><a href="#" id="moreBtn">more...</a></div>
+	  <div id="less-options"><a href="#" id="lessBtn">less...</a></div>
 	  <div id="player-wrapper">
-	  <div id="play-functions">
+	  <div class="threecol play-btns">
 	  <div class="box player-box">
 	  	<a id="prev-btn" class="btn" href="#">prev-btn</a>
 		<!-- <a class="sc-play" href="#play">New track</a> -->
@@ -252,18 +435,20 @@ $(document).ready(function() {
 		
 	  </div>
 	  <div class="sixcol" id="playSliderContainer"><div id="playSlider"></div></div>
-	   <div class="optional-functions">
+	  <div class="threecol last">
 		  <div class="player-box">
 		  <a id="repeat-btn" class="off" href="#">repeat</a>
+		  <a id="discovery-btn" class="off" href="#">discover (favourite this track)</a>
 		  </div>
 		<div class="clear"></div>
-		</div>
+	  </div>
 	  </div>
 	  <div class="clear"></div>
+	  </div>
+	  </div>
 	  </footer>
 	  
-</div>
-</div>
+<div id="window"><div id="window-wrapper"><div id="window-head"><h1>Information</h1></div><div id="window-body"><p>Your settings have been updated</p><p><a id="window-a" href="#">Okay</a></p></div></div></div>
 <div id="fb-root"></div>
 </body>
 </html>

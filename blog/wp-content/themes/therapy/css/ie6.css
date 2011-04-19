@@ -1,0 +1,11 @@
+.meta span {zoom: 1;}
+
+#social li  {zoom: 1;}
+
+#commentform #submit  {
+	padding: 7px 3px 7px 3px;
+}
+
+.widget li  {zoom: 1;}
+
+.idTabs .popular  a, .idTabs .comments a, .idTabs .tags a  { background-image: none!important; padding-left: 10px!important;}

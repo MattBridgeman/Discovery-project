@@ -48,26 +48,7 @@
 
 /* controls */
 
-a:link.sc-player, a:link.sc-player .sc-controls , a:visited.sc-player {
-	text-indent:-9999px;
-	height:50px;
-	width:49px;
-	background: url("../../images/player/play-track.jpg") no-repeat top left scroll;
-	float:left;
-}
-.sc-player .sc-controls a:link.sc-pause, .sc-player .sc-controls a:visited.sc-pause {
-  background: url("../../images/player/pause-track.jpg") no-repeat top left scroll;
-}
-.sc-player.playing .sc-controls a.sc-pause{
-  background: url("../../images/player/pause-track.jpg") no-repeat top left scroll;
-}
 
-a:hover.sc-player, a:hover.sc-player .sc-controls , .sc-player .sc-controls a.sc-pause:hover,.sc-player.playing .sc-controls a.sc-pause:hover {
-	background-position: center left ;
-}
-.sc-player .sc-controls a:active {
-	background-position: bottom left ;
-}
 
 .sc-scrubber .sc-time-indicators{
   background: #fff;

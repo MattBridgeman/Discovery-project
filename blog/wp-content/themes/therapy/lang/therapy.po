@@ -1,0 +1,362 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Text in function
+#: therapy/index.php:78
+#: therapy/search.php:49
+#: therapy/archive.php:83
+msgid " Older Entries &raquo;"
+msgstr ""
+
+#. Text in function
+#: therapy/index.php:30
+#: therapy/search.php:22
+#: therapy/single.php:20
+#: therapy/archive.php:35
+msgid "% Comments"
+msgstr ""
+
+#. Text in function
+#: therapy/comments.php:19
+msgid "% Responses"
+msgstr ""
+
+#. Text in function
+#: therapy/index.php:77
+#: therapy/search.php:48
+#: therapy/archive.php:82
+msgid "&laquo; Newer Entries "
+msgstr ""
+
+#. Text in function
+#: therapy/index.php:30
+#: therapy/search.php:22
+#: therapy/single.php:20
+#: therapy/archive.php:35
+msgid "0 Comments"
+msgstr ""
+
+#. Text in function
+#: therapy/index.php:30
+#: therapy/search.php:22
+#: therapy/single.php:20
+#: therapy/archive.php:35
+msgid "1 Comment"
+msgstr ""
+
+#. Text in echo
+#: therapy/footer.php:8
+msgid "A proud member of the"
+msgstr ""
+
+#. Text in echo
+#: therapy/footer.php:6
+msgid "All Rights Reserved."
+msgstr ""
+
+#. Text in echo
+#: therapy/archive.php:15
+#: therapy/archive.php:18
+#: therapy/archive.php:21
+#: therapy/archive.php:24
+msgid "Archive"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-archives.php:21
+msgid "Archives"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-sitemap.php:29
+msgid "Blog / News Categories"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-sitemap.php:33
+msgid "Blog / News Monthly Archives"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-archives.php:35
+msgid "Categories"
+msgstr ""
+
+#. Text in echo
+#: therapy/sidebar.php:19
+msgid "Comments"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:50
+msgid "Comments are closed."
+msgstr ""
+
+#. Text in echo
+#: therapy/footer.php:6
+msgid "Copyright"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:76
+msgid "Custom Title:"
+msgstr ""
+
+#. Text in echo
+#: therapy/header.php:62
+msgid "Follow me on Twitter"
+msgstr ""
+
+#. Text in echo
+#: therapy/header.php:82
+msgid "Home"
+msgstr ""
+
+#. Text in echo
+#: therapy/header.php:62
+msgid "Latest Tweet from Twitter"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:99
+msgid "Latest Video"
+msgstr ""
+
+#. Text in function
+#: therapy/comments.php:62
+msgid "Leave a Reply"
+msgstr ""
+
+#. Text in function
+#: therapy/comments.php:62
+msgid "Leave a Reply to %s"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:76
+msgid "Logged in as"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:76
+msgid "Logout"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:84
+msgid "Mail (will not be published)"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-archives.php:41
+msgid "Monthly Archives"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:81
+msgid "Name"
+msgstr ""
+
+#. Text in function
+#: therapy/comments.php:19
+msgid "No Responses"
+msgstr ""
+
+#. Text in echo
+#: therapy/index.php:64
+#: therapy/template-fullwidth.php:38
+#: therapy/404.php:11
+#: therapy/page.php:34
+#: therapy/single.php:47
+#: therapy/archive.php:69
+msgid "Nothing Found"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:74
+msgid "OR specify a custom value"
+msgstr ""
+
+#. Text in function
+#: therapy/comments.php:19
+msgid "One Response"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-sitemap.php:25
+msgid "Pages"
+msgstr ""
+
+#. Text in echo
+#: therapy/index.php:33
+#: therapy/template-fullwidth.php:24
+#: therapy/search.php:25
+#: therapy/page.php:18
+#: therapy/single.php:23
+#: therapy/archive.php:38
+msgid "Permanent Link to"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:157
+msgid "Photos on"
+msgstr ""
+
+#. Text in echo
+#: therapy/sidebar.php:18
+msgid "Popular"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:44
+msgid "Preset:"
+msgstr ""
+
+#. Text in function
+#: therapy/archive.php:15
+msgid "RSS feed for this section"
+msgstr ""
+
+#. Text in echo
+#: therapy/search-form.php:3
+msgid "Search"
+msgstr ""
+
+#. Text in echo
+#: therapy/search.php:13
+msgid "Search Results"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:46
+msgid "Select Preset"
+msgstr ""
+
+#. Text in function
+#: therapy/includes/theme-functions.php:108
+msgid "Settings"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-sitemap.php:21
+msgid "Sitemap"
+msgstr ""
+
+#. Text in function
+#: therapy/includes/theme-widgets.php:226
+msgid "Social Profiles"
+msgstr ""
+
+#. Text in echo
+#: therapy/index.php:68
+#: therapy/template-fullwidth.php:42
+#: therapy/404.php:15
+#: therapy/page.php:38
+#: therapy/single.php:51
+#: therapy/archive.php:73
+msgid "Sorry, no posts matched you criteria. Please try again."
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:211
+msgid "Sponsors"
+msgstr ""
+
+#. Text in echo
+#: therapy/header.php:95
+msgid "Subscribe"
+msgstr ""
+
+#. Text in echo
+#: therapy/sidebar.php:20
+msgid "Tags"
+msgstr ""
+
+#. Text in function
+#: therapy/index.php:54
+#: therapy/single.php:35
+#: therapy/archive.php:59
+msgid "Tags: "
+msgstr ""
+
+#. Text in echo
+#: therapy/template-archives.php:25
+msgid "The Last 30 Posts"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:7
+msgid "This post is password protected. Enter the password to view comments."
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:65
+msgid "Title:"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:35
+msgid "Trackbacks/Pingbacks"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-widgets.php:70
+msgid "URL:"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:87
+msgid "Website"
+msgstr ""
+
+#. Text in function
+#: therapy/includes/theme-functions.php:108
+msgid "You cannot edit the Yoast Breadcrumbs options."
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:69
+msgid "You must be"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-comments.php:32
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#. Text in function
+#: therapy/search.php:13
+msgid "\\'%s\\'"
+msgstr ""
+
+#. Text in echo
+#: therapy/includes/theme-comments.php:21
+msgid "at"
+msgstr ""
+
+#. Text in echo
+#: therapy/template-archives.php:31
+msgid "comments"
+msgstr ""
+
+#. Text in echo
+#: therapy/footer.php:8
+msgid "family"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:69
+msgid "logged in"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:19
+msgid "to"
+msgstr ""
+
+#. Text in echo
+#: therapy/comments.php:69
+msgid "to post a comment."
+msgstr ""

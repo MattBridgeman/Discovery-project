@@ -8,6 +8,10 @@ img {
 a {
 	outline: none;
 	text-decoration:none;
+	color:black;
+}
+a:hover {
+	text-decoration:underline;
 }
 
 body  {
@@ -59,10 +63,16 @@ body  {
 	margin-bottom: 20px;
 }
 a#facebookBtn {
+	background-image:url('images/facebook-btn.png');
+}
+a#anonBtn {
+	background-image:url('images/anon.png');
+	margin-top: 20px!important;
+}
+a#facebookBtn, a#anonBtn {
 	display:block;
 	width:251px;
 	height:48px;
-	background-image:url('images/facebook-btn.png');
 	background-repeat:none;
 	background-position:top left;
 	margin:0 auto;

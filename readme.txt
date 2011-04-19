@@ -1,2 +1,2 @@
 Discovery Project Site Directory
-beta v2
+beta v2.6

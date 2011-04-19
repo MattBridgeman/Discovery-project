@@ -29,8 +29,18 @@ $(document).ready(function() {
 	var mainSearchInput = $('#main-search-input');
 	var submit = $('.submit');
 	//menu elements
-	var profileBtn = $("#profile-btn");
-	var homeLink = $('.home_link');
+	
+	var homeLink = $('#home_link');
+	var homeContent = $('#main-content');
+	var profileLink = $("#profile_link");
+	var profileContent = $('#profile-content');
+	var nowPlayingLink = $("#playing_link");
+	var nowPlayingContent = $('#playing-content');
+	var searchesLink = $("#searches_link");
+	var searchesContent = $('#searches-content');
+	var accountLink = $("#account_link");
+	var accountContent = $('#account-content');
+	var searchType = $('#type');
 	//play elements
 	var repeatBtn = $("#repeat-btn");
 	var volumeBtn = $("#volume-btn");
@@ -38,8 +48,12 @@ $(document).ready(function() {
 	var volumeSliderContainer = $("#volumeSliderContainer");
 	var playSlider = $("#playSlider");
 	var prevBtn = $('#prev-btn');
-	var nextBtn = $('#prev-btn');
-	var playPause = $('#play-pause');
+	var nextBtn = $('#next-btn');
+	var playPause = $('a.sc-play');
+	var moreBtn = $('#moreBtn');
+	var lessBtn = $('#lessBtn');
+	var playerContainer = $('#player-container');
+	
 	//dynamic RHS elements
 	var scTrack = $('a.track-load');
 	
@@ -61,10 +75,99 @@ $(document).ready(function() {
 	var currentTrack;
 	var playList = new Array();
 	var firstPlay = true;
+	var states = new Array();
+	var types = new Array();
+	var selectedType = "";
+	var submenu = $('ul#subMenu');
+	var genreType = $('#genre-type');
+	var artistType = $('#artist-type');
+	var trackType = $('#track-type');
+	var id = 0;
 	//elements to hide
 	errors.hide();
 	volumeSliderContainer.hide();
 	mainError.hide();
+	lessBtn.hide();
+	submenu.hide();
+	var typeState = function (menuItem) {
+		this.menuItem = menuItem;
+		this.menuItem.bind('click', function(e) {
+			e.preventDefault();
+			selectedType = $(this).html();
+		});
+	}
+	var genreState = new typeState(genreType);
+	types.push(genreState);
+	var artistState = new typeState(artistType);
+	types.push(artistState);
+	var trackState = new typeState(trackType);
+	types.push(trackState);
+	var menuState = function (menuItem, wrapElement, children) {
+		this.id = id;
+		id++;
+		this.menuItem = menuItem;
+		this.wrapElement = wrapElement;
+		this.header = wrapElement.find("h1.header");
+		this.body = wrapElement.find("div.wrap");
+		this.selected = false;
+		if (children) {
+			menuItem.children().hide();
+		}
+		var stateID = this.id;
+		this.menuItem.bind('click', function(e) {
+			e.preventDefault();
+		});
+	}
+	
+	homeState = new menuState(homeLink, homeContent, false);
+	states.push(homeState);
+	profileState = new menuState(profileLink, profileContent, false);
+	states.push(profileState);
+	nowPlayingState = new menuState(nowPlayingLink, nowPlayingContent, false);
+	states.push(nowPlayingState);
+	searchesState = new menuState(searchesLink, searchesContent, false);
+	states.push(searchesState);
+	accountState = new menuState(accountLink, accountContent, false);
+	states.push(accountState);
+	console.log(states.length);
+	for (var i = 0; i < states.length; i++) {
+		
+		if (i > 0) {
+			states[i].menuItem.addClass("unselected");
+			states[i].wrapElement.hide();
+		} else {
+			states[i].menuItem.addClass("selected");
+		}
+	}
+	
+	function changeState(state) {
+		for (var i = 0; i < states.length; i++) {
+			if (states[i].id == state) {
+				//change the class to on and it's wrapElement to on, if children is equal to true turn them on
+				states[i].menuItem.addClass("selected");
+				states[i].selected = true;
+				states[i].menuItem.removeClass("unselected");
+				if (states[i].wrapElement) {
+					states[i].wrapElement.show();
+				}
+				
+				if (states[i].children) {
+					states[i].children().show();
+				}
+			} else {
+				//change the class to off, wrapElement to off and children to off
+				states[i].menuItem.addClass("unselected");
+				states[i].selected = false;
+				states[i].menuItem.removeClass("selected");
+				if (states[i].wrapElement) {
+				states[i].wrapElement.hide();
+				}
+				if (states[i].children) {
+					states[i].children().hide();
+				}
+			}
+		}
+	}
 	
 	function jsonRequest(requestString, additionalParams) { 
 		var orig = additionalParams;
@@ -76,20 +179,24 @@ $(document).ready(function() {
 			if (data == "") { 
 					$('.json').append('<p>Query Empty</p>');	
 			} else { 
+				console.log(data);
 			var count = 0;
-				 
-				 $('#main-form > h2').replaceWith('<h2 class="search-class">Search Results For: "'+ orig +'"</h2>');
-				 
-				 $('#the-content > ul.new').replaceWith('<ul class="new"></ul>');
-				 $.each(data, function() {
-					 
-					 for (var i = count, l = 10; i < l; i++) {
+			homeContent.find('h2').replaceWith('<h2 class="search-class">Search Results For: "'+ orig +'"</h2>');
+				 //$('#main-form > h2').replaceWith('');
+			
+				// $('.the-content > ul.new').replaceWith('<ul class="new"></ul>');
+			
+			for ( keyVar in data) {
+				   console.log(data[keyVar]);
+				   homeContent.find('ul.new').append('<li><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'<a/></li>');
+			}
+					/* for (var i = count, l = 10; i < l; i++) {
 						 //console.log(data[i].id);
-						 $('#the-content ul.new').append('<li><a class="track-load" href="'+ data[i].uri +'" >'+ data[i].title +'<a/></li>');
-						 count++;
-					 }
+						
+						 
+					 } */
 					 
-					});
+					
 
 			}
 			
@@ -101,10 +208,20 @@ $(document).ready(function() {
 		e.preventDefault();
 		repeat();
 	});
-	
-	profileBtn.click(function(e) {
-		jsonRequest("users/spawn", "");
+	searchType.click(function(e) {
+		e.preventDefault();
+		submenu.show();
+		submenu.children().toggle('fast', function() {});
 	});
+	submenu.hover( function () {
+	      $(this).children().fadeIn('fast');
+    }, 
+    function () {
+    	submenu.fadeOut('fast');
+    });
+	/* profileBtn.click(function(e) {
+		jsonRequest("users/spawn", "");
+	}); */
 	
 	//buttons
 	volumeSlider.slider({
@@ -125,19 +242,40 @@ $(document).ready(function() {
 		  event.preventDefault();
 		  currentPlaying ++;
 		  if (firstPlay) {
-			  playPause.click();
+			  
+			  playPause.trigger('click');
+			  firstPlay = false;
 		  }
 		  thePlayer.api_load(this.href);
 		});
 	
 	
-	volumeBtn.hover(function () {
-	    volumeSliderContainer.fadeIn('slow');
-	  },
-	  function () {
-		volumeSliderContainer.fadeOut('fast');
+	volumeBtn.click(function () {
+	    volumeSliderContainer.toggle('fast', function() {
+	        // Animation complete.
+	    });
 	  });
 	
+	moreBtn.click(function(e) {
+		e.preventDefault();
+		  playerContainer.animate({
+		  "height" : "+=100px" 
+		  }, 'fast', function() {
+		    // Animation complete.
+		  });
+		  moreBtn.hide();
+		  lessBtn.show();
+		});
+	lessBtn.click(function(e) {
+		e.preventDefault();
+		  playerContainer.animate({
+		  "height" : "-=100px"
+		  }, 'fast', function() {
+		    // Animation complete.
+		  });
+		  lessBtn.hide();
+		  moreBtn.show();
+		});
 	//buttons
 	playSlider.slider({
 	      orientation: "horizontal",
@@ -168,8 +306,14 @@ $(document).ready(function() {
 		 if ((mainSearchInput.val()) == "") {
 			mainError.show();
 		 } else {
-			 var data = mainSearchInput.val();
-			 jsonRequest("tracks", data );
+			 var search = mainSearchInput.val();
+			 console.log(search);
+			 searchT = "tracks";
+			 if (selectedType == "artists") {
+				 searchT = "users";
+			 }
+			 console.log(searchT);
+			 jsonRequest(searchT, search );
 		 }
 		 var justSearched = mainSearchInput.val();
 

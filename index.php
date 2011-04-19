@@ -19,6 +19,12 @@ function curPageURL() {
  }
  return $pageURL;
 }
+$pageURL = curPageURL();
+$array;
+if (count($array = explode("www", $pageURL)) > 1) {
+} else {
+	header("Location: http://www.".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]);
+}
 function getMessage () {
 	if ($_GET['message'] == "thankyou") {
 		$message = true;
@@ -41,7 +47,7 @@ $facebook = new Facebook(array(
 
     if(empty($code)) {
 		$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
-		. $app_id . "&scope=". $scope ."&redirect_uri=" . urlencode($my_url."player/");
+		. $app_id . "&scope=". $scope ."&redirect_uri=http://www.thediscoveryapp.com/player/";
 		$redirect = "" . $dialog_url . "";
 	}   
 
@@ -78,7 +84,9 @@ $(document).ready(function() {
   				//user is not connected
   		  } else {
 			redirect = "player/";
+			<?php if (!isset($_GET['done'])) { ?>
 			top.location.href=redirect;
+			<?php } ?>
   		  }
   		});
 	  };
@@ -113,6 +121,7 @@ $(document).ready(function() {
 <div class="container">
 <header id="mainHead">
 	<h1>The Discovery Application</h1>
+	<aside><p><a href="http://www.thediscoveryapp.com">Home</a> &#47; <a href="http://www.thediscoveryapp.com/blog">Dev Blog</a></p></aside>
 </header>
 <section id="mainSection">
 <h1>Welcome to<br/>the Discovery App</h1>
@@ -121,6 +130,7 @@ $(document).ready(function() {
 <p>It was released early to show you just what's instore and to get valuable feedback.</p>
 <p>Login via Facebook below and have a go!</p>
 <a href="#" id="facebookBtn" title="link-to-authorize-discovery">Login via Facebook</a>
+<a href="/player?anon=1" id="anonBtn" title="link-to-authorize-discovery">Login anonymously</a>
 </section>
 <aside id="mainAside">
 

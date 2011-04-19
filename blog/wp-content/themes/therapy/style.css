@@ -1,0 +1,112 @@
+/*  
+Matt Bridgeman: The Discovery App Blog
+*/
+
+@import url("../../../../css/webfontkit/stylesheet.css");
+
+img {
+	border:0 none;
+}
+
+a {
+	outline: none;
+	text-decoration:none;
+	color:black;
+}
+a:hover {
+	text-decoration:underline;
+}
+body  {
+	background-image:url('../../../../css/images/bg-body.gif');
+	background-repeat:repeat;
+	font-size: 18px;
+    font-family: 'DroidSerifRegular', serif;
+	font-size-adjust: 0.55;
+	font-weight: lighter;
+	font-style: normal;
+	line-height:normal;
+	color: #444;
+	line-height: 1.5;  /*unitless for proper inheritance*/
+	padding:0;
+	margin:0;
+	text-shadow:#fff 1px 1px 1px;
+}
+
+.container {
+	width:850px;
+	margin: 0 auto;
+}
+#mainHead {
+	display:block;
+	width:380px;
+	float:left;
+	margin-top: 75px;
+}
+#mainHead h1 {
+	background-image: url('../../../../css/images/discovery-main.png');
+	background-position: top left;
+	background-repeat:none;
+	display:block;
+	width:330px;
+	height:460px;
+	text-indent: -9999px;
+	margin-bottom: 0;
+}
+#mainHead h1 a {
+	display:block;
+	height:100%;
+}
+#mainSection {
+	float: left;
+	display: block;
+	width: 470px;
+	margin-top: 62px;
+	border-bottom: 2px dotted #72655E;
+	padding-bottom: 20px;
+}
+#mainSection h1 {
+	border-bottom: 2px dotted #72655E;
+	margin-bottom: 20px;
+}
+a#facebookBtn {
+	display:block;
+	width:251px;
+	height:48px;
+	background-image:url('../../../../css/images/facebook-btn.png');
+	background-repeat:none;
+	background-position:top left;
+	margin:0 auto;
+	text-indent:-9999px;
+}
+#mainAside {
+	
+}
+
+h1, h2, h3, h4, h5, h6  {
+	
+}
+.blog-article {
+	border-top: 2px dotted #72655E;
+}
+
+/* http://sonspring.com/journal/clearing-floats */
+
+html body * span.clear,
+html body * div.clear,
+html body * li.clear,
+html body * dd.clear
+{
+	background: none;
+	border: 0;
+	clear: both;
+	display: block;
+	float: none;
+	font-size: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}

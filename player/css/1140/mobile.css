@@ -21,3 +21,26 @@ body {
 font-size: 16px;
 line-height: 24px;
 }
+
+#playSliderContainer {
+padding-top: 18px;
+height: 32px;
+}
+.play-btns {
+height: 50px;
+}
+#more-options, #less-options {
+	position:fixed;
+	width:60px;
+	height:20px;
+	right:0;
+	margin-top: -24px;
+	display:block;
+}
+#more-options a, #less-options a {
+text-align: center;
+background: #999;
+color: white;
+padding: 3px 11px;
+}
+}

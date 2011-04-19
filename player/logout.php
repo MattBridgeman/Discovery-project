@@ -1,6 +1,8 @@
 <?php
 require_once('../../includes/initialize.php');
-
+if (isset($_GET['anon'])) {
+	header("Location: ../index.php?anon=1&done=1");
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -20,7 +22,7 @@ $(document).ready(function() {
 			//they are logged in
   			FB.logout(function(response) {
   				// user is now logged out
-  				top.location.href='../?message=thankyou';
+  				top.location.href='../?message=thankyou&done=1';
   			});
   		  }
   		});

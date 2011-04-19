@@ -1,0 +1,11 @@
+*** Therapy Changelog ***
+
+2009.10.10 - version 1.0.2
+	* lang/therapy-fr_FR.mo - Added French Translation files
+	  lang/therapy-fr_FR.po
+	
+2009.10.08 - version 1.0.1
+	* style.css - Removed background from "#tabber .list li a:link, #tabber .list li a:visited" to fix missing image bug
+	
+2009.10.08 - version 1.0
+	* First release!
