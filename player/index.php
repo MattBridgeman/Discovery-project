@@ -110,6 +110,8 @@ $(document).ready(function() {
 		this.inputBox = inputBox;
 		
 	}
+	var likes = new Array();
+	var responses = new Array();
 	var nameField = new inputField(nickname);
 	var emailField = new inputField(email);
 	var firstField = new inputField(first_name);
@@ -138,7 +140,7 @@ $(document).ready(function() {
   				first_name = response.first_name;
   				last_name = response.last_name;
   				dataString += '&name=' + name + '&email=' + email + '&last_name=' + last_name + '&first_name=' + first_name;
-  				console.log(dataString);
+  				
 				//only perform when variables have been collected
   				$.ajax({
   			      type: "POST",
@@ -150,10 +152,45 @@ $(document).ready(function() {
   			    	loop_info();
   		          }
   		     });
-  	  		     
+  			  
   	  		});
-	        
-		     
+  			FB.api('/me/likes', function(response) {
+  	  			
+  				for ( keyVar in response) {	
+					for ( keyVars in response[keyVar]) {
+						
+						if (response[keyVar][keyVars].category == "Musician/band") {
+							console.log(response[keyVar][keyVars].name);
+							likes.push(response[keyVar][keyVars].name);
+						}
+					}
+  				}
+				do_likes();
+  			});
+  			function do_likes() {
+	  			dataString = "&likes=";
+	  			for (var i = 0; i < likes.length; i++) {
+		  			dataString += likes[i];
+		  			if (0 < i < likes.length) {
+						dataString += ",";
+		  			}
+	  			}
+		  		 	
+		  		 	urlString = "bin/process.php?callback=?"+dataString+"";
+		  			//only perform when variables have been collected
+		  			console.log(urlString);
+		  			$.getJSON(urlString,{}, function(data) {
+		  			
+		  				if (data == "") { 
+		  					//alert("no data");
+		  				} else {
+		  					//alert("data");
+		  					console.log(data);
+		  				}
+		  			});
+	  				
+	  			
+  			}
   		  }
   		});
 	  };

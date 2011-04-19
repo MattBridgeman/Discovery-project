@@ -104,11 +104,33 @@ WHERE ip = '$ip'";
 		echo $message;
   	}
   	
+} else if(isset($_GET['likes'])) {
+	$resultsArr = array();
+	
+	require_once("search/index.php");
+	$likes = $_GET['likes'];
+	foreach (explode(',', $likes) as $likesID) {
+	// Setup the variables
+		$methodVars = array(
+			'artist' => $likesID,
+			'page' => 2,
+			'limit' => 10
+		);
+		
+		/* if ( $results = $artistClass->search($methodVars) ) {
+			array_push($resultsArr, $results);
+		} else {
+			array_push($resultsArr, $artistClass->error['code']);
+		} */
+		$li = array("artist" => stripslashes($likesID));
+		array_push($resultsArr, $li);
+	}
+	$resultsArr = json_encode($resultsArr);
+	echo $_GET['callback'] . ' (' . $resultsArr . ');';
 } else {
 	$message = array('error with post');
 	$json = json_encode($message);
   	$message = $json;
   	echo $_GET['callback'] . ' (' . $message . ');';
-	echo $message;
 }
 ?>
