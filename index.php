@@ -56,7 +56,7 @@ $facebook = new Facebook(array(
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Discovery App | Music Discovery</title>
+<title>The Discovery App v2.9 | Music Discovery</title>
 <meta name="keywords" content="music, discovery, app, soundcloud api, matt bridgeman">
 <meta name="description" content="The Discovery Application is a music discovery service based on the soundcloud API">
 <meta name="author" content="Matthew Bridgeman">
@@ -124,9 +124,9 @@ $(document).ready(function() {
 	<aside><p><a href="http://www.thediscoveryapp.com">Home</a> &#47; <a href="http://www.thediscoveryapp.com/blog">Dev Blog</a></p></aside>
 </header>
 <section id="mainSection">
-<h1>Welcome to<br/>the Discovery App</h1>
+<h1>Welcome to<br/>the Discovery App v2.9</h1>
 <p>The Discovery App is a music streaming service designed to provide innovative ways to interact with new and unheard music.</p>
-<p>This is Beta release version 2.5</p>
+<p>This is Beta release version 2.9</p>
 <p>It was released early to show you just what's instore and to get valuable feedback.</p>
 <p>Login via Facebook below and have a go!</p>
 <a href="#" id="facebookBtn" title="link-to-authorize-discovery">Login via Facebook</a>

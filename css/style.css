@@ -15,7 +15,7 @@ a:hover {
 }
 
 body  {
-	background-image:url('images/bg-body.gif');
+	background-image:url("../player/css/images/bg-pattern.png");
 	background-repeat:repeat;
 	font-size: 18px;
     font-family: 'DroidSerifRegular', serif;
