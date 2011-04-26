@@ -3,13 +3,9 @@
  * Author: Matthew Bridgeman
  */
 
-//current seconds / total seconds 
-
 //when the page is ready
 $(document).ready(function() {
-   // put all your jQuery goodness in here.
-	//$('#player-object').hide();
-	
+ 
 	//generic
 	//the player is a random object
 	thePlayer = new Object();
@@ -30,17 +26,18 @@ $(document).ready(function() {
 	var submit = $('.submit');
 	//menu elements
 	
-	var homeLink = $('#home_link');
+	var homeLink = $('a#home_link');
 	var homeContent = $('#main-content');
-	var profileLink = $("#profile_link");
+	var profileLink = $("a#profile_link");
 	var profileContent = $('#profile-content');
-	var nowPlayingLink = $("#playing_link");
+	var nowPlayingLink = $("a#playing_link");
 	var nowPlayingContent = $('#playing-content');
-	var searchesLink = $("#searches_link");
+	var searchesLink = $("a#searches_link");
 	var searchesContent = $('#searches-content');
-	var accountLink = $("#account_link");
+	var accountLink = $("a#account_link");
 	var accountContent = $('#account-content');
-	var searchType = $('#type');
+	var searchType = $('a#type-a');
+	var searchT;
 	//play elements
 	var repeatBtn = $("#repeat-btn");
 	var volumeBtn = $("#volume-btn");
@@ -82,6 +79,7 @@ $(document).ready(function() {
 	var genreType = $('#genre-type');
 	var artistType = $('#artist-type');
 	var trackType = $('#track-type');
+	var fromSearch = false;
 	var id = 0;
 	//elements to hide
 	errors.hide();
@@ -116,6 +114,8 @@ $(document).ready(function() {
 		var stateID = this.id;
 		this.menuItem.bind('click', function(e) {
 			e.preventDefault();
+			console.log(wrapElement);
+			changeState(wrapElement);
 		});
 	}
 	
@@ -129,7 +129,7 @@ $(document).ready(function() {
 	states.push(searchesState);
 	accountState = new menuState(accountLink, accountContent, false);
 	states.push(accountState);
-	console.log(states.length);
+	//console.log(states.length);
 	for (var i = 0; i < states.length; i++) {
 		
 		if (i > 0) {
@@ -142,7 +142,7 @@ $(document).ready(function() {
 	
 	function changeState(state) {
 		for (var i = 0; i < states.length; i++) {
-			if (states[i].id == state) {
+			if (states[i].wrapElement == state) {
 				//change the class to on and it's wrapElement to on, if children is equal to true turn them on
 				states[i].menuItem.addClass("selected");
 				states[i].selected = true;
@@ -168,8 +168,22 @@ $(document).ready(function() {
 			}
 		}
 	}
-	
-	function jsonRequest(requestString, additionalParams) { 
+	//gets soundcloud results for this artist
+	$('a.artist-search').live('click', function(e) {
+		e.preventDefault();
+		$('ul.recom').fadeOut();
+		search = $(this).attr('href');
+		search.replace("#", "");
+		search.replace("%27", "/'");
+		console.log(search);
+		searchT = "tracks";
+		from = "artist-search";
+		jsonRequest(searchT, search, from);
+	});
+	function jsonRequest(requestString, additionalParams, from) { 
+		$('ul.recom').hide();
+		$('ul.others').hide();
+		$('body').find('div.ajaxLoading').show();
 		var orig = additionalParams;
 		var newString = "&q=" + additionalParams;
 		var urlRequest = "http://api.soundcloud.com/"+ requestString + ".json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
@@ -179,29 +193,23 @@ $(document).ready(function() {
 			if (data == "") { 
 					$('.json').append('<p>Query Empty</p>');	
 			} else { 
-				console.log(data);
+				
 			var count = 0;
 			homeContent.find('h2').replaceWith('<h2 class="search-class">Search Results For: "'+ orig +'"</h2>');
 				 //$('#main-form > h2').replaceWith('');
 			
 				// $('.the-content > ul.new').replaceWith('<ul class="new"></ul>');
-			
+			homeContent.find('ul.new').empty();
 			for ( keyVar in data) {
 				   console.log(data[keyVar]);
 				   homeContent.find('ul.new').append('<li><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'<a/></li>');
 			}
-					/* for (var i = count, l = 10; i < l; i++) {
-						 //console.log(data[i].id);
-						
-						 
-					 } */
-					 
 					
 
 			}
 			
    	    });
-			
+		$('body').find('div.ajaxLoading').hide();
 	}
 
 	repeatBtn.click(function(e) {
@@ -210,11 +218,10 @@ $(document).ready(function() {
 	});
 	searchType.click(function(e) {
 		e.preventDefault();
-		submenu.show();
-		submenu.children().toggle('fast', function() {});
+		submenu.toggle('fast', function() {});
 	});
 	submenu.hover( function () {
-	      $(this).children().fadeIn('fast');
+	      //$(this).children().fadeIn('fast');
     }, 
     function () {
     	submenu.fadeOut('fast');
@@ -238,15 +245,16 @@ $(document).ready(function() {
 	 });
 	
 
-	scTrack.live('click',function(event){
+	$('a.track-load').live('click',function(event){
 		  event.preventDefault();
 		  currentPlaying ++;
 		  if (firstPlay) {
-			  
+			  fromSearch = true;
 			  playPause.trigger('click');
 			  firstPlay = false;
+			  
 		  }
-		  thePlayer.api_load(this.href);
+			  thePlayer.api_load(this.href);
 		});
 	
 	
@@ -277,7 +285,7 @@ $(document).ready(function() {
 		  moreBtn.show();
 		});
 	//buttons
-	playSlider.slider({
+	$("#playSlider").slider({
 	      orientation: "horizontal",
 	      range: "min",
 	      min: 0,
@@ -289,9 +297,7 @@ $(document).ready(function() {
 	      }
 	 });
 	
-	homeLink.click(function() {
-		  //$('#the-content .wrap').replaceWith( 
-				  
+	/* homeLink.click(function() {
 		 $.ajax({
 		      type: "GET",
 		      url: "main-search.php",
@@ -300,7 +306,7 @@ $(document).ready(function() {
 		        }
 		     });
 		  
-		});
+		}); */
 	submit.click(function() {
 		
 		 if ((mainSearchInput.val()) == "") {
@@ -313,7 +319,7 @@ $(document).ready(function() {
 				 searchT = "users";
 			 }
 			 console.log(searchT);
-			 jsonRequest(searchT, search );
+			 jsonRequest(searchT, search, "");
 		 }
 		 var justSearched = mainSearchInput.val();
 
@@ -328,15 +334,8 @@ $(document).ready(function() {
 				prevTrack = 0;
 			}
 			thePlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[prevTrack]);
-			//var nextTrack = currentPlaying + 1;
 			currentPlaying --;
-			/*for( i = 0; l = thePlayList.length; i++)  {
-				  var lastTrack = thePlayList[i];
-				  if(playlist[i] == currentTrack) {
-					  console.log("this "+playlist[i]+" is current track");
-				  }
-				  
-			}*/
+			
 		}
 		 return false;
 	});
@@ -348,14 +347,6 @@ $(document).ready(function() {
 			thePlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[nextTrack]);
 			//var nextTrack = currentPlaying + 1;
 			currentPlaying ++;
-			//console.log(nextTrack);
-			/*for( i = 0; l = thePlayList.length; i++)  {
-				  var lastTrack = thePlayList[i];
-				  if(playlist[i] == currentTrack) {
-					  console.log("this "+playlist[i]+" is current track");
-				  }
-				  
-			}*/
 			
 		}
 		 return false;
@@ -375,12 +366,6 @@ $(document).ready(function() {
 		if (skipTo > loadedSeconds) {
 			skipTo = loadedSeconds;
 		}
-		//var secondsBuf = ;
-		
-		//console.log(skipTo);
-		//var trackPercentage = trackDuration / 100;
-		//var trackPosition = player.api_getTrackPosition();
-		//var trackPos = (trackPosition / trackDuration);
 		thePlayer.api_seekTo(skipTo);
 	}
 	
@@ -416,14 +401,7 @@ soundcloud.addEventListener('onMediaSeek', function(player, data) {
 
 //when it's buffering
 soundcloud.addEventListener('onMediaBuffering', function(player, data) {
-	//console.log(data.percent);
-		//slider = 
-	  //if slider is more than data.percent { playback = (overall seeking percentage)  }
 	theLoad = data.percent;
-	//console.log(loadedAmt);
-  //console.log(trackPosition);
-  //playPos = trackPos;
-	//thePlayer = player;
 });
 
 soundcloud.addEventListener('onMediaDoneBuffering', function(player, data) {
@@ -431,47 +409,38 @@ soundcloud.addEventListener('onMediaDoneBuffering', function(player, data) {
 });
 
 soundcloud.addEventListener('onMediaStart', function(player, data) {
-	
 });
 
 
 //handles what to do when the song is ready
 soundcloud.addEventListener('onPlayerReady', function(player, data) {
 
+		player.api_play();
 		//the player object equals whatever the player is
 		thePlayer = player;
 		theData = data;
-		
-		//once the player is ready, divide total seconds by 100
-		
-		
-		//stopper = slider
-		
-		// -|-----
+		console.log(thePlayer);
 		currentTrack = data.mediaUri;
-		//for (i = 0; l = playList.length; i++) {
-		//currentPlaying ++;
-		//}
+		if (fromSearch) {
+			console.log("fromSearch");
+			playList.push($('a.track-load').attr('href'));
+			fromSearch = false;
+		}
 		if (currentTrack != thePlayList[thePlayList.length]) {
-			//console.log($(playList).last());
 			playList.push(data.mediaId);
 		}
 		thePlayList = playList;
 		console.log(currentPlaying);
-		//player.api_setVolume(0);
 		
 });
 
 //handles the event of the song finishing
 soundcloud.addEventListener('onMediaEnd', function(player, data) {
-	//console.log(data);
-	
-	//if repeat button is on, repeat track
 	if (repeatBtn.hasClass('on')) {
 		player.api_load(currentTrack);
 		soundcloud.addEventListener('onPlayerReady', function(player, data) {
 		player.api_play();
 		});
-		  console.log("repeat");
+		console.log("repeat");
 	}  
 });

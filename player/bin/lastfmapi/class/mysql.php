@@ -12,22 +12,22 @@ class lastfmApiDatabase {
 	 * Stores the host name
 	 * @var string
 	 */
-	private $host;
+	private $host = "localhost";
 	/**
 	 * Stores the username
 	 * @var string
 	 */
-	private $dbUser;
+	private $dbUser = "thedisc4_test";
 	/**
 	 * Stores the password
 	 * @var string
 	 */
-	private $dbPass;
+	private $dbPass = "2002ASpace!";
 	/**
 	 * Stores the database name
 	 * @var string
 	 */
-	private $dbName;
+	private $dbName = "thedisc4_songs";
 	/**
 	 * Stores the connection status
 	 * @var boolean

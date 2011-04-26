@@ -4,6 +4,7 @@
 // Name: Discovery
 //
 require_once("../../../includes/initialize.php");
+require_once("lastfmapi/lastfmapi.php");
 header("Content-type: application/json");
 header('Access-Control: *');
 header('Access-Control-Allow-Origin: *');
@@ -105,28 +106,144 @@ WHERE ip = '$ip'";
   	}
   	
 } else if(isset($_GET['likes'])) {
-	$resultsArr = array();
-	
-	require_once("search/index.php");
+$resultsArr = array();
+	$artistArr = array();
+	$lastFM = array();
 	$likes = $_GET['likes'];
-	foreach (explode(',', $likes) as $likesID) {
-	// Setup the variables
+	$likes = stripslashes($likes);
+	$likes = str_replace("%20", " ", $likes);
+	$likes = str_replace("'", "%27", $likes);
+	$authVars = array(
+		'apiKey' => 'fbe282844ddb2e0bfef66790e0d012f1',
+		'secret' => 'ba9da9d645aace82cefc040bdb8b7ee1',
+		'username' => 'spawnDnB'
+	);
+	$config = array(
+		'enabled' => true,
+		'path' => './lastfmapi/',
+		'cache_length' => 1800
+	);
+	// Pass the array to the auth class to eturn a valid auth
+	$auth = new lastfmApiAuth('setsession', $authVars);
+	
+	// Call for the album package class with auth data
+	$apiClass = new lastfmApi();
+	$artistClass = $apiClass->getPackage($auth, 'artist', $config);
+	
+	$explode = (explode(',', $likes));
+	for($i = 0; $i < (count($explode)-1); $i++)  {
+		// Setup the variables
 		$methodVars = array(
-			'artist' => $likesID,
-			'page' => 2,
-			'limit' => 10
+			'artist' => $explode[$i],
+			'page' => 1,
+			'limit' => 1
 		);
+		if ($results = $artistClass->search($methodVars)) {
+			//$print_r($results);
+							
+			foreach ($results as $k1 => $v1) {
+			
+				if (is_array($results[$k1])) {
+				
+					foreach ($results[$k1] as $k2 => $v2) {
+						if (is_array($results[$k1][$k2])) {
+						if ($results[$k1][$k2]["name"]) {
+								//print_r($results[$k1][$k2]["name"]);
+								$artistArr["name"] = $results[$k1][$k2]["name"];
+							}
+							foreach ($results[$k1][$k2] as $k3 => $v3) {
+								if (is_array($results[$k1][$k2][$k3])) {
+									foreach ($results[$k1][$k2]["image"] as $k4 => $v4) {
+										$image = str_replace("/34/", "/252/", $results[$k1][$k2]["image"][$k4]);
+										//echo($image."<br/>");
+										if ($image != "") {
+											$artistArr["image"] = $image;
+										}
+									}
+								}
+							}
+							array_push($lastFM, $artistArr);
+							unset($artistArr);
+							$artistArr = array();
+						}
+						
+					}
+					//array_push($lastFM, $artistArr);
+					
+				}
+				
+			}
+			
+		}
+		else {
+			//$ret = $artistClass->error['code'];
+			array_push($lastFM, array("error" => $artistClass->error['desc']));
+		}
+		//$lastFM = json_encode(array("artist" => $likesID));
+		//json_encode($lastFM);
 		
-		/* if ( $results = $artistClass->search($methodVars) ) {
-			array_push($resultsArr, $results);
-		} else {
-			array_push($resultsArr, $artistClass->error['code']);
-		} */
-		$li = array("artist" => stripslashes($likesID));
-		array_push($resultsArr, $li);
 	}
-	$resultsArr = json_encode($resultsArr);
-	echo $_GET['callback'] . ' (' . $resultsArr . ');';
+	$resultsArr = json_encode($lastFM);
+	$print = $_GET['callback'] . ' (' . $resultsArr . ');';
+	echo $print;
+} else if(isset($_GET['similar'])) {
+	$resultsArr = array();
+	$artistArr = array();
+	$lastFM = array();
+	$likes = $_GET['similar'];
+	$likes = stripslashes($likes);
+	$likes = str_replace("%20", " ", $likes);
+	$likes = str_replace("'", "%27", $likes);
+	// Get the session auth data
+	//$file = fopen('../auth.txt', 'r');
+	// Put the auth data into an array
+	$authVars = array(
+		'apiKey' => 'fbe282844ddb2e0bfef66790e0d012f1',
+		'secret' => 'ba9da9d645aace82cefc040bdb8b7ee1',
+		'username' => 'spawnDnB',
+		'sessionKey' => '',
+		'subscriber' => ''
+	);
+	$config = array(
+		'enabled' => true,
+		'path' => './lastfmapi/',
+		'cache_length' => 1800
+	);
+	// Pass the array to the auth class to eturn a valid auth
+	$auth = new lastfmApiAuth('setsession', $authVars);
+	
+	// Call for the album package class with auth data
+	$apiClass = new lastfmApi();
+	$artistClass = $apiClass->getPackage($auth, 'artist', $config);
+	
+	// Setup the variables
+	$methodVars = array(
+		'artist' => $likes,
+	);
+	
+	if ( $artists = $artistClass->getSimilar($methodVars) ) {
+				//$print_r($results);
+								
+				foreach ($artists as $k1 => $v1) {
+					if ($artists[$k1]["name"]) {
+						//print_r($results[$k1][$k2]["name"]);
+						$artistArr["name"] = $artists[$k1]["name"];
+						$image = str_replace("/34/", "/252/", $artists[$k1]["image"]);
+						$artistArr["image"] = $image;
+					}
+					array_push($lastFM, $artistArr);
+					unset($artistArr);
+					$artistArr = array();
+				}
+		
+	}
+	else {
+		array_push($lastFM, array("error" => $artistClass->error['desc']));
+	}
+		
+	$resultsArr = json_encode($lastFM);
+	$print = $_GET['callback'] . ' (' . $resultsArr . ');';
+	echo $print;
 } else {
 	$message = array('error with post');
 	$json = json_encode($message);

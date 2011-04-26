@@ -42,8 +42,10 @@ if(isset($_GET['anon'])) {
 <head>
 <!-- meta info -->
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="keywords" content="discovery, music, streaming, player, soundcloud">
-<meta name="description" content="The Discovery App Player, this is the player for ">
+<meta name="description" content="The Discovery App Player, this is the player the helps you discovery new and unheard music">
+
 <meta name="author" content="Matthew Bridgeman">
 <title>The Discovery App | Player</title>
 <!--[if lt IE 9]>
@@ -55,20 +57,14 @@ if(isset($_GET['anon'])) {
 <link href="css/ui-lightness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css">
 <link href="css/style.css" rel="stylesheet" type="text/css">
 <link href="css/sc/sc-player-minimal.css" rel="stylesheet" type="text/css">
-<!-- The 1140px Grid -->
-<link rel="stylesheet" href="css/1140/1140.css" type="text/css" media="screen" />
+<!-- 1140px Grid styles for IE -->
+<!--[if lte IE 9]><link rel="stylesheet" href="css/1140_2/css/ie.css" type="text/css" media="screen" /><![endif]-->
 
-<!--[if lte IE 9]>
-<link rel="stylesheet" href="css/ie.css" type="text/css" media="screen" />
-<![endif]-->
+<!-- The 1140px Grid - http://cssgrid.net/ -->
+<link rel="stylesheet" href="css/1140_2/css/1140.css" type="text/css" media="screen" />
 
-<!-- Make minor type adjustments for 1024 monitors -->
-<link rel="stylesheet" href="css/1140/smallerscreen.css" media="only screen and (max-width: 1023px)" />
-<!-- Resets grid for mobile -->
-<link rel="stylesheet" href="css/1140/mobile.css" media="handheld, only screen and (max-width: 767px)" />
-<!-- Put your layout here -->
-<link rel="stylesheet" href="css/1140/layout.css" type="text/css" media="screen" />
-<!-- style -->
+<!--css3-mediaqueries-js - http://code.google.com/p/css3-mediaqueries-js/ - Enables media queries in some unsupported browsers-->
+<script type="text/javascript" src="css/1140_2/js/css3-mediaqueries.js"></script>
 
 <link REL="SHORTCUT ICON" HREF="../css/images/favicon.ico">
 <!-- javascript -->
@@ -112,6 +108,46 @@ $(document).ready(function() {
 	}
 	var likes = new Array();
 	var responses = new Array();
+	var recommendations = new Object();
+	var recom_image = $('li.recom-image');
+	var moreInfo = $('a.moreInfo-a');
+	//$('ul.subFM').live().hide();
+	//.live('mouseover mouseout', function(event) {
+	
+	$('a.moreInfo-a').live('click', function(e) {
+		
+		var amt = "-=159px";
+		e.preventDefault();
+		  $(this).parent().parent().animate({
+		  "margin-top" : amt
+		  }, 'fast', function() {
+		    // Animation complete.
+			  amt = "+=159px";
+		  });
+		  $(this).html("Less Info");
+		  $(this).removeClass('moreInfo-a').addClass('lessInfo-a');
+	});
+	$('a.lessInfo-a').live('click', function(e) {
+			
+			var amt = "+=159px";
+			e.preventDefault();
+			  $(this).parent().parent().animate({
+			  "margin-top" : amt
+			  }, 'fast', function() {
+			    // Animation complete.
+			  });
+			  $(this).html("More Info");
+			  $(this).removeClass('lessInfo-a').addClass('moreInfo-a');
+		});
+	recom_image.live("myCustomEvent", function(e, myName, myValue) {
+		$(this).children('ul').hide();
+		$(this).hover( function () {
+		      $(this).children('ul').fadeIn('fast');
+		    }, 
+		    function () {
+		    	$(this).children('ul').fadeOut('fast');
+		    });
+	});
 	var nameField = new inputField(nickname);
 	var emailField = new inputField(email);
 	var firstField = new inputField(first_name);
@@ -160,7 +196,6 @@ $(document).ready(function() {
 					for ( keyVars in response[keyVar]) {
 						
 						if (response[keyVar][keyVars].category == "Musician/band") {
-							console.log(response[keyVar][keyVars].name);
 							likes.push(response[keyVar][keyVars].name);
 						}
 					}
@@ -178,19 +213,76 @@ $(document).ready(function() {
 		  		 	
 		  		 	urlString = "bin/process.php?callback=?"+dataString+"";
 		  			//only perform when variables have been collected
-		  			console.log(urlString);
-		  			$.getJSON(urlString,{}, function(data) {
+		  			//console.log(urlString);
+		  			$.getJSON(urlString,{}, function(data2) {
 		  			
-		  				if (data == "") { 
+		  				if (data2 == "") { 
 		  					//alert("no data");
 		  				} else {
 		  					//alert("data");
-		  					console.log(data);
+		  					$('div.ajaxLoading').hide();
+		  					recommendations = data2;
+		  					var col = "threecol";
+		  					$('body').find('ul.recom').empty();
+		  				for (var i = 0, l = data2.length; i < l; i++) {
+			  				if (i < 16) {
+			  					if ((i-3)%4 == 0) {
+									col = "threecol last";
+			  					} else {
+									col = "threecol";
+			  					}
+		  						//console.log(data2[i]['image']);//image
+			  						//data2[i].name.replace("%27", "\'");
+			  						
+		  							$('body').find('ul.recom').append('<ul class="'+col+'"><li id="recom-img'+i+'" class="recom-image"><div class="artist-pic"><div style="height:200px;background: url(\''+data2[i].image+'\');"></div></div><ul class="subFM"><li class="moreInfo"><a class="moreInfo-a" href="#">More Info</a></li><li class="subSearch '+i+'"><a class="artist-search" href="'+data2[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data2[i].name+'">similar artists</a></li><li class="subFav '+i+'">Favourite</li></ul></li><li class="recom-info"><a href="#">'+data2[i].name+'</a></li></ul>');
+		  						
+			  				}
+				  		}
+		  				
+						//
 		  				}
 		  			});
 	  				
-	  			
   			}
+  			//last.fm recommendations
+  			$('a.similar-search').live('click', function(e) {
+  				e.preventDefault();
+	  			dataString = "&similar=";
+	  			$('ul.recom').fadeOut();
+	  			$('ul.others').fadeOut();
+	  			$('body').find('div.ajaxLoading').show();
+	  			search = $(this).attr('href');
+	  			console.log(search);
+	  			dataString+=search;
+		  		 	urlString = "bin/process.php?callback=?"+dataString+"";
+		  			//only perform when variables have been collected
+		  			//console.log(urlString);
+		  			$.getJSON(urlString,{}, function(data3) {
+		  			
+		  				if (data3 == "") {
+		  				} else {
+		  					var col = "threecol";
+		  					$('ul#others').empty();
+		  				for (var i = 0, l = data3.length; i < l; i++) {
+			  				if (i < 16) {
+			  					if ((i-3)%4 == 0) {
+									col = "threecol last";
+			  					} else {
+									col = "threecol";
+			  					}
+		  						//console.log(data3[i]['image']);//image
+			  						//data3[i].name.replace("%27", "\'");
+			  						
+		  							$('ul#others').append('<ul class="'+col+'"><li id="recom-img'+i+'" class="recom-image"><div class="artist-pic"><div style="height:200px;background: url(\''+data3[i].image+'\');"></div></div><ul class="subFM"><li class="moreInfo"><a class="moreInfo-a" href="#">More Info</a></li><li class="subSearch '+i+'"><a class="artist-search" href="'+data3[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data3[i].name+'">similar artists</a></li><li class="subFav '+i+'">Favourite</li></ul></li><li class="recom-info"><a href="#">'+data3[i].name+'</a></li></ul>');
+			  				}
+			  				
+				  		}
+
+	  					$('div.ajaxLoading').hide();
+		  				}
+		  			});
+	  				
+  			});
   		  }
   		});
 	  };
@@ -340,32 +432,16 @@ $(document).ready(function() {
 	  <div class="clear"></div>
 	  
 	  <div class="main-wrapper">
-	<section id="main-menu" class="threecol">
+	<section id="main-menu" class="twelvecol last">
 		<div class="white-wrapper white-padding">
 		<nav id="main-navigation" class="menu-inner">
-			<ul>	
-					<li><a id="home_link" href="#main-content">home</a></li>
-					<li><a id="profile_link" href="#profile-content">profile</a></li>
-					
-					<!-- <li><a href="#my-music">my music</span>
-						<ul>
-						<li><a href="#">my tracks</a></li>
-						<li><a href="#">favourites</a></li>
-						<li><a href="#">discovered</a></li>
-						</ul>
-					</li> -->
-					
-					<li><a id="playing_link" href="#playing-content">now playing</a></li>
-					
-					<li><a id="searches_link" href="#searches-content">searches</a>
-						<!-- <ul id="ul-searches">
-						<li><a href="#">dystopia</a></li>
-						<li><a href="#">favourites</a></li>
-						<li><a href="#">discovered</a></li>
-						</ul>-->
-					</li>
-					<li><a id="account_link" href="#account-content">account</a></li>
-					<li><a id="logout_link" href="logout.php?<?php if ($anon != "") { echo "anon=1"; }?>">Logout</a></li>
+			<ul id="mainMenu">
+					<li class="twocol"><span><a class="single" id="home_link" href="#main-content">home</a></span></li>
+					<li class="twocol"><span><a class="single" id="profile_link" href="#profile-content">profile</a></span></li>
+					<li class="twocol"><span><a id="playing_link" href="#playing-content">now playing</a></span></li>
+					<li class="twocol"><span><a class="single" id="searches_link" href="#searches-content">searches</a></span></li>
+					<li class="twocol"><span><a class="single" id="account_link" href="#account-content">account</a></span></li>
+					<li class="twocol last"><span><a class="single" id="logout_link" href="logout.php?<?php if ($anon != "") { echo "anon=1"; }?>">Logout</a></span></li>
 			</ul>
 			<div class="clear"></div>
 		</nav>
@@ -373,26 +449,34 @@ $(document).ready(function() {
 		</div>
 		<div class="clear"></div>
 	</section>
-	<section id="main-content" class="ninecol last menu-inner">
+	<section id="main-content" class="twelvecol last menu-inner">
 	<div class="white-wrapper">
 	<div class="the-content">
 <div class="content-header"><h1 class="header">Home</h1></div>
 <div id="main-form" class="wrap">
-<form action="#" method="post">
+<form class="floatCenter" action="#" method="post">
 	<label class="" id="main-search-label" for="main-search-input">search</label>
 	<input class="" type="text" placeholder="Search" name="search" id="main-search-input">
-	<ul class="ul-float"><li id="type"><a href="#">type of search</a><ul id="subMenu"><li><a id="track-type" href="#">tracks</a></li><li><a id="artist-type" href="#">artists</a></li><li><a id="genre-type" href="#">Genre</a></li></ul></li></ul>
+	<div class="mobileFix" style="">
+	<ul class="ul-float"><li id="type"><a id="type-a" href="#">type of search</a><ul id="subMenu"><li><a id="track-type" href="#">tracks</a></li><li><a id="artist-type" href="#">artists</a></li><li><a id="genre-type" href="#">Genre</a></li></ul></li></ul>
 	<input class="submit"  type="submit" name="submit" id="main-submit" value="Discover">
 	<label class="main-error" id="search_error">Please enter a search</label>
+	</div>
+<div class="clear"></div>
 </form>
 <h2></h2>
 </div>
-
+<div class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading suggestions</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
+<ul class="recom"></ul>
+<div class="clear"></div>
 <ul class="new"></ul>
+<div class="clear"></div>
+<ul id="others"></ul>
+<div class="clear"></div>
 </div>
 	</div>
 	</section>
-	<section id="profile-content" class="ninecol last menu-inner">
+	<section id="profile-content" class="twelvecol last menu-inner">
 	<div class="the-content">
 	<div class="content-header">
 	<h1 class="header">Profile</h1>
@@ -403,7 +487,7 @@ $(document).ready(function() {
 	</div>
 	</div>
 	</section>
-	<section id="playing-content" class="ninecol last menu-inner">
+	<section id="playing-content" class="twelvecol last menu-inner">
 	<div class="the-content">
 	<div class="content-header">
 	<h1 class="header">Now Playing</h1>
@@ -412,7 +496,7 @@ $(document).ready(function() {
 	</div>
 	</div>
 	</section>
-	<section id="searches-content" class="ninecol last menu-inner">
+	<section id="searches-content" class="twelvecol last menu-inner">
 	<div class="the-content">
 	<div class="content-header">
 	<h1 class="header">Searches</h1>
@@ -422,7 +506,7 @@ $(document).ready(function() {
 	</div>
 	</div>
 	</section>
-	<section id="account-content" class="ninecol last menu-inner">
+	<section id="account-content" class="twelvecol last menu-inner">
 	<div class="the-content">
 	<div class="content-header">
 	<h1 class="header">Account Settings</h1>
@@ -460,7 +544,7 @@ $(document).ready(function() {
 	  <div class="box player-box">
 	  	<a id="prev-btn" class="btn" href="#">prev-btn</a>
 		<!-- <a class="sc-play" href="#play">New track</a> -->
-		<a id="play-pause" href="http://soundcloud.com/spawn/dystopia" class="sc-player">My new dub track</a>
+		<a id="play-pause" href="http://soundcloud.com/user1207673/welcome" class="sc-player">Welcome</a>
 		<a id="next-btn" class="btn" href="#">next-btn</a>
 		<div id="volumeContainer">
 		<div id="volumeSliderContainer">

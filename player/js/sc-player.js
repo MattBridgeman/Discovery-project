@@ -59,7 +59,7 @@
           // let's enable the html5 audio on selected mobile devices first, unlikely to support Flash
           // the desktop browsers are still better with Flash, e.g. see the Safari 10.6 bug
           // comment the following line out, if you want to force the html5 mode
-          state = state && (/iPad|iphone|mobile|pre\//i).test(navigator.userAgent);
+         state = state && (/iPad|iphone|mobile|pre\//i).test(navigator.userAgent);
         }catch(e){
           // there's no audio support here sadly
         }
