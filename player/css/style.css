@@ -196,6 +196,11 @@ a:link.sc-player, a:link.sc-player , a:visited.sc-player {
 	text-shadow: black 0 0 3px;
 	color: white;
 }
+.search-class a, .search-class2 a {
+padding: 3px 0 0;
+font-size: 1em;
+height: 20px;
+}
 .search-class2 {
 background: url(images/ulLight.png) repeat scroll top white;
 }
@@ -335,7 +340,7 @@ li.recom-image {
 		overflow: hidden;
 		background: #F1F1F1;
 	}
-.the-content ul.recom li.recom-image div.artist-pic {
+.the-content ul.recom li.recom-image div.artist-pic, div.artist-pic {
 	background:#f1f1f1;
 	background-image: url("images/note.png");
 	background-repeat: no-repeat;
@@ -367,7 +372,7 @@ li.moreInfo a {
 	padding: 0;
 height: 20px;
 }
-li.subSearch, li.subSimilar, li.subFav {
+li.subSearch, li.subSimilar, li.subFav, li.genreSimilar, li.genreSearch, li.queueTrack, li.favTrack {
 	background: url(images/ul.png) repeat-x scroll bottom center #333;
 	height: 40px;
 	padding: 10px 20px;
@@ -394,18 +399,29 @@ li.subSimilar {
 li.subFav {
 	
 }
-.the-content ul.new li:nth-child(even), li.favArtLi:nth-child(even) {
+.the-content ul.new li:nth-child(even), li.favArtLi:nth-child(even), li.favGenre:nth-child(even) {
 	background: url(images/ulLight.png) repeat scroll bottom white;
 	height: 54px;
 }
-.the-content ul.new li:nth-child(odd), li.favArtLi:nth-child(odd) {
+.the-content ul.new li:nth-child(odd), li.favArtLi:nth-child(odd), li.favGenre:nth-child(odd) {
 	background: url(images/ulLight.png) repeat scroll top white;
 	height: 54px;
+}
+li.favGenre span {
+	font: bold 16px/20px helvetica, arial;
+	text-shadow: black 0 0 3px;
+	padding: 18px 10px 8px 24px;
+	color: white;
+	display: inline;
+	width: 64%;
+	overflow: hidden;
+	height: 30px;
+	position: absolute;
 }
 .the-content ul.new li:hover {
 	background:none repeat scroll 0 0 #cafdee;
 }
-li.favArtLi a {
+li.favArtLi a, ul.new li a {
 	font: bold 16px/20px helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 18px 10px 8px 72px;
@@ -416,35 +432,51 @@ li.favArtLi a {
 	height: 30px;
 	position: absolute;
 }
-span.artistSpan {
+span.artistSpan, span.trackSpan {
 	margin: 7px;
 	display: block;
 	height: 40px;
 	width: 40px;
 	position: absolute;
-	background-image: url("images/note.png");
+	background: url('images/artist.png') center scroll;
 }
-li.favArtLi ul.artist-options {
+li.favArtLi ul.artist-options, li.favGenre ul.artist-options {
 	position: absolute;
 	right: 7%;
 	width: 118px;
 }
-li.favArtLi ul li.subSimilar, li.favArtLi ul li.subSearch {
+ul.new li ul.artist-options {
+	position: absolute;
+	right: 7%;
+	width: 79px;
+}
+ul.new li ul.artist-options li.queueTrack a {
+	background:url('images/queue.png') center scroll;
+}
+li.favArtLi ul li.subSimilar, li.favArtLi ul li.subSearch, li.favGenre ul li.genreSimilar, li.favGenre ul li.genreSearch,ul.new li ul.artist-options li.queueTrack, ul.new li ul.artist-options li.favTrack {
 	width: 30px;
 	height: 30px;
 	text-indent: -9999px;
 	margin: 9px 5px 12px 0;
 	float: left;
 }
-
-li.favArtLi ul li.subFav {
+li.favArtLi ul li.subSearch a {
+	background:url('images/artist-search.png') center scroll;
+}
+li.favArtLi ul li.subSimilar a {
+	background:url('images/artist-similar.png') center scroll;
+}
+li.favArtLi ul li.subFav, li.favGenre ul li.subFav {
 	width: 30px;
 	height: 30px;
 	text-indent: -9999px;
 	margin: 9px 0 12px;
 	float: left;
 }
-li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.subFav a {
+li.favArtLi ul li.subFav a, li.favGenre ul li.subFav a.favourite-remove-genre {
+	background:url('images/artist-unfav.png') center scroll;
+}
+li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.subFav a, li.favGenre ul li a,ul.new li ul.artist-options li a {
 	font: bold 16px/20px helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 0;
@@ -455,6 +487,7 @@ li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.
 	height: 30px;
 	position: absolute;
 }
+
 #main-form {
 	margin: 20px 0 0;
 }
@@ -519,6 +552,10 @@ margin-top: 42px;
 }
 #window-body {
 	padding: 20px;
+}
+#window-body p {
+	color: #333;
+text-shadow: none;
 }
 #window-head {
 	padding: 10px 20px;

@@ -20,3 +20,7 @@ Favourite Artist feature added (todo: display them)
 Visual Search Engine Built (todo: integrate)
 2.9.3 (28th April)
 Favourite Artist feature displayed on profile (todo: collapse each section)
+Favourite artist options added
+feature added (unfavourite)
+Feature added: Genre suggestions, search tracks based on suggestions
+search tracks revised (images and options added) (TODO: add click event)

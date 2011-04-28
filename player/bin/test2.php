@@ -96,7 +96,62 @@ if(isset($_GET['getLikes'])) {
 }
 
 
-
+if(isset($_GET['unfavourite'])) {
+	$fav = trim($_GET['unfavourite']);
+	$fav = str_replace("%20", " ", $fav);
+	$ip = $_GET['ip'];
+	$already = false;
+	$array = array();
+	if (isset($_GET['anon'])) {
+  		$sql = "SELECT favourites FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT favourites FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+		$unserialized = unserialize($row['favourites']);
+		foreach ($unserialized as $v1) {
+			
+			if ($v1 == $fav) {
+				$already = true;
+				//don't add it back to the list
+			} else {
+				array_push($array, $v1);
+			}
+		}
+  	}
+  	//if send worked and it was found in the array
+  	if ($send && $already) {
+  		//don't need array push because we don't want it in the list
+  		//array_push($array, $fav);
+  		$array = serialize($array);
+	  	if(isset($_GET['anon'])) {
+			$sql2 = "UPDATE users SET favourites = '".$array."' WHERE ip = '$ip'";
+		} else {
+			$sql2 = "UPDATE users SET favourites = '".$array."' WHERE fb_id = '$ip'";
+		}
+  		$send = $database->query($sql2);
+  		if ($send) {
+  		if (isset($_GET['anon'])) {
+  			$sql = "SELECT favourites FROM users WHERE ip = '$ip'";
+  		} else {
+  			$sql = "SELECT favourites FROM users WHERE fb_id = '$ip'";
+  		}
+  		$send = $database->query($sql);
+  		//$array = array("sql" => unserialize($send));
+  		while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+  			$favourites = unserialize($row['favourites']);
+  		}
+		//$json = $database->while_query($send);
+  		$json = json_encode($favourites);
+  		
+  		}
+  	} else {
+  		$json = json_encode(array("error" => "unforeseen error"));
+  	}
+  	$message = $json;
+  	echo $_GET['callback'] . ' (' . $message . ');';
+}
 
 
 

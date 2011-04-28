@@ -247,9 +247,10 @@ $(document).ready(function() {
   			//last.fm recommendations
   			$('a.similar-search').live('click', function(e) {
   				e.preventDefault();
+  				homeLink.trigger('click');
 	  			dataString = "&similar=";
-	  			$('ul.recom').fadeOut();
-	  			$('ul.others').fadeOut();
+	  			$('body').find('ul.recom').fadeOut();
+	  			$('body').find('ul.others').fadeOut();
 	  			$('body').find('div.ajaxLoading').show();
 	  			search = $(this).attr('href');
 	  			console.log(search);
@@ -348,6 +349,95 @@ $(document).ready(function() {
 	  				}
 	  			});
 		});
+	 $('a.favourite-remove').live('click', function(e) {
+			e.preventDefault();
+			//$('ul.recom').fadeOut();
+			name = $(this).attr('href');
+			var id = $(this).html();
+			id = id.replace("Unfavourite ", "");
+			console.log("id: "+id);
+			
+			dataString = "&unfavourite=";
+			dataString+=name;
+			dataString+="&artist=true";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+			
+	  		urlString = "bin/process.php?callback=?"+dataString+"";
+	  			$.getJSON(urlString,{}, function(data) {
+	  				if (data == "") {
+	  				} else {
+		  				console.log(data);
+	  					if (data.error == "unforeseen error") {
+	  						window_head.find("h1").html("Error");
+	  						window_body.find("p.window-p").empty().html("There was an issue removing your favourite");
+	  						windowBox.fadeIn();
+	  					} else {
+	  						//id
+	  						var isLi;
+	  						 $("li.favArtLi").each(function (i) {
+								if($(this).hasClass(id)) {
+									$(this).fadeOut();
+									$(this).remove();
+								}
+	  						}); 
+	  						window_head.find("h1").html("Favourite Removed");
+	  						window_body.find("p.window-p").empty().html("\""+name+"\" was removed your favourites");
+	  						windowBox.fadeIn();
+	  					}
+	  				}
+	  			});
+		});
+		$('a.favourite-remove-genre').live('click', function(e) {
+			e.preventDefault();
+			//$('ul.recom').fadeOut();
+			name = $(this).attr('href');
+			var id = $(this).html();
+			id = id.replace("Unfavourite ", "");
+			
+			dataString = "&genre=";
+			dataString+=name;
+			dataString+="&notGenre=true";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+			
+	  		urlString = "bin/lastfm.php?callback=?"+dataString+"";
+	  			$.getJSON(urlString,{}, function(data6) {
+	  				if (data6 == "") {
+	  				} else {
+		  				console.log(data6);
+	  					if (data6.error == "unforeseen error") {
+	  						window_head.find("h1").html("Genre Error");
+	  						window_body.find("p.window-p").empty().html("There was an issue removing your favourite genre");
+	  						windowBox.fadeIn();
+	  					} else {
+	  						//id
+	  						
+	  						 $('body').find('ul.favGenres').children('li.').each(function (i) {
+								if($(this).hasClass(id)) {
+									$(this).fadeOut();
+									$(this).remove();
+								}
+	  						}); 
+	  						window_head.find("h1").html("Favourite Removed");
+	  						window_body.find("p.window-p").empty().html("\""+name+"\" was removed your favourite genres");
+	  						windowBox.fadeIn();
+	  					}
+	  				}
+	  			});
+		});
+		
+	 	$('a.similar-genre').live('click', function(e) {
+	 		e.preventDefault();
+	 	});
 	 function loop_info() {
 		 for (var i = 0, l = info.length; i < l; i++) {
 				var first_n = info[i].first_name;
@@ -473,7 +563,7 @@ $(document).ready(function() {
 		var volumeBtn = $("#volume-btn");
 		var volumeSlider = $("#volumeSlider");
 		var volumeSliderContainer = $("#volumeSliderContainer");
-		var playSlider = $("#playSlider");
+		//var playSlider = $("#playSlider");
 		var prevBtn = $('#prev-btn');
 		var nextBtn = $('#next-btn');
 		var playPause = $('a.sc-play');
@@ -585,6 +675,7 @@ $(document).ready(function() {
 						states[i].wrapElement.show();
 						if (states[i].wrapElement.attr("id") == "profile-content") {
 							loadGenres();
+							loadTags();
 						}
 					}
 					
@@ -606,6 +697,7 @@ $(document).ready(function() {
 			}
 		}
 		function loadGenres() {
+			profileState.wrapElement.find('div.ajaxLoading').show();
 			dataString = "&getLikes=true&artist=true";
 			<?php if ($anon != "") { ?>
 			dataString+="&anon=true";
@@ -635,10 +727,41 @@ $(document).ready(function() {
 								col = "threecol";
 		  					}
 		  						
-	  							$('body').find('ul.favArtists').append('<li class="favArtLi"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite</a></li></ul></li>');
+	  							$('body').find('ul.favArtists').append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
 	  						
 		  				
 			  		}
+	  				
+	  				}
+	  			});
+		}
+		function loadTags() {
+			profileState.wrapElement.find('div.ajaxLoading').show();
+			dataString = "&getGenres=true";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+	  		 	urlString = "bin/lastfm.php?callback=?"+dataString+"";
+	  		 	console.log(urlString);
+	  			//only perform when variables have been collected
+	  			//console.log(urlString);
+	  			$.getJSON(urlString,{}, function(data4) {
+	  			
+	  				if (data4 == "") { 
+	  					//alert("no data");
+	  				} else {
+		  				
+	  					//alert("data");
+	  					$('div#ajaxTags').hide();
+	  					var col = "threecol";
+	  					$('body').find('ul.favGenres').empty();
+	  				for (var i = 0, l = data4.length; i < l; i++) {
+	  					console.log(data4[i]);
+	  							$('body').find('ul.favGenres').append('<li class="favGenre '+i+'"><span>'+data4[i]+'</span><ul class="artist-options"><li class="genreSearch '+i+'"><a class="genre-search" href="'+data4[i]+'">songs in genre</a></li><li class="genreSimilar '+i+'"><a class="similar-genre" href="'+data4[i]+'">similar genres</a></li><li class="subFav last '+i+'"><a class="favourite-remove-genre" href="'+data4[i]+'">Unfavourite '+i+'</a></li></ul></li>');
+	  						}
 	  				
 	  				}
 	  			});
@@ -657,16 +780,31 @@ $(document).ready(function() {
 			from = "artist-search";
 			jsonRequest(searchT, search, from);
 		});
-		
+		$('a.genre-search').live('click', function(e) {
+			e.preventDefault();
+			homeLink.trigger('click');
+			homeState.wrapElement.find('div.ajaxLoading').show();
+			$('ul.recom').fadeOut();
+			search = "&genres=";
+			search += $(this).attr('href');
+			search.replace("#", "");
+			search.replace("%27", "/'");
+			search += "&order=hotness";
+			console.log(search);
+			searchT = "tracks";
+			from = "genre";
+			jsonRequest(searchT, search, from);
+		});
 		
 		function jsonRequest(requestString, additionalParams, from) { 
+			
 			$('ul.recom').hide();
 			$('ul.others').hide();
 			$('body').find('div.ajaxLoading').show();
 			var orig = additionalParams;
 			var newString = "&q=" + additionalParams;
 			var urlRequest = "http://api.soundcloud.com/"+ requestString + ".json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
-			
+			console.log(urlRequest);
 			$.getJSON(urlRequest, function(data) {
 
 				if (data == "") { 
@@ -681,7 +819,7 @@ $(document).ready(function() {
 				homeContent.find('ul.new').empty();
 				for ( keyVar in data) {
 					   console.log(data[keyVar]);
-					   homeContent.find('ul.new').append('<li><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'<a/></li>');
+					   homeContent.find('ul.new').append('<li><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'<a/><ul class="artist-options"><li class="queueTrack 0"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track</a></li><li class="favTrack last 0"><a class="favTrack" href="'+data[keyVar].id+'">Favourite this Track</a></li></ul></li>');
 				}
 						
 
@@ -863,7 +1001,7 @@ $(document).ready(function() {
 
 	$(document).bind('onMediaTimeUpdate.scPlayer', function(event){
 		var trackPosition = ((1-((event.duration - event.position)/event.duration))*100);
-		playSlider.slider( "option", "value", trackPosition );
+		$("#playSlider").slider( "option", "value", trackPosition );
 	});
 
 	$(document).bind('onPlayerInit.scPlayer', function(event){
@@ -1014,6 +1152,7 @@ $(document).ready(function() {
 	<ul class="favArtists">
 	</ul>
 	<h3 class="search-class">Favourite Genres</h3>
+	<div id="ajaxTags" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Artists</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
 	<ul class="favGenres"></ul>
 	</div>
 	</div>
