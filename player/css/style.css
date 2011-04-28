@@ -180,6 +180,10 @@ a:link.sc-player, a:link.sc-player , a:visited.sc-player {
 	width:66%;
 	float: left;
 }
+.textbox {
+	padding: 5px 0px 6px;
+	width: 100%;
+}
 #search-label, #main-search-label {
 	text-indent:-9999px;
 	float:left;
@@ -196,8 +200,8 @@ a:link.sc-player, a:link.sc-player , a:visited.sc-player {
 background: url(images/ulLight.png) repeat scroll top white;
 }
 .account-label {
-	margin: 20px 20px 10px;
-	width: 19%;
+	margin: 20px 0px 10px;
+	width: 100%;
 	float: left;
 }
 #search {
@@ -239,6 +243,7 @@ ul#subMenu li a {
 	float: left;
 	clear: both;
 	margin: 15px 0 0 24%;
+	max-width: 262px;
 }
 .submit, #type {
 	border: 1px solid #999;
@@ -389,16 +394,66 @@ li.subSimilar {
 li.subFav {
 	
 }
-.the-content ul.new li:nth-child(even) {
+.the-content ul.new li:nth-child(even), li.favArtLi:nth-child(even) {
 	background: url(images/ulLight.png) repeat scroll bottom white;
 	height: 54px;
 }
-.the-content ul.new li:nth-child(odd) {
+.the-content ul.new li:nth-child(odd), li.favArtLi:nth-child(odd) {
 	background: url(images/ulLight.png) repeat scroll top white;
 	height: 54px;
 }
 .the-content ul.new li:hover {
 	background:none repeat scroll 0 0 #cafdee;
+}
+li.favArtLi a {
+	font: bold 16px/20px helvetica, arial;
+	text-shadow: black 0 0 3px;
+	padding: 18px 10px 8px 72px;
+	color: white;
+	display: inline;
+	width: 64%;
+	overflow: hidden;
+	height: 30px;
+	position: absolute;
+}
+span.artistSpan {
+	margin: 7px;
+	display: block;
+	height: 40px;
+	width: 40px;
+	position: absolute;
+	background-image: url("images/note.png");
+}
+li.favArtLi ul.artist-options {
+	position: absolute;
+	right: 7%;
+	width: 118px;
+}
+li.favArtLi ul li.subSimilar, li.favArtLi ul li.subSearch {
+	width: 30px;
+	height: 30px;
+	text-indent: -9999px;
+	margin: 9px 5px 12px 0;
+	float: left;
+}
+
+li.favArtLi ul li.subFav {
+	width: 30px;
+	height: 30px;
+	text-indent: -9999px;
+	margin: 9px 0 12px;
+	float: left;
+}
+li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.subFav a {
+	font: bold 16px/20px helvetica, arial;
+	text-shadow: black 0 0 3px;
+	padding: 0;
+	color: white;
+	display: block;
+	width: 30px;
+	overflow: hidden;
+	height: 30px;
+	position: absolute;
 }
 #main-form {
 	margin: 20px 0 0;
@@ -445,7 +500,7 @@ a#logout_link {
 	background: rgba(0, 0, 0, 0.6);
 	width: 100%;
 	display: block;
-	position: absolute;
+	position: fixed;
 	top: 0;
 }
 #window-wrapper {

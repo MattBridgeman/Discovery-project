@@ -50,7 +50,12 @@ $(document).ready(function() {
 	var moreBtn = $('#moreBtn');
 	var lessBtn = $('#lessBtn');
 	var playerContainer = $('#player-container');
+	//window
+	var windowBox = $('#window');
 	
+	var window_head = $('#window-head');
+	var window_body = $('#window-body');
+	var window_a = $('#window-a');
 	//dynamic RHS elements
 	var scTrack = $('a.track-load');
 	
@@ -114,7 +119,6 @@ $(document).ready(function() {
 		var stateID = this.id;
 		this.menuItem.bind('click', function(e) {
 			e.preventDefault();
-			console.log(wrapElement);
 			changeState(wrapElement);
 		});
 	}
@@ -149,6 +153,9 @@ $(document).ready(function() {
 				states[i].menuItem.removeClass("unselected");
 				if (states[i].wrapElement) {
 					states[i].wrapElement.show();
+					if (states[i].wrapElement.attr("id") == "profile-content") {
+						loadGenres();
+					}
 				}
 				
 				if (states[i].children) {
@@ -168,6 +175,37 @@ $(document).ready(function() {
 			}
 		}
 	}
+	function loadGenres() {
+		dataString = "&getLikes=true";
+  		 	
+  		 	urlString = "bin/process.php?callback=?"+dataString+"";
+  			//only perform when variables have been collected
+  			//console.log(urlString);
+  			$.getJSON(urlString,{}, function(data2) {
+  			
+  				if (data2 == "") { 
+  					//alert("no data");
+  				} else {
+  					//alert("data");
+  					$('div#ajaxArtists').hide();
+  					var col = "threecol";
+  					$('body').find('ul.recom').empty();
+  				for (var i = 0, l = data2.length; i < l; i++) {
+	  				if (i < 16) {
+	  					if ((i-3)%4 == 0) {
+							col = "threecol last";
+	  					} else {
+							col = "threecol";
+	  					}
+	  						
+  							$('body').find('ul.favArtists').append('<li id="recom-img'+i+'" class="favArtLi"><span class="artistSpan"><div style="background: url(\''+data2[i].image+'\');"></div></span><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data2[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data2[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data2[i].name+'">Unfavourite</a></li></ul></li>');
+  						
+	  				}
+		  		}
+  				
+  				}
+  			});
+	}
 	//gets soundcloud results for this artist
 	$('a.artist-search').live('click', function(e) {
 		e.preventDefault();
@@ -180,6 +218,8 @@ $(document).ready(function() {
 		from = "artist-search";
 		jsonRequest(searchT, search, from);
 	});
+	
+	
 	function jsonRequest(requestString, additionalParams, from) { 
 		$('ul.recom').hide();
 		$('ul.others').hide();

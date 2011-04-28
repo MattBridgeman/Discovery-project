@@ -14,4 +14,9 @@ Infinite related artists loop
 Search the Soundcloud database based on Last FM recommendations
 fluid grid system (cssgrid.net) v2.0 added, better support for iphone and other devices
 User interface design fixes (loading bar appears when content takes a while to load)
-
+2.9.1
+Favourite Artist feature added (todo: display them)
+2.9.2 (27th April)
+Visual Search Engine Built (todo: integrate)
+2.9.3 (28th April)
+Favourite Artist feature displayed on profile (todo: collapse each section)

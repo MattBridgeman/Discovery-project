@@ -1,87 +1,11 @@
 <?php
 	
 require_once("lastfmapi/lastfmapi.php");
-$likes = $_GET['similar'];
-$likes = explode(",next,", $likes);
-	$mainArtists = array();
-	$artistArr = array();
-	$lastFM = array();
-	$authVars = array(
-		'apiKey' => 'fbe282844ddb2e0bfef66790e0d012f1',
-		'secret' => 'ba9da9d645aace82cefc040bdb8b7ee1',
-		'username' => 'spawnDnB'
-	);
-	$config = array(
-		'enabled' => true,
-		'path' => './lastfmapi/',
-		'cache_length' => 1800
-	);
-	// Pass the array to the auth class to eturn a valid auth
-	$auth = new lastfmApiAuth('setsession', $authVars);
-	
-	// Call for the album package class with auth data
-	$apiClass = new lastfmApi();
-	$artistClass = $apiClass->getPackage($auth, 'artist', $config);
-	
-	for($i = 0; $i < count($likes); $i++)  {
-		// Setup the variables
-		$methodVars = array(
-			'artist' => $likes[$i],
-			'page' => 1,
-			'limit' => 1
-		);
-		if ($results = $artistClass->search($methodVars)) {
-			//$print_r($results);
-							
-			foreach ($results as $k1 => $v1) {
-			
-				if (is_array($results[$k1])) {
-				
-					foreach ($results[$k1] as $k2 => $v2) {
-						if (is_array($results[$k1][$k2])) {
-						if ($results[$k1][$k2]["name"]) {
-								//print_r($results[$k1][$k2]["name"]);
-								$artistArr["name"] = $results[$k1][$k2]["name"];
-							}
-							foreach ($results[$k1][$k2] as $k3 => $v3) {
-								if (is_array($results[$k1][$k2][$k3])) {
-									foreach ($results[$k1][$k2]["image"] as $k4 => $v4) {
-										$image = str_replace("/34/", "/252/", $results[$k1][$k2]["image"][$k4]);
-										//echo($image."<br/>");
-										if ($image != "") {
-											$artistArr["image"] = $image;
-										}
-									}
-								}
-							}
-							array_push($lastFM, $artistArr);
-							unset($artistArr);
-							$artistArr = array();
-						}
-						
-					}
-					//array_push($lastFM, $artistArr);
-					
-				}
-				
-			}
-			
-		}
-		else {
-			//$ret = $artistClass->error['code'];
-			//array_push($lastFM, array("error" => $artistClass->error['desc']));
-		}
-		array_push($mainArtists, $lastFM);
-		unset($lastFM);
-		$lastFM = array();
-		
-	}
-
 $resultsArr = array();
 $artistArr = array();
 $lastFM = array();
 $likes = $_GET['similar'];
-$likes = explode(",next,", $likes);
+$likes = explode(",", $likes);
 // Get the session auth data
 //$file = fopen('../auth.txt', 'r');
 // Put the auth data into an array
@@ -137,8 +61,9 @@ $methodVars = array(
 	echo '<pre>';
 	
 	echo '</pre>'; */
-	//print_r($mainArtists);
+	print_r($resultsArr);
 ?>
+
 <html> 
   <head> 
     <title>Matts test</title> 
@@ -168,44 +93,31 @@ function updateData(){
 
 		theData = {
 		  nodes:[
-			<?php 
-			$theNum = 0;
-			foreach($mainArtists as $artist) { 
-				foreach ($artist as $part) {
-	?>
-				{id:<?php echo $theNum; ?>,songName:"<?php echo $part['name']; ?>",art:"<?php echo $part['image']; ?>",size:<?php echo 70-($theNum * 10); ?>,visible:true},
-			<? $theNum++;
-				}
-			} ?>
- 			
+ 			{id:0,songName:"first Tune",art:"sdsad",size:70,visible:true},
+			{id:2,songName:"Seond Tune",art:"sdsad",size:50,visible:true},
+		    
 			<?php
 			//$resultsArr[0];
-			$num = $theNum-1;
+			$num = 0;
 			for($i = 0; $i< count($resultsArr); $i++){
 				foreach($resultsArr[$i] as $k2) {
 				$num++;
 					?>
-		    {id:<?php echo $num; ?>,songName:"<?php echo $k2['name'];?>",artistName:"<?php echo $k2['name'];?>",art:"<?php echo $k2['image'];?>",size:10,visible:true},
+		    {id:<?php echo $num; ?>,songName:"Seond Tune",artistName:"<?php echo $k2['name'];?>",art:"<?php echo $k2['image'];?>",size:10,visible:true},
 		    <?php } 
 		    }
 		    ?>
 		  ],
 		  links:[
-			<?php for($i = 0; $i < $theNum-1; $i++) { ?>
-			{source:<?php echo $i; ?>, target:<?php echo $i+1; ?>, value:20},
-			<?php } ?>
+			{source:0, target:1, value:10},
 			<?php
 			$layer = 0;
-			for($i = $theNum; $i<=$num; $i++){
+			for($i = 2; $i<=$num+1; $i++){
 			
 			if($i<=7){
 				$layer = 0;
 			}else if($i<=14){
 				$layer = 1;
-			}else if($i<=21){
-				$layer = 2;
-			}else if($i<=28){
-				$layer = 3;
 			}
 				?>
 			 {source:<?php echo $layer; ?>, target:<?php echo $i; ?>, value:10},
@@ -269,7 +181,7 @@ force.node.add(pv.Image)
     .event("mousedown", function(d) {
     	//runs when click
 		console.log(d.artistName);
-		window.location.href= "test.php?similar="+d.artistName+",next,<?php echo $_GET['similar']; ?>";
+		top.location.href= "test.php?similar="+d.artistName+",<?php echo $_GET['similar']; ?>";
     });
     //.visible(function(d) d.visible);
  
