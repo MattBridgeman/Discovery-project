@@ -450,5 +450,150 @@ $resultsArr = array();
 	$json = json_encode($lastFM);
   	$message = $json;
   	echo $_GET['callback'] . ' (' . $message . ');';
+} else if(isset($_GET['track'])) {
+	$track = trim($_GET['track']);
+	$ip = $_GET['ip'];
+	$already = false;
+	$array = array();
+	if (isset($_GET['anon'])) {
+  		$sql = "SELECT tracks FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT tracks FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+		$unserialized = unserialize($row['tracks']);
+		if (is_array($unserialized)) {
+			foreach ($unserialized as $v1) {
+				
+				if ($v1 == $track) {
+					$already = true;
+					//don't add it back to the list
+				} else {
+					array_push($array, $v1);
+				}
+			}
+		}
+  	}
+  	//if send worked and it wasn't found in the array
+  	if ($send && !$already) {
+  		//don't need array push because we don't want it in the list
+  		array_push($array, $track);
+  		$array = serialize($array);
+	  	if(isset($_GET['anon'])) {
+			$sql2 = "UPDATE users SET tracks = '".$array."' WHERE ip = '$ip'";
+		} else {
+			$sql2 = "UPDATE users SET tracks = '".$array."' WHERE fb_id = '$ip'";
+		}
+  		$send = $database->query($sql2);
+  		if ($send) {
+  		if (isset($_GET['anon'])) {
+  			$sql = "SELECT tracks FROM users WHERE ip = '$ip'";
+  		} else {
+  			$sql = "SELECT tracks FROM users WHERE fb_id = '$ip'";
+  		}
+  		$send = $database->query($sql);
+  		//$array = array("sql" => unserialize($send));
+  		while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+  			$favourites = unserialize($row['track']);
+  		}
+		//$json = $database->while_query($send);
+  		$json = json_encode($array);
+  		
+  		}
+  	} else {
+  		$json = json_encode(array("error" => "unforeseen error"));
+  	}
+  	$message = $json;
+  	echo $_GET['callback'] . ' (' . $message . ');';
+} else if(isset($_GET['getArtists'])) {
+	
+	$ip = $_GET['ip'];
+	$already = false;
+	$array = array();
+	$string = "";
+	if (isset($_GET['anon'])) {
+  		$sql = "SELECT tracks FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT tracks FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+		$unserialized = unserialize($row['tracks']);
+		if (is_array($unserialized)) {
+			foreach ($unserialized as $v1) {
+				if (end($unserialized) == $v1) {
+					$string .= $v1;
+				} else {
+					$string .= $v1.",";
+				}
+			}
+		}
+  	}
+  	//if send worked and it wasn't found in the array
+  	if ($send) {
+  		//don't need array push because we don't want it in the list
+  		
+  		$json = json_encode($string);
+  		
+  	} else {
+  		$json = json_encode(array("error" => "unforeseen error"));
+  	}
+  	$message = $json;
+  	echo $_GET['callback'] . ' (' . $message . ');';
+} else if(isset($_GET['unfavtrack'])) {
+	$track = $_GET['unfavtrack'];
+	$ip = $_GET['ip'];
+	$already = false;
+	$array = array();
+	$string = "";
+	if (isset($_GET['anon'])) {
+  		$sql = "SELECT tracks FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT tracks FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+		$unserialized = unserialize($row['tracks']);
+		if (is_array($unserialized)) {
+			foreach ($unserialized as $v1) {
+				if ($v1 == $track) {
+					$already = true;
+				} else {
+					array_push($array, $v1);
+				}
+			}
+		}
+  	}
+  	//if send worked and it was found in the array
+  	if ($send && $already) {
+  		//don't need array push because we don't want it in the list
+  		$array = serialize($array);
+	  	if(isset($_GET['anon'])) {
+			$sql2 = "UPDATE users SET tracks = '".$array."' WHERE ip = '$ip'";
+		} else {
+			$sql2 = "UPDATE users SET tracks = '".$array."' WHERE fb_id = '$ip'";
+		}
+  		$send = $database->query($sql2);
+  		if ($send) {
+	  		if (isset($_GET['anon'])) {
+	  			$sql = "SELECT tracks FROM users WHERE ip = '$ip'";
+	  		} else {
+	  			$sql = "SELECT tracks FROM users WHERE fb_id = '$ip'";
+	  		}
+	  		$send = $database->query($sql);
+	  		//$array = array("sql" => unserialize($send));
+	  		while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+	  			$favourites = unserialize($row['track']);
+	  		}
+			//$json = $database->while_query($send);
+	  		$json = json_encode($array);
+  		}
+  	} else {
+  		$json = json_encode(array("error" => "unforeseen error"));
+  	}
+  	
+  	$message = $json;
+  	echo $_GET['callback'] . ' (' . $message . ');';
 }
 ?>

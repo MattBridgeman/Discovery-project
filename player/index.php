@@ -434,9 +434,79 @@ $(document).ready(function() {
 	  				}
 	  			});
 		});
-		
+		$('a.favTrack').live('click', function(e) {
+			e.preventDefault();
+			//$('ul.recom').fadeOut();
+			name = $(this).attr('href');
+			dataString = "";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+			dataString+="&track="+name;
+			dataString+="&artist=true";
+	  		urlString = "bin/process.php?callback=?"+dataString+"";
+	  		console.log(urlString);
+	  			$.getJSON(urlString,{}, function(data7) {
+	  				if (data7 == "") {
+	  				} else {
+	  					if (data7.error == "unforeseen error") {
+	  						window_head.find("h1").html("Favourite Error");
+	  						window_body.find("p.window-p").empty().html("This track has already been added to favourites");
+	  						windowBox.fadeIn();
+	  					} else {
+		  					console.log(data7);
+	  						window_head.find("h1").html("Favourite added");
+	  						window_body.find("p.window-p").empty().html("Track was added to your favourites");
+	  						windowBox.fadeIn();
+	  					}
+	  				}
+	  			});
+		});
+		$('a.unfavTrack').live('click', function(e) {
+			e.preventDefault();
+			//$('ul.recom').fadeOut();
+			name = $(this).attr('href');
+			var id = $(this).html();
+			id = id.replace("Unfavourite this Track ", "");
+			dataString = "";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+			dataString+="&unfavtrack="+name;
+			dataString+="&artist=true";
+	  		urlString = "bin/process.php?callback=?"+dataString+"";
+	  		console.log(urlString);
+	  			$.getJSON(urlString,{}, function(data8) {
+	  				if (data8 == "") {
+	  				} else {
+	  					if (data8.error == "unforeseen error") {
+	  						window_head.find("h1").html("Unfavourite Error");
+	  						window_body.find("p.window-p").empty().html("This track has already been removed from favourites");
+	  						windowBox.fadeIn();
+	  					} else {
+	  						$('body').find('ul.favTracks').children('li').each(function (i) {
+								if($(this).hasClass(id)) {
+									$(this).fadeOut();
+									$(this).remove();
+								}
+	  						}); 
+	  						window_head.find("h1").html("Favourite removed");
+	  						window_body.find("p.window-p").empty().html("Track was removed from your favourites");
+	  						windowBox.fadeIn();
+	  					}
+	  				}
+	  			});
+		});
+		//unfavTrack
 	 	$('a.similar-genre').live('click', function(e) {
 	 		e.preventDefault();
+	 		//similar_genres();
 	 	});
 	 function loop_info() {
 		 for (var i = 0, l = info.length; i < l; i++) {
@@ -484,6 +554,7 @@ $(document).ready(function() {
 		}
 		}
 		if (!stopped) {
+			dataString = "";
 			dataString = "&nickname=" + nameField.inputBox.val() + "&email=" + emailField.inputBox.val() + "&first_name=" + firstField.inputBox.val() + "&last_name=" + lastField.inputBox.val() + "<?php echo "&login="; if ($anon != ""){ echo $usersIP; echo "&anon=1"; echo "\""; } else { echo "\""; ?>+fb_id<?php }?>;
 			urlString = "bin/process.php?callback=?"+dataString;
 			console.log(urlString);
@@ -676,6 +747,7 @@ $(document).ready(function() {
 						if (states[i].wrapElement.attr("id") == "profile-content") {
 							loadGenres();
 							loadTags();
+							loadTracks();
 						}
 					}
 					
@@ -698,6 +770,7 @@ $(document).ready(function() {
 		}
 		function loadGenres() {
 			profileState.wrapElement.find('div.ajaxLoading').show();
+			dataString = "";
 			dataString = "&getLikes=true&artist=true";
 			<?php if ($anon != "") { ?>
 			dataString+="&anon=true";
@@ -732,6 +805,64 @@ $(document).ready(function() {
 		  				
 			  		}
 	  				
+	  				}
+	  			});
+		}
+		function loadTracks() {
+			$('div#ajaxTracks').show();
+			dataString = "";
+			dataString = "&getArtists=true&artist=true";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+	  		 	urlString2 = "bin/process.php?callback=?"+dataString+"";
+	  			//only perform when variables have been collected
+	  			console.log(urlString2);
+	  			$.getJSON(urlString2,{}, function(data6) {
+		  		
+	  				if (data6 == "") { 
+	  					//alert("no data");
+	  				} else {
+	  					//ids
+	  					console.log(data6);
+	  					var newString = "&ids="+data6;
+	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
+	  					console.log(urlRequest);
+	  					$.getJSON(urlRequest, function(data) {
+
+	  						if (data == "") { 
+	  							$('div#ajaxTracks').hide();
+	  							$('body').find('ul.favTracks').empty().append('<li>Query Empty</li>');	
+	  						} else { 
+	  							var count = 0;
+	  							var purchase;
+	  							$('body').find('ul.favTracks').empty();
+	  						for ( keyVar in data) {
+		  						purchase = "";
+	  							   if (data[keyVar].purchase_url == null) {
+										purchaseClass = "";
+	  							   } else {
+		  							   purchaseClass = "purchase";
+										purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
+	  							   }
+	  							   console.log(data[keyVar]);
+	  							 $('body').find('ul.favTracks').append('<li class="favTrackLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="queueTrack '+count+'"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="unfavTrack last '+count+'"><a class="unfavTrack" href="'+data[keyVar].id+'">Unfavourite this Track '+count+'</a></li></ul></li>');
+								count ++;
+	 	  					}
+	  						}
+	  						
+	  			   	    });
+	  					//alert("data");
+	  					$('div#ajaxTracks').hide();
+	  					var col = "threecol";
+	  					$('body').find('ul.favTracks').empty();
+	  					for (var i = 0, l = data6.length; i < l; i++) {
+	  					console.log(data6[i].name);
+	  							$('body').find('ul.favTracks').append('<li class="favTrack '+i+'"><span class="artistSpan"><div style="background: url(\''+data6[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data6[i].name+'">'+data6[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data6[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data6[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data6[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
+	  					}
 	  				}
 	  			});
 		}
@@ -780,6 +911,19 @@ $(document).ready(function() {
 			from = "artist-search";
 			jsonRequest(searchT, search, from);
 		});
+		$('a.artistsTracks').live('click', function(e) {
+			e.preventDefault();
+			homeLink.trigger('click');
+			homeState.wrapElement.find('div.ajaxLoading').show();
+			$('ul.recom').fadeOut();
+			name = $(this).attr('href');
+			name.replace("#", "");
+			name.replace("%27", "/'");
+			searchT = "users/"+name+"/tracks";//users/{id}/tracks
+			search="";
+			from = "artist-search";
+			jsonRequest(searchT, search, from);
+		});
 		$('a.genre-search').live('click', function(e) {
 			e.preventDefault();
 			homeLink.trigger('click');
@@ -801,7 +945,10 @@ $(document).ready(function() {
 			$('ul.recom').hide();
 			$('ul.others').hide();
 			$('body').find('div.ajaxLoading').show();
+			additionalParams = additionalParams.replace("&genres=", "");
+			additionalParams = additionalParams.replace("&order=hotness", "");
 			var orig = additionalParams;
+			
 			var newString = "&q=" + additionalParams;
 			var urlRequest = "http://api.soundcloud.com/"+ requestString + ".json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
 			console.log(urlRequest);
@@ -812,6 +959,9 @@ $(document).ready(function() {
 				} else { 
 					
 				var count = 0;
+				if (orig == "") {
+					orig = "Artist: "+data[0]['user']['username'];
+				}
 				homeContent.find('h2').replaceWith('<h2 class="search-class">Search Results For: "'+ orig +'"</h2>');
 					 //$('#main-form > h2').replaceWith('');
 				
@@ -819,7 +969,7 @@ $(document).ready(function() {
 				homeContent.find('ul.new').empty();
 				for ( keyVar in data) {
 					   console.log(data[keyVar]);
-					   homeContent.find('ul.new').append('<li><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'<a/><ul class="artist-options"><li class="queueTrack 0"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track</a></li><li class="favTrack last 0"><a class="favTrack" href="'+data[keyVar].id+'">Favourite this Track</a></li></ul></li>');
+					   homeContent.find('ul.new').append('<li><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options"><li class="queueTrack 0"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track</a></li><li class="favTrack last 0"><a class="favTrack" href="'+data[keyVar].id+'">Favourite this Track</a></li></ul></li>');
 				}
 						
 
@@ -875,7 +1025,8 @@ $(document).ready(function() {
 			});
 		
 		
-		volumeBtn.click(function () {
+		volumeBtn.click(function (e) {
+			e.preventDefault();
 		    volumeSliderContainer.toggle('fast', function() {
 		        // Animation complete.
 		    });
@@ -1147,12 +1298,16 @@ $(document).ready(function() {
 	
 	</div>
 	<div class="wrap">
+	<h3 class="search-class">Discovered Tracks</h3>
+	<div id="ajaxTracks" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Tracks</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
+	<ul class="favTracks">
+	</ul>
 	<h3 class="search-class">Favourite Artists</h3>
 	<div id="ajaxArtists" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Artists</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
 	<ul class="favArtists">
 	</ul>
 	<h3 class="search-class">Favourite Genres</h3>
-	<div id="ajaxTags" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Artists</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
+	<div id="ajaxTags" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Genres</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
 	<ul class="favGenres"></ul>
 	</div>
 	</div>

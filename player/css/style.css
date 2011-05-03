@@ -372,8 +372,8 @@ li.moreInfo a {
 	padding: 0;
 height: 20px;
 }
-li.subSearch, li.subSimilar, li.subFav, li.genreSimilar, li.genreSearch, li.queueTrack, li.favTrack {
-	background: url(images/ul.png) repeat-x scroll bottom center #333;
+li.subSearch, li.subSimilar, li.subFav, li.genreSimilar, li.genreSearch, li.queueTrack, li.favTrack, li.unfavTrack, li.artistsTracks, li.purchaseTrack {
+	background: url(images/ul.png) repeat-x scroll bottom center #333!important;
 	height: 40px;
 	padding: 10px 20px;
 	margin: 5px auto;
@@ -393,17 +393,18 @@ overflow: hidden;
 height: 16px;
 
 }
-li.subSimilar {
+li.subSimilar, li.queueTrack, li.favTrack {
 	background: url(images/ul.png) repeat-x scroll top center #333;
 }
+
 li.subFav {
 	
 }
-.the-content ul.new li:nth-child(even), li.favArtLi:nth-child(even), li.favGenre:nth-child(even) {
+.the-content ul.new li:nth-child(even), li.favArtLi:nth-child(even), li.favGenre:nth-child(even), li.favTrackLi:nth-child(even) {
 	background: url(images/ulLight.png) repeat scroll bottom white;
 	height: 54px;
 }
-.the-content ul.new li:nth-child(odd), li.favArtLi:nth-child(odd), li.favGenre:nth-child(odd) {
+.the-content ul.new li:nth-child(odd), li.favArtLi:nth-child(odd), li.favGenre:nth-child(odd), li.favTrackLi:nth-child(odd) {
 	background: url(images/ulLight.png) repeat scroll top white;
 	height: 54px;
 }
@@ -421,7 +422,7 @@ li.favGenre span {
 .the-content ul.new li:hover {
 	background:none repeat scroll 0 0 #cafdee;
 }
-li.favArtLi a, ul.new li a {
+li.favArtLi a, ul.new li a, ul.favTracks li a.track-load {
 	font: bold 16px/20px helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 18px 10px 8px 72px;
@@ -440,43 +441,56 @@ span.artistSpan, span.trackSpan {
 	position: absolute;
 	background: url('images/artist.png') center scroll;
 }
-li.favArtLi ul.artist-options, li.favGenre ul.artist-options {
+li.favArtLi ul.artist-options, li.favGenre ul.artist-options, ul.favTracks li ul.artist-options, ul.new li ul.artist-options{
 	position: absolute;
 	right: 7%;
 	width: 118px;
 }
-ul.new li ul.artist-options {
+ul.favTracks li ul.purchase {
 	position: absolute;
 	right: 7%;
-	width: 79px;
+	width: 159px;
 }
-ul.new li ul.artist-options li.queueTrack a {
+
+ul.new li ul.artist-options li.queueTrack a, ul.favTracks li ul a.queueTrack {
 	background:url('images/queue.png') center scroll;
 }
-li.favArtLi ul li.subSimilar, li.favArtLi ul li.subSearch, li.favGenre ul li.genreSimilar, li.favGenre ul li.genreSearch,ul.new li ul.artist-options li.queueTrack, ul.new li ul.artist-options li.favTrack {
+ul.new li ul.artist-options li.favTrack a {
+	background: url('images/favTrack.png') center scroll;
+}
+li.favArtLi ul li.subSimilar, li.favArtLi ul li.subSearch, li.favGenre ul li.genreSimilar, li.favGenre ul li.genreSearch,ul.new li ul.artist-options li.queueTrack, ul.new li ul.artist-options li.favTrack, ul.favTracks li ul.artist-options li, ul.favTracks li ul.purchase li {
 	width: 30px;
 	height: 30px;
 	text-indent: -9999px;
 	margin: 9px 5px 12px 0;
 	float: left;
 }
-li.favArtLi ul li.subSearch a {
+li.favArtLi ul li.subSearch a, a.artistsTracks {
 	background:url('images/artist-search.png') center scroll;
 }
 li.favArtLi ul li.subSimilar a {
 	background:url('images/artist-similar.png') center scroll;
 }
-li.favArtLi ul li.subFav, li.favGenre ul li.subFav {
+li.favArtLi ul li.subFav, li.favGenre ul li.subFav, ul.favTracks li.favTrackLi ul li.unfavTrack {
 	width: 30px;
 	height: 30px;
 	text-indent: -9999px;
 	margin: 9px 0 12px;
 	float: left;
 }
-li.favArtLi ul li.subFav a, li.favGenre ul li.subFav a.favourite-remove-genre {
+li.favArtLi ul li.subFav a, li.favGenre ul li.subFav a.favourite-remove-genre, a.unfavTrack {
 	background:url('images/artist-unfav.png') center scroll;
 }
-li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.subFav a, li.favGenre ul li a,ul.new li ul.artist-options li a {
+li.favGenre ul li a.genre-search {
+	background:url('images/genre-search.png') center scroll;
+}
+li.favGenre ul li a.similar-genre {
+	background:url('images/genre-similar.png') center scroll;
+}
+a.purchaseTrack {
+	background:url('images/buy.png') center scroll;
+}
+li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.subFav a, li.favGenre ul li a,ul.new li ul.artist-options li a, li.favTrackLi ul li a {
 	font: bold 16px/20px helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 0;

@@ -24,3 +24,10 @@ Favourite artist options added
 feature added (unfavourite)
 Feature added: Genre suggestions, search tracks based on suggestions
 search tracks revised (images and options added) (TODO: add click event)
+2.9.4 (1st May)
+Genre Search Bugs fixed
+Genre search, Similar Genre icons added
+2.9.5 (2nd May)
+feature added - tracks by same artist
+favourite/unfavourite track
+
