@@ -62,7 +62,7 @@ if(isset($_GET['anon'])) {
 
 <!-- The 1140px Grid - http://cssgrid.net/ -->
 <link rel="stylesheet" href="css/1140_2/css/1140.css" type="text/css" media="screen" />
-
+<link rel="stylesheet" href="css/1140_2/css/styles.css" type="text/css" media="screen" />
 <!--css3-mediaqueries-js - http://code.google.com/p/css3-mediaqueries-js/ - Enables media queries in some unsupported browsers-->
 <script type="text/javascript" src="css/1140_2/js/css3-mediaqueries.js"></script>
 
@@ -73,7 +73,8 @@ if(isset($_GET['anon'])) {
 <script src="js/modernizr-1.7.min.js" type="text/javascript"></script>
 <!-- jQuery UI elements -->
 <script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript"></script>
-
+<script type="text/javascript" src="js/soundcloud.player.api.js"></script>
+<script src="js/sc-player.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	var redirect = '<?php echo $dialog_url; ?>';
@@ -101,6 +102,7 @@ $(document).ready(function() {
 	var window_a = $('#window-a');
 	windowBox.hide();
 	var inputs = new Array();
+	var playerReady = false;
 	var inputField = function (inputBox) {
 		
 		this.inputBox = inputBox;
@@ -312,7 +314,6 @@ $(document).ready(function() {
 				loop_info(info);
 			}
 		});
-		
 	 <?php } ?>
 	 $('a.favourite-add').live('click', function(e) {
 			e.preventDefault();
@@ -421,7 +422,7 @@ $(document).ready(function() {
 	  					} else {
 	  						//id
 	  						
-	  						 $('body').find('ul.favGenres').children('li.').each(function (i) {
+	  						 $(this).closest('ul.favGenres').children('li').each(function (i) {
 								if($(this).hasClass(id)) {
 									$(this).fadeOut();
 									$(this).remove();
@@ -503,10 +504,59 @@ $(document).ready(function() {
 	  				}
 	  			});
 		});
-		//unfavTrack
+		//
+		$('a.queueTrack').live('click', function(e) {
+			e.preventDefault();
+			track = $(this).attr('href');
+			playList.push(track);
+			var name = $(this).html();
+			name = name.replace('queue track ', ' ');
+			window_head.find("h1").html("Track Queued");
+			window_body.find("p.window-p").empty().html(name+" was added to the playlist");
+			windowBox.fadeIn();
+		});
 	 	$('a.similar-genre').live('click', function(e) {
 	 		e.preventDefault();
+	 		id = $(this).attr('href');
+	 		id = id.replace(' ', '_');
+	 		id = id.replace(" ", "_");
+				id = id.replace(" ", "_");
+				id = id.replace(" ", "_");
 	 		//similar_genres();
+	 		//add a loading
+	 		//$(this).closest('li.favGenre').after('<ul class="related-genres" id="'+id+'"></ul>');
+	 		$('body').find('ul#'+id).append('<li style="width:64px; margin:0 auto;"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></li><div class="clear"></div>');
+	 		
+			dataString = "&getRelatedGenres=true";
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+			dataString+="&tag="+$(this).attr('href');
+	  		 	urlString = "bin/lastfm.php?callback=?"+dataString+"";
+	  		 	
+	  			$.getJSON(urlString,{}, function(data4) {
+	  			
+	  				if (data4 == "") { 
+	  					//alert("no data");
+	  				} else {
+		  				
+	  					//alert("data");
+	  					$('body').find('ul#'+id).empty();
+	  					
+	  				for (var i = 0, l = data4.length; i < l; i++) {
+	  					var name = data4[i];
+		  				name = name.replace(" ", "_");
+		  				name = name.replace(" ", "_");
+		  				name = name.replace(" ", "_");
+		  				name = name.replace(" ", "_");
+	  							$('body').find('ul#'+id).append('<li class="favGenre '+i+'"><span>'+data4[i]+'</span><ul class="artist-options"><li class="genreSearch '+i+'"><a class="genre-search" href="'+data4[i]+'">songs in genre</a></li><li class="genreSimilar '+i+'"><a class="similar-genre" href="'+data4[i]+'">similar genres</a></li><li class="subFav last '+i+'"><a class="favourite-remove-genre" href="'+data4[i]+'">Unfavourite '+i+'</a></li></ul></li><ul class="related-genres" id="'+name+'"></ul>');
+	  						}
+	  				
+	  				}
+	  			});
 	 	});
 	 function loop_info() {
 		 for (var i = 0, l = info.length; i < l; i++) {
@@ -514,17 +564,17 @@ $(document).ready(function() {
 				var last_n = info[i].last_name;
 				var nick_n = info[i].name;
 				var email_n = info[i].email;
-				if (first_n != "NULL" && first_n != "") {
+				if (first_n != null && first_n != "") {
 					firstField.inputBox.val(first_n);
 				}
-				if (last_n != "NULL" && last_n != "") {
+				if (last_n != null && last_n != "") {
 					lastField.inputBox.val(last_n);
 				}
-				if (nick_n != "NULL" && nick_n != "") {
+				if (nick_n != null && nick_n != "") {
 					console.log(true);
 					nameField.inputBox.val(nick_n);
 				}
-				if (email_n != "NULL" && email_n != "") {
+				if (email_n != null && email_n != "") {
 					emailField.inputBox.val(email_n);
 				}
 			}
@@ -603,7 +653,7 @@ $(document).ready(function() {
 		theData = new Object();
 		thePlayList = new Object();
 		theLoad = new Object(); //load percentage
-		currentPlaying = new Object;
+		
 		currentPlaying = 0; //a number for use within the playlist
 		
 		//vars
@@ -667,6 +717,7 @@ $(document).ready(function() {
 		var loadedSeconds;
 		var currentTrack;
 		var playList = new Array();
+		playList.push("http://soundcloud.com/user1207673/welcome");
 		var firstPlay = true;
 		var states = new Array();
 		var types = new Array();
@@ -792,18 +843,11 @@ $(document).ready(function() {
 	  					var col = "threecol";
 	  					$('body').find('ul.favArtists').empty();
 	  				for (var i = 0, l = data4.length; i < l; i++) {
-	  					console.log(data4[i].name);
+	  					
 		  				
-		  					if ((i-3)%4 == 0) {
-								col = "threecol last";
-		  					} else {
-								col = "threecol";
-		  					}
 		  						
 	  							$('body').find('ul.favArtists').append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
-	  						
-		  				
-			  		}
+	  					}
 	  				
 	  				}
 	  			});
@@ -876,7 +920,7 @@ $(document).ready(function() {
 			dataString+="&ip="+fb_id;
 			<?php } ?>
 	  		 	urlString = "bin/lastfm.php?callback=?"+dataString+"";
-	  		 	console.log(urlString);
+	  		 	
 	  			//only perform when variables have been collected
 	  			//console.log(urlString);
 	  			$.getJSON(urlString,{}, function(data4) {
@@ -890,8 +934,12 @@ $(document).ready(function() {
 	  					var col = "threecol";
 	  					$('body').find('ul.favGenres').empty();
 	  				for (var i = 0, l = data4.length; i < l; i++) {
-	  					console.log(data4[i]);
-	  							$('body').find('ul.favGenres').append('<li class="favGenre '+i+'"><span>'+data4[i]+'</span><ul class="artist-options"><li class="genreSearch '+i+'"><a class="genre-search" href="'+data4[i]+'">songs in genre</a></li><li class="genreSimilar '+i+'"><a class="similar-genre" href="'+data4[i]+'">similar genres</a></li><li class="subFav last '+i+'"><a class="favourite-remove-genre" href="'+data4[i]+'">Unfavourite '+i+'</a></li></ul></li>');
+	  					var id = data4[i];
+		  				id = id.replace(" ", "_");
+		  				id = id.replace(" ", "_");
+		  				id = id.replace(" ", "_");
+		  				id = id.replace(" ", "_");
+	  							$('body').find('ul.favGenres').append('<li class="favGenre '+i+'"><span>'+data4[i]+'</span><ul class="artist-options"><li class="genreSearch '+i+'"><a class="genre-search" href="'+data4[i]+'">songs in genre</a></li><li class="genreSimilar '+i+'"><a class="similar-genre" href="'+data4[i]+'">similar genres</a></li><li class="subFav last '+i+'"><a class="favourite-remove-genre" href="'+data4[i]+'">Unfavourite '+i+'</a></li></ul></li><ul class="related-genres" id="'+id+'"></ul>');
 	  						}
 	  				
 	  				}
@@ -940,7 +988,7 @@ $(document).ready(function() {
 			jsonRequest(searchT, search, from);
 		});
 		
-		function jsonRequest(requestString, additionalParams, from) { 
+		function jsonRequest(requestString, additionalParams, from) {
 			
 			$('ul.recom').hide();
 			$('ul.others').hide();
@@ -968,11 +1016,15 @@ $(document).ready(function() {
 					// $('.the-content > ul.new').replaceWith('<ul class="new"></ul>');
 				homeContent.find('ul.new').empty();
 				for ( keyVar in data) {
-					   console.log(data[keyVar]);
-					   homeContent.find('ul.new').append('<li><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options"><li class="queueTrack 0"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track</a></li><li class="favTrack last 0"><a class="favTrack" href="'+data[keyVar].id+'">Favourite this Track</a></li></ul></li>');
+					purchase = "";
+					   if (data[keyVar].purchase_url == null) {
+							purchaseClass = "";
+					   } else {
+						   purchaseClass = "purchase";
+							purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
+					   }
+					   homeContent.find('ul.new').append('<li><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'"><li class="queueTrack 0"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track '+data[keyVar].title+'</a></li><li class="favTrack last 0"><a class="favTrack" href="'+data[keyVar].id+'">Favourite this Track</a></li>'+purchase+'</ul></li>');
 				}
-						
-
 				}
 				
 	   	    });
@@ -1014,15 +1066,20 @@ $(document).ready(function() {
 
 		$('a.track-load').live('click',function(event){
 			  event.preventDefault();
-			  currentPlaying ++;
-			  if (firstPlay) {
+			  
+			  if (this.href != playList[playList.length]) {
+				  playList.push(this.href);
+			  }
+			  thePlayList = playList;
+			  if (playerReady == false) {
 				  fromSearch = true;
 				  playPause.trigger('click');
 				  firstPlay = false;
-				  
-			  }
+			  } else {
+				  currentPlaying ++;
 				  thePlayer.api_load(this.href);
-			});
+			  }
+		});
 		
 		
 		volumeBtn.click(function (e) {
@@ -1094,7 +1151,8 @@ $(document).ready(function() {
 			 return false;
 		});
 		
-		prevBtn.click(function() {
+		prevBtn.click(function(e) {
+			e.preventDefault();
 			if(thePlayList) {
 				
 				prevTrack = currentPlaying - 1;
@@ -1108,6 +1166,7 @@ $(document).ready(function() {
 			 return false;
 		});
 		nextBtn.click(function() {
+			e.preventDefault();
 			if(thePlayList) {
 				
 				nextTrack = currentPlaying + 1;
@@ -1148,7 +1207,7 @@ $(document).ready(function() {
 		}
 		
 		 
-	 });
+	 
 
 	$(document).bind('onMediaTimeUpdate.scPlayer', function(event){
 		var trackPosition = ((1-((event.duration - event.position)/event.duration))*100);
@@ -1182,28 +1241,32 @@ $(document).ready(function() {
 
 	//handles what to do when the song is ready
 	soundcloud.addEventListener('onPlayerReady', function(player, data) {
-
+			playerReady = true;
 			player.api_play();
 			//the player object equals whatever the player is
 			thePlayer = player;
 			theData = data;
-			console.log(thePlayer);
 			currentTrack = data.mediaUri;
-			if (fromSearch) {
+			/* if (fromSearch) {
 				console.log("fromSearch");
 				playList.push($('a.track-load').attr('href'));
 				fromSearch = false;
-			}
-			if (currentTrack != thePlayList[thePlayList.length]) {
-				playList.push(data.mediaId);
-			}
+			} */
+			
 			thePlayList = playList;
-			console.log(currentPlaying);
+			
 			
 	});
 
 	//handles the event of the song finishing
 	soundcloud.addEventListener('onMediaEnd', function(player, data) {
+		var playCounter = 0;
+		for (var i in thePlaylist) {
+			playCounter++;
+			//returns playlist length
+			console.log(playCounter);
+		}
+		console.log(playList.length);
 		if (repeatBtn.hasClass('on')) {
 			player.api_load(currentTrack);
 			soundcloud.addEventListener('onPlayerReady', function(player, data) {
@@ -1211,14 +1274,17 @@ $(document).ready(function() {
 			});
 			console.log("repeat");
 		}
+		if (playCounter > currentPlaying) {
+		player.api_load(thePlaylist[currentTrack+1]);
+		}
+	});
 });
 </script>
 <!-- soundcloud controls 
 
 <script src="js/jquery-soundcloud-controls.js" type="text/javascript"></script>
 -->
-<script type="text/javascript" src="js/soundcloud.player.api.js"></script>
-<script src="js/sc-player.js" type="text/javascript"></script>
+
 
 
 <script type="text/javascript">    

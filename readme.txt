@@ -30,4 +30,10 @@ Genre search, Similar Genre icons added
 2.9.5 (2nd May)
 feature added - tracks by same artist
 favourite/unfavourite track
+buy links added
+2.9.6 (3rd May)
+similar genre search added
+player logic alterations
+Feature added: queue track to playlist
+
 

@@ -27,22 +27,23 @@
 	#more-options, #less-options {
 		position:fixed;
 		width:60px;
-		height:20px;
 		right:0;
-		margin-top: -24px;
-		display:block;
+		margin-top: -26px;
+		display: block;
 	}
 	#more-options a, #less-options a {
 	text-align: center;
-	background: #999;
+	background: url(../../images/ulLight.png) repeat scroll 0 -1px white;
 	color: white;
-	padding: 3px 11px;
+	padding: 3px 12px 3px 5px;
+	height: 36px;
+	font: bold 16px/20px helvetica, arial;
+	text-shadow: black 0 0 3px;
 	}
 	ul#mainMenu li span {
 	width:100%;
 	float: left;
 	height: 60px;
-	background: url(images/ul.png) top;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-border-radius: 5px;
@@ -57,12 +58,31 @@
 	.mobileFix {
 		clear:both;
 		width:100%;
+		border: 1px solid #999;
+		height: 50px;
 	}
 	.submit, #type {
 		border: none;
 	}
+	.submit {
+		width: 49%;
+		height: 50px;
+	}
 	#type {
 		border-right: 1px solid #999;
+	}
+	ul.ul-float, .the-content ul.ul-float  {
+		border-right: 1px solid #999;
+	}
+	#player-container {
+	background:url(images/ulMobile.png) repeat scroll 0 0px #333;
+	}
+	a#home_link, a#profile_link, a#playing_link, a#searches_link, a#account_link, a#logout_link, ul#mainMenu li a.single {
+		padding: 14px 20px 0px 59px;
+	}
+	ul#subMenu {
+		position: static;
+		width: initial;
 	}
 }
 

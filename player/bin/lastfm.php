@@ -82,6 +82,29 @@ if(isset($_GET['getGenres'])) {
 			$extra = 0;
 	}
 	}
+	if (isset($_GET['anon'])) {
+  		$sql = "SELECT genres FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT genres FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+			$unserialized = unserialize($row['genres']);
+			if (is_array($unserialized)) {
+				foreach ($unserialized as $v1) {
+					if (!in_array($v1, $artistArr)) {
+						array_push($artistArr, $v1);
+					}
+				}
+			}
+	  	}
+	$array = serialize($artistArr);
+	if(isset($_GET['anon'])) {
+		$sql2 = "UPDATE users SET genres = '".$array."' WHERE ip = '$ip'";
+	} else {
+		$sql2 = "UPDATE users SET genres = '".$array."' WHERE fb_id = '$ip'";
+	}
+  	$send = $database->query($sql2);
 	$json = json_encode($artistArr);
   	$message = $json;
   	echo $_GET['callback'] . ' (' . $message . ');';
@@ -140,5 +163,81 @@ if(isset($_GET['notGenre'])) {
   	}
   	$message = $json;
   	echo $_GET['callback'] . ' (' . $message . ');';	
+} else if(isset($_GET['getRelatedGenres'])) {
+	$ip = $_GET['ip'];
+	$tag = $_GET['tag'];
+	$already = false;
+	$array = array();
+	$lastFM = array();
+	$artistArr = array();
+	$notArray = array();
+	if (isset($_GET['anon'])) {
+  		$sql = "SELECT genres FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT genres FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+		$unserialized = unserialize($row['genres']);
+		if(is_array($unserialized)) {
+			foreach ($unserialized as $v1) {
+				array_push($array, $v1);
+			}
+		}
+  	}
+  	
+  	//check genre hasn't been disguarded
+  	if (isset($_GET['anon'])) {
+  		$sql = "SELECT notgenres FROM users WHERE ip = '$ip'";
+  	} else {
+  		$sql = "SELECT notgenres FROM users WHERE fb_id = '$ip'";
+  	}
+  	$send = $database->query($sql);
+	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
+			$unserialized = unserialize($row['notgenres']);
+			if (is_array($unserialized)) {
+				foreach ($unserialized as $v1) {
+					array_push($notArray, $v1);
+				}
+			}
+	  	}
+	$authVars = array(
+		'apiKey' => 'fbe282844ddb2e0bfef66790e0d012f1',
+		'secret' => 'ba9da9d645aace82cefc040bdb8b7ee1',
+		'username' => 'spawnDnB'
+	);
+	$config = array(
+		'enabled' => true,
+		'path' => './lastfmapi/',
+		'cache_length' => 1800
+	);
+	// Pass the array to the auth class to eturn a valid auth
+	$auth = new lastfmApiAuth('setsession', $authVars);
+
+	$apiClass = new lastfmApi();
+	$tagClass = $apiClass->getPackage($auth, 'tag', $config);
+	
+	// Setup the variables
+	$methodVars = array(
+		'tag' => $tag
+	);
+	
+	if ($tags = $tagClass->getSimilar($methodVars)) {
+		$extra = 0;
+		for($i = 0; $i < 5+$extra; $i++) {
+			$theTag = $tags[$i]['name'];
+			if(!in_array($theTag, $notArray) && !in_array($theTag, $array)) {
+			    array_push($artistArr, $tags[$i]['name']);
+			} else {
+				$extra++;
+			}
+		}
+		$extra = 0;
+	}
+	
+	$json = json_encode($artistArr);
+  	$message = $json;
+  	echo $_GET['callback'] . ' (' . $message . ');';
 }
+
 ?>
