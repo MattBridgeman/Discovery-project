@@ -12,11 +12,11 @@ $today = date("d.m.y");
 if(isset($_GET['fb_id'])) {
 	$name = trim($_GET['name']);
 	$fb_id = trim($_GET['fb_id']);
-	$first_name = trim($_GET['first_name']);
+	$first_name = trim($_GET['firstname']);
 	$last_name = trim($_GET['last_name']);
 	$email = trim($_GET['email']);
 	
-	$sql = "SELECT * FROM users WHERE fb_id='$fb_id'";
+	$sql = "SELECT * FROM users WHERE fb_id = '$fb_id'";
 	$send = $database->query($sql);
 	if(mysql_num_rows($send) < 1) {
 		$sql = "INSERT INTO users (name,fb_id,first_name,last_name,email,date_added)
@@ -38,6 +38,7 @@ WHERE fb_id = '$fb_id'";
 				$message = "false ip";
 			}
   		}
+  		$sql = "SELECT * FROM users WHERE fb_id = '$fb_id'";
   		$json = $database->while_query($sql);
   		$json = json_encode($json);
   		$message = $json;

@@ -47,7 +47,7 @@ $facebook = new Facebook(array(
 
     if(empty($code)) {
 		$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
-		. $app_id . "&scope=". $scope ."&redirect_uri=http://www.thediscoveryapp.com/player/";
+		. $app_id . "&scope=". $scope ."&redirect_uri=http://www.thediscoveryapp.com/";
 		$redirect = "" . $dialog_url . "";
 	}   
 

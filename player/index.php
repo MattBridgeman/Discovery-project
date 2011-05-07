@@ -20,6 +20,7 @@ $app_id = 154550127940245;
 $app_secret = "08751756393722bcc0ec3ad06a20d12f";
 $my_url = curPageURL(); 
 $code = $_REQUEST["code"];
+$scope = "email,user_likes";
 $anon = "";
 // Create our Application instance.
 $facebook = new Facebook(array(
@@ -32,7 +33,7 @@ if(isset($_GET['anon'])) {
 } else {
 	if(empty($code)) {
 		$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
-		. $app_id . "&redirect_uri=" . urlencode($my_url."player/");
+		. $app_id . "&scope=". $scope ."&redirect_uri=http://www.thediscoveryapp.com/";
 		$redirect = "" . $dialog_url . "";
 	}
 }
@@ -42,7 +43,7 @@ if(isset($_GET['anon'])) {
 <head>
 <!-- meta info -->
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <meta name="keywords" content="discovery, music, streaming, player, soundcloud">
 <meta name="description" content="The Discovery App Player, this is the player the helps you discovery new and unheard music">
 
@@ -71,6 +72,9 @@ if(isset($_GET['anon'])) {
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <!-- further HTML5 and new technologies fixes-->
 <script src="js/modernizr-1.7.min.js" type="text/javascript"></script>
+<!-- iPhone -->
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=0;">
+<script src="js/fixed.js" type="text/javascript" charset="utf-8"></script>
 <!-- jQuery UI elements -->
 <script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="js/soundcloud.player.api.js"></script>
@@ -115,41 +119,18 @@ $(document).ready(function() {
 	var moreInfo = $('a.moreInfo-a');
 	//$('ul.subFM').live().hide();
 	//.live('mouseover mouseout', function(event) {
+	function isiPhone(){
+    return (
+        (navigator.platform.indexOf("iPhone") != -1) ||
+        (navigator.platform.indexOf("iPod") != -1)
+    );
+	}
+	if (isiPhone()) {
+		$('#player-container').css({'position' : 'absolute', 'top': '368px'});
+		$('#container').css({'height': '324px'});
+	}
 	
-	$('a.moreInfo-a').live('click', function(e) {
-		
-		var amt = "-=159px";
-		e.preventDefault();
-		  $(this).parent().parent().animate({
-		  "margin-top" : amt
-		  }, 'fast', function() {
-		    // Animation complete.
-			  amt = "+=159px";
-		  });
-		  $(this).html("Less Info");
-		  $(this).removeClass('moreInfo-a').addClass('lessInfo-a');
-	});
-	$('a.lessInfo-a').live('click', function(e) {
-			
-			var amt = "+=159px";
-			e.preventDefault();
-			  $(this).parent().parent().animate({
-			  "margin-top" : amt
-			  }, 'fast', function() {
-			    // Animation complete.
-			  });
-			  $(this).html("More Info");
-			  $(this).removeClass('lessInfo-a').addClass('moreInfo-a');
-		});
-	recom_image.live("myCustomEvent", function(e, myName, myValue) {
-		$(this).children('ul').hide();
-		$(this).hover( function () {
-		      $(this).children('ul').fadeIn('fast');
-		    }, 
-		    function () {
-		    	$(this).children('ul').fadeOut('fast');
-		    });
-	});
+	
 	var nameField = new inputField(nickname);
 	var emailField = new inputField(email);
 	var firstField = new inputField(first_name);
@@ -169,7 +150,7 @@ $(document).ready(function() {
   		  } else {
 			//they are logged in
 			fb_id = response.session.uid;
-			dataString = 'fb_id=' + fb_id;
+			
   			FB.api('/me', function(response) {
   	  			
   				name = response.name;
@@ -177,19 +158,17 @@ $(document).ready(function() {
   				email = response.email;
   				first_name = response.first_name;
   				last_name = response.last_name;
-  				dataString += '&name=' + name + '&email=' + email + '&last_name=' + last_name + '&first_name=' + first_name;
+  				dataString = '&fb_id=' + fb_id;
+  				dataString += '&name=' + name + '&email=' + email + '&lastname=' + last_name + '&first_name=' + first_name;
   				
 				//only perform when variables have been collected
-  				$.ajax({
-  			      type: "POST",
-  			      url: "bin/process.php",
-  			      data: "?callback=?&"+dataString,
-  			      success: function(msg) {
-  			    	 console.log(msg);
-  			    	 info = msg;
-  			    	loop_info();
-  		          }
-  		     });
+				urlString = "bin/process.php?callback=?"+dataString+"";
+				console.log(urlString);
+		  			//only perform when variables have been collected
+		  			//console.log(urlString);
+		  			$.getJSON(urlString,{}, function(msg) {
+		  				console.log(msg);
+		  			});
   			  
   	  		});
   			FB.api('/me/likes', function(response) {
@@ -204,8 +183,17 @@ $(document).ready(function() {
   				}
 				do_likes();
   			});
+			FB.api('/me/friends', function(response) {
+  	  			//take entire response and place it in process.php
+  	  			console.log(response);
+  	  		$.post('bin/functions.php', {'response[]': response, 'theFB': fb_id }, function(data){
+  	  		   // do something with received data!
+   	  		   console.log(data);
+  	  		});
+  			
+  			});
   			function do_likes() {
-	  			dataString = "&likes=";
+  				dataString = "&likes=";
 	  			for (var i = 0; i < likes.length; i++) {
 		  			dataString += likes[i];
 		  			if (0 < i < likes.length) {
@@ -246,46 +234,7 @@ $(document).ready(function() {
 		  			});
 	  				
   			}
-  			//last.fm recommendations
-  			$('a.similar-search').live('click', function(e) {
-  				e.preventDefault();
-  				homeLink.trigger('click');
-	  			dataString = "&similar=";
-	  			$('body').find('ul.recom').fadeOut();
-	  			$('body').find('ul.others').fadeOut();
-	  			$('body').find('div.ajaxLoading').show();
-	  			search = $(this).attr('href');
-	  			console.log(search);
-	  			dataString+=search;
-		  		 	urlString = "bin/process.php?callback=?"+dataString+"";
-		  			//only perform when variables have been collected
-		  			//console.log(urlString);
-		  			$.getJSON(urlString,{}, function(data3) {
-		  			
-		  				if (data3 == "") {
-		  				} else {
-		  					var col = "threecol";
-		  					$('ul#others').empty();
-		  				for (var i = 0, l = data3.length; i < l; i++) {
-			  				if (i < 16) {
-			  					if ((i-3)%4 == 0) {
-									col = "threecol last";
-			  					} else {
-									col = "threecol";
-			  					}
-		  						//console.log(data3[i]['image']);//image
-			  						//data3[i].name.replace("%27", "\'");
-			  						
-		  							$('ul#others').append('<ul class="'+col+'"><li id="recom-img'+i+'" class="recom-image"><div class="artist-pic"><div style="height:200px;background: url(\''+data3[i].image+'\');"></div></div><ul class="subFM"><li class="moreInfo"><a class="moreInfo-a" href="#">More Info</a></li><li class="subSearch '+i+'"><a class="artist-search" href="'+data3[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data3[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-add" href="'+data3[i].name+'">Favourite</a></li></ul></li><li class="recom-info"><a href="#">'+data3[i].name+'</a></li></ul>');
-			  				}
-			  				
-				  		}
-
-	  					$('div.ajaxLoading').hide();
-		  				}
-		  			});
-	  				
-  			});
+  			
   		  }
   		});
 	  };
@@ -315,6 +264,82 @@ $(document).ready(function() {
 			}
 		});
 	 <?php } ?>
+	//last.fm recommendations
+		$('a.similar-search').live('click', function(e) {
+			e.preventDefault();
+			homeLink.trigger('click');
+			dataString = "&similar=";
+			$('body').find('ul.recom').fadeOut();
+			$('body').find('ul.others').fadeOut();
+			$('body').find('div.ajaxLoading').show();
+			search = $(this).attr('href');
+			console.log(search);
+			dataString+=search;
+	  		 	urlString = "bin/process.php?callback=?"+dataString+"";
+	  			//only perform when variables have been collected
+	  			//console.log(urlString);
+	  			$.getJSON(urlString,{}, function(data3) {
+	  			
+	  				if (data3 == "") {
+	  				} else {
+	  					var col = "threecol";
+	  					$('ul#others').empty();
+	  				for (var i = 0, l = data3.length; i < l; i++) {
+		  				if (i < 16) {
+		  					if ((i-3)%4 == 0) {
+								col = "threecol last";
+		  					} else {
+								col = "threecol";
+		  					}
+	  						//console.log(data3[i]['image']);//image
+		  						//data3[i].name.replace("%27", "\'");
+		  						
+	  							$('ul#others').append('<ul class="'+col+'"><li id="recom-img'+i+'" class="recom-image"><div class="artist-pic"><div style="height:200px;background: url(\''+data3[i].image+'\');"></div></div><ul class="subFM"><li class="moreInfo"><a class="moreInfo-a" href="#">More Info</a></li><li class="subSearch '+i+'"><a class="artist-search" href="'+data3[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data3[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-add" href="'+data3[i].name+'">Favourite</a></li></ul></li><li class="recom-info"><a href="#">'+data3[i].name+'</a></li></ul>');
+		  				}
+		  				
+			  		}
+
+					$('div.ajaxLoading').hide();
+	  				}
+	  			});
+			return false;
+		});
+	 $('a.moreInfo-a').live('click', function(e) {
+			
+			var amt = "-=159px";
+			e.preventDefault();
+			  $(this).parent().parent().animate({
+			  "margin-top" : amt
+			  }, 'fast', function() {
+			    // Animation complete.
+				  amt = "+=159px";
+			  });
+			  $(this).html("Less Info");
+			  $(this).removeClass('moreInfo-a').addClass('lessInfo-a');
+			  return false;
+		});
+		$('a.lessInfo-a').live('click', function(e) {
+				
+				var amt = "+=159px";
+				e.preventDefault();
+				  $(this).parent().parent().animate({
+				  "margin-top" : amt
+				  }, 'fast', function() {
+				    // Animation complete.
+				  });
+				  $(this).html("More Info");
+				  $(this).removeClass('lessInfo-a').addClass('moreInfo-a');
+				  return false;
+			});
+		recom_image.live("myCustomEvent", function(e, myName, myValue) {
+			$(this).children('ul').hide();
+			$(this).hover( function () {
+			      $(this).children('ul').fadeIn('fast');
+			    }, 
+			    function () {
+			    	$(this).children('ul').fadeOut('fast');
+			    });
+		});
 	 $('a.favourite-add').live('click', function(e) {
 			e.preventDefault();
 			//$('ul.recom').fadeOut();
@@ -349,6 +374,7 @@ $(document).ready(function() {
 	  					}
 	  				}
 	  			});
+	  		return false;
 		});
 	 $('a.favourite-remove').live('click', function(e) {
 			e.preventDefault();
@@ -392,6 +418,7 @@ $(document).ready(function() {
 	  					}
 	  				}
 	  			});
+	  		return false;
 		});
 		$('a.favourite-remove-genre').live('click', function(e) {
 			e.preventDefault();
@@ -434,7 +461,19 @@ $(document).ready(function() {
 	  					}
 	  				}
 	  			});
+	  		return false;
 		});
+		$('a.visualSearch').live('click', function(e) {
+			e.preventDefault();
+			title = $(this).attr('href');
+			popuponclick(title);
+		});
+		function popuponclick(title)
+		   {
+		      my_window = window.open("bin/test.php?similar="+title,
+		       "mywindow","status=1,width=100%,height=100%");
+		      my_window.document.write('<h1>The Popup Window</h1>');
+		   }
 		$('a.favTrack').live('click', function(e) {
 			e.preventDefault();
 			//$('ul.recom').fadeOut();
@@ -465,6 +504,7 @@ $(document).ready(function() {
 	  					}
 	  				}
 	  			});
+	  		return false;
 		});
 		$('a.unfavTrack').live('click', function(e) {
 			e.preventDefault();
@@ -503,8 +543,36 @@ $(document).ready(function() {
 	  					}
 	  				}
 	  			});
+	  		return false;
 		});
-		//
+		//playListDelete
+		$('a.playListDelete').live('click', function(e) {
+			e.preventDefault();
+			//$('ul.recom').fadeOut();
+			 var name = $(this).attr('href');
+			var id = $(this).html();
+			id = id.replace("Delete this Track ", "");
+			for (var i in playList) {
+				playList[i] = playList[i].replace("http://api.soundcloud.com/tracks/", "");
+				playList[i] = playList[i]+'';
+				name = name+'';
+				if (playList[i] == name) {
+					playList.splice(i, 1);
+				}
+			}
+			
+  						$('body').find('ul.playlist').children('li').each(function (i) {
+							if($(this).hasClass(id)) {
+								$(this).fadeOut();
+								$(this).remove();
+							}
+  						}); 
+  						window_head.find("h1").html("Track removed from playlist");
+  						window_body.find("p.window-p").empty().html("Track was removed from playlist");
+  						windowBox.fadeIn();
+	  					
+	  		return false;
+		});
 		$('a.queueTrack').live('click', function(e) {
 			e.preventDefault();
 			track = $(this).attr('href');
@@ -514,6 +582,7 @@ $(document).ready(function() {
 			window_head.find("h1").html("Track Queued");
 			window_body.find("p.window-p").empty().html(name+" was added to the playlist");
 			windowBox.fadeIn();
+			return false;
 		});
 	 	$('a.similar-genre').live('click', function(e) {
 	 		e.preventDefault();
@@ -557,6 +626,7 @@ $(document).ready(function() {
 	  				
 	  				}
 	  			});
+	  		return false;
 	 	});
 	 function loop_info() {
 		 for (var i = 0, l = info.length; i < l; i++) {
@@ -584,10 +654,12 @@ $(document).ready(function() {
 			e.preventDefault();
 			account_info();
 			windowBox.fadeIn();
+		return false;
 	});
 	window_a.click(function(e) {
 			e.preventDefault();
 			windowBox.fadeOut();
+		return false;
 	});
 	function account_info() {
 		var stopped = false;
@@ -717,7 +789,7 @@ $(document).ready(function() {
 		var loadedSeconds;
 		var currentTrack;
 		var playList = new Array();
-		playList.push("http://soundcloud.com/user1207673/welcome");
+		playList.push("http://api.soundcloud.com/tracks/13964562");
 		var firstPlay = true;
 		var states = new Array();
 		var types = new Array();
@@ -739,6 +811,7 @@ $(document).ready(function() {
 			this.menuItem.bind('click', function(e) {
 				e.preventDefault();
 				selectedType = $(this).html();
+				return false;
 			});
 		}
 		var genreState = new typeState(genreType);
@@ -762,6 +835,7 @@ $(document).ready(function() {
 			this.menuItem.bind('click', function(e) {
 				e.preventDefault();
 				changeState(wrapElement);
+				return false;
 			});
 		}
 		
@@ -799,6 +873,8 @@ $(document).ready(function() {
 							loadGenres();
 							loadTags();
 							loadTracks();
+						} else if (states[i].wrapElement.attr("id") == "playing-content") {
+							loadPlaylist();
 						}
 					}
 					
@@ -910,6 +986,68 @@ $(document).ready(function() {
 	  				}
 	  			});
 		}
+		function loadPlaylist() {
+			$('div#ajaxPlaylist').show();
+			var string;
+			for (var i in playList) {
+				playList[i] = playList[i].replace("http://api.soundcloud.com/tracks/", "");
+				if (playList[i] == playList[0]) {
+					string= playList[i]+",";
+				} else if (playList[i] == playList[playList.length]) {
+					string+= playList[i];
+				} else {
+					string+= playList[i]+",";
+				}
+			}
+			
+			if (string == 0 || string == null) {
+				$('div#ajaxPlaylist').hide();
+				$('body').find('ul.playlist').empty().append('<li class="playlistLi"><span>Tracks will appear hear</span></li>');
+			} else {
+						var table = new Array();
+	  					var newString = "&ids="+string;
+	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
+	  					console.log(urlRequest);
+	  					$.getJSON(urlRequest, function(data) {
+
+	  						if (data == "") { 
+	  							$('div#ajaxPlaylist').hide();
+	  							$('body').find('ul.playlist').empty().append('<li>Query Empty</li>');	
+	  						} else { 
+		  						$('div#ajaxPlaylist').hide();
+	  							var count = 0;
+	  							var purchase;
+	  							$('body').find('ul.playlist').empty();
+		  						for ( keyVar in data) {
+			  						purchase = "";
+		  							   if (data[keyVar].purchase_url == null) {
+											purchaseClass = "";
+		  							   } else {
+			  							    purchaseClass = "purchase";
+											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
+		  							   }
+		  							   console.log(data[keyVar]);
+		  							   var number;
+		  							   number = data[keyVar].uri;
+		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="track-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
+		  							   table[number] = string;
+		  							 $('body').find('ul.playlist').append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="track-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
+									count ++;
+		 	  					}
+	  						}
+	  						
+	  			   	    });
+	  					/*alert("data");
+	  					$('div#ajaxTracks').hide();
+	  					var col = "threecol";
+	  					$('body').find('ul.favTracks').empty();
+	  					for (var i = 0, l = data6.length; i < l; i++) {
+	  					console.log(data6[i].name);
+	  							$('body').find('ul.favTracks').append('<li class="favTrack '+i+'"><span class="artistSpan"><div style="background: url(\''+data6[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data6[i].name+'">'+data6[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data6[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data6[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data6[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
+	  					}*/
+			}	
+	  			
+		}
 		function loadTags() {
 			profileState.wrapElement.find('div.ajaxLoading').show();
 			dataString = "&getGenres=true";
@@ -958,6 +1096,7 @@ $(document).ready(function() {
 			searchT = "tracks";
 			from = "artist-search";
 			jsonRequest(searchT, search, from);
+			return false;
 		});
 		$('a.artistsTracks').live('click', function(e) {
 			e.preventDefault();
@@ -971,6 +1110,7 @@ $(document).ready(function() {
 			search="";
 			from = "artist-search";
 			jsonRequest(searchT, search, from);
+			return false;
 		});
 		$('a.genre-search').live('click', function(e) {
 			e.preventDefault();
@@ -986,6 +1126,7 @@ $(document).ready(function() {
 			searchT = "tracks";
 			from = "genre";
 			jsonRequest(searchT, search, from);
+			return false;
 		});
 		
 		function jsonRequest(requestString, additionalParams, from) {
@@ -1034,10 +1175,12 @@ $(document).ready(function() {
 		repeatBtn.click(function(e) {
 			e.preventDefault();
 			repeat();
+			return false;
 		});
 		searchType.click(function(e) {
 			e.preventDefault();
 			submenu.toggle('fast', function() {});
+			return false;
 		});
 		submenu.hover( function () {
 		      //$(this).children().fadeIn('fast');
@@ -1087,27 +1230,47 @@ $(document).ready(function() {
 		    volumeSliderContainer.toggle('fast', function() {
 		        // Animation complete.
 		    });
+		    return false;
 		  });
 		
 		moreBtn.click(function(e) {
 			e.preventDefault();
-			  playerContainer.animate({
-			  "height" : "+=100px" 
-			  }, 'fast', function() {
-			    // Animation complete.
-			  });
+			if (isiPhone()) {
+				playerContainer.animate({
+					  "top" : "-=100px" 
+					  }, 'fast', function() {
+					    // Animation complete.
+					  });
+			} else {
+				playerContainer.animate({
+					  "height" : "+=100px" 
+					  }, 'fast', function() {
+					    // Animation complete.
+					  });
+			}
+			  
 			  moreBtn.hide();
 			  lessBtn.show();
+			  return false;
 			});
 		lessBtn.click(function(e) {
 			e.preventDefault();
+			if (isiPhone()) {
+				playerContainer.animate({
+					  "top" : "+=100px" 
+					  }, 'fast', function() {
+					    // Animation complete.
+					  });
+			} else {
 			  playerContainer.animate({
 			  "height" : "-=100px"
 			  }, 'fast', function() {
 			    // Animation complete.
 			  });
+			}
 			  lessBtn.hide();
 			  moreBtn.show();
+			  return false;
 			});
 		//buttons
 		$("#playSlider").slider({
@@ -1299,8 +1462,8 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<div class="container">
-<div class="row">
+<div id="container" class="container">
+<div id="content" class="row">
 	<div id="player-object" class="twelvecol">
 	  <!-- <object height="81" width="100%" id="discoveryPlayer" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000">
 	    <param name="movie" value="http://player.soundcloud.com/player.swf?url=http%3A%2F%2Fsoundcloud.com%2Fspawn%2Fstonedeep&enable_api=true&object_id=discoveryPlayer"></param>
@@ -1317,12 +1480,12 @@ $(document).ready(function() {
 		<div class="white-wrapper white-padding">
 		<nav id="main-navigation" class="menu-inner">
 			<ul id="mainMenu">
-					<li class="twocol"><span><a class="single" id="home_link" href="#main-content">home</a></span></li>
-					<li class="twocol"><span><a class="single" id="profile_link" href="#profile-content">profile</a></span></li>
-					<li class="twocol"><span><a id="playing_link" href="#playing-content">now playing</a></span></li>
-					<li class="twocol"><span><a class="single" id="searches_link" href="#searches-content">searches</a></span></li>
-					<li class="twocol"><span><a class="single" id="account_link" href="#account-content">account</a></span></li>
-					<li class="twocol last"><span><a class="single" id="logout_link" href="logout.php?<?php if ($anon != "") { echo "anon=1"; }?>">Logout</a></span></li>
+					<li class=""><span><a class="single" id="home_link" href="#main-content">home</a></span></li>
+					<li class=""><span><a class="single" id="profile_link" href="#profile-content">profile</a></span></li>
+					<li class=""><span><a id="playing_link" href="#playing-content">now playing</a></span></li>
+					<li class=""><span><a class="single" id="searches_link" href="#searches-content">searches</a></span></li>
+					<li class=""><span><a class="single" id="account_link" href="#account-content">account</a></span></li>
+					<li class="last"><span><a class="single" id="logout_link" href="logout.php?<?php if ($anon != "") { echo "anon=1"; }?>">Logout</a></span></li>
 			</ul>
 			<div class="clear"></div>
 		</nav>
@@ -1384,6 +1547,13 @@ $(document).ready(function() {
 	<h1 class="header">Now Playing</h1>
 	</div>
 	<div class="wrap">
+	<h3 class="search-class">Now Playing</h3>
+	<div id="ajaxPlaylist" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Playlist</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
+	<ul class="playlist">
+	</ul>
+	<div id="ajaxOtherPlaylist" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Playlist</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
+	<ul class="other-playlist">
+	</ul>
 	</div>
 	</div>
 	</section>
@@ -1474,6 +1644,7 @@ $(document).ready(function() {
 	  <div class="clear"></div>
 	  </div>
 	  </div>
+	  <div class="clear"></div>
 	  </footer>
 	  
 <div id="window"><div id="window-wrapper"><div id="window-head"><h1>Information</h1></div><div id="window-body"><p class="window-p">Your settings have been updated</p><p><a id="window-a" href="#">Okay</a></p></div></div></div>

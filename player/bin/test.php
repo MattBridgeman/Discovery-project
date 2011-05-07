@@ -3,6 +3,11 @@
 require_once("lastfmapi/lastfmapi.php");
 $likes = $_GET['similar'];
 $likes = explode(",next,", $likes);
+if (isset($_GET['ip'])) {
+	$ip = $_GET['ip'];
+	$anon = $_GET['anon'];
+	$string="&ip=".$ip."&anon=".$anon;
+}
 	$mainArtists = array();
 	$artistArr = array();
 	$lastFM = array();
@@ -143,13 +148,73 @@ $methodVars = array(
   <head> 
     <title>Matts test</title> 
     <script type="text/javascript" src="./protovis-r3.2.js"></script> 
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
     <style type="text/css"> 
  
-body {
-  margin: 0;
-}
- 
-    </style> 
+	body, h1 {
+	  margin: 0;
+	  padding:0;
+	}
+ 	@media handheld, only screen and (max-width: 767px) {
+ 		h1 {
+		  font-size: 1em;
+		}
+ 	}
+    </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		var windowBox = $('#window');
+		var winHeight = $('body').height();
+		 windowBox.css({
+			 "height" : winHeight
+	   });
+		var window_head = $('#window-head');
+		var window_body = $('#window-body');
+		var window_a = $('#window-a');
+		var hist = history.length;
+		window_body.empty().append('<p></p>').append(history.length);
+		windowBox.hide();
+		window_a.live('click', function(e) {
+			e.preventDefault();
+			windowBox.fadeOut();
+		return false;
+		});
+		console.log(window.opener);
+		if(history.length < 2) {
+			//don't add a back link
+		}
+		
+		$("a").live("hover", function(){
+			var title = $(this).attr('title');
+			var img/* = $(this).html()*/;
+			if (title.length > 0) {
+				window_head.find("h1").html("Artist: "+title);
+				window_body.empty().html("<span class=\"visualImage\">"+img+"</span>");
+				window_body.append("<ul class=\"visualList\"><li><a class='similar-artist' title='' href='test.php?similar="+title+",next,<?php echo $_GET['similar']; echo $string; ?>'>similar artists</a></li><li><a class=\"favourite\" title='' href='"+title+"'>favourite</a></li><li><a class=\"search\" title='' href='"+title+"'>artist search</a></li></ul>");
+				window_body.append('<a id="window-a" href="#">close</a>');
+	  			windowBox.fadeIn();
+			}
+		});
+		$('a.favourite').live('hover', function(e) {
+			e.preventDefault();
+			//do ajax save here
+		});
+		$('a.search').live('click', function(e) {
+			e.preventDefault();
+			var title = $(this).attr('href');
+			
+			opener.Json(title);
+			self.close();
+		});
+		/*
+			window_head.find("h1").html("Error");
+  			window_body.find("p.window-p").empty().html("There was an issue adding your favourite");
+  			windowBox.fadeIn();
+		*/
+		
+	});
+	</script>
   </head> 
   <body> 
     <script type="text/javascript+protovis"> 
@@ -265,12 +330,13 @@ force.node.add(pv.Image)
     .width(function(d) getAlbumSize(d.size))
     .height(function(d) getAlbumSize(d.size))
     .top(function(d) d.y-getAlbumSize(d.size)/2)
-    .left(function(d) d.x-getAlbumSize(d.size)/2)
+    .left(function(d) d.x-getAlbumSize(d.size)/2)/*
     .event("mousedown", function(d) {
     	//runs when click
 		console.log(d.artistName);
-		window.location.href= "test.php?similar="+d.artistName+",next,<?php echo $_GET['similar']; ?>";
-    });
+		window.location.href= "test.php?similar="+d.artistName+",next,<?php echo $_GET['similar']; echo $string; ?>";
+    })*/
+	
     //.visible(function(d) d.visible);
  
  
@@ -279,6 +345,7 @@ vis.render();
  
 vis.render();
  
-    </script> 
-  </body> 
+    </script>
+    <div id="window"><div id="window-wrapper"><div id="window-head"><h1>Information</h1></div><div id="window-body"><p class="window-p">Your settings have been updated</p><p><a id="window-a" href="#">Okay</a></p></div></div></div>
+	</body> 
 </html>

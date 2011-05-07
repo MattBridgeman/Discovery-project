@@ -35,5 +35,15 @@ buy links added
 similar genre search added
 player logic alterations
 Feature added: queue track to playlist
+2.9.7
+iphone/ipod fixes, playbar fixed position solution (TODO: background colour fix - done)
+iphone and desktop menu change, iphone: from stacked to floated left, text removed
+desktop: margin between menu elements removed
+Feature Added: now playing playlist display(TODO: display in correct order)
+Feature Added: Remove track from play list
+2.9.8
+Feature added: Facebook friends added
+
+
 
 
