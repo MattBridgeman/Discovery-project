@@ -1061,6 +1061,34 @@ $(document).ready(function() {
   				
   				} else {
   					$('body').find('ul.other-playlist').empty();
+  					function doJson (dataName) {
+						var dataName = dataName;
+	  					$.getJSON(urlRequest, function(data2) {
+
+	  						if (data2 == "") { 
+	  						} else { 
+		  						console.log(data2);
+	  							var count = 0;
+	  							var purchase;
+		  						for ( keyVar in data2) {
+			  						purchase = "";
+		  							   if (data2[keyVar].purchase_url == null) {
+											purchaseClass = "";
+		  							   } else {
+			  							    purchaseClass = "purchase";
+											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data2[keyVar].purchase_url +'">Purchase Track '+ data2[keyVar].title +'</a></li>';
+		  							   }
+		  							   console.log(data2[keyVar]);
+		  							   var number;
+		  							   number = data2[keyVar].uri;
+		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
+		  							 $('body').find('ul.list-'+dataName.name).append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
+									count ++;
+		 	  					}
+	  						}
+	  						
+	  			   	    }); 
+	  					}
 					for(var i = 0; i < data.length; i++) {
 						//foreach list make a ul or li for the list
 						var dataName = new Object();
@@ -1090,34 +1118,10 @@ $(document).ready(function() {
 						//loop the track like you would on the playlist
 						var newString = "&ids="+string;
 	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
-	  					function doJson () {
-	  					$.getJSON(urlRequest, function(data2) {
-
-	  						if (data2 == "") { 
-	  						} else { 
-	  							var count = 0;
-	  							var purchase;
-		  						for ( keyVar in data2) {
-			  						purchase = "";
-		  							   if (data2[keyVar].purchase_url == null) {
-											purchaseClass = "";
-		  							   } else {
-			  							    purchaseClass = "purchase";
-											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data2[keyVar].purchase_url +'">Purchase Track '+ data2[keyVar].title +'</a></li>';
-		  							   }
-		  							   console.log(data2[keyVar]);
-		  							   var number;
-		  							   number = data2[keyVar].uri;
-		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
-		  							 $('body').find('ul.list-'+dataName.name).append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
-									count ++;
-		 	  					}
-	  						}
-	  						
-	  			   	    }); 
-	  					}
-	  					doJson();
+	  					
+	  					doJson(dataName);
 					}
+					
 					$('div#ajaxOtherPlaylist').hide();
   				}
   			});

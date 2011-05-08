@@ -492,7 +492,7 @@ ul.new li ul.purchase, ul.playlist li ul.artist-options, ul.other-playlist li ul
 	float: right;
 	margin-right: 10px;
 }
-ul.favTracks li ul.purchase, ul.playlist li ul.purchase {
+ul.favTracks li ul.purchase, ul.playlist li ul.purchase, ul.other-playlist li ul.purchase {
 	width: 159px;
 	float: right;
 	margin-right: 10px;

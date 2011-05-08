@@ -43,6 +43,8 @@ Feature Added: now playing playlist display(TODO: display in correct order)
 Feature Added: Remove track from play list
 2.9.8
 Feature added: Facebook friends added
+Feature added: View Facebook friends profiles
+feature added: Save playlists
 
 
 
