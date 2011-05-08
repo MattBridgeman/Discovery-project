@@ -117,6 +117,94 @@ $(document).ready(function() {
 	var recommendations = new Object();
 	var recom_image = $('li.recom-image');
 	var moreInfo = $('a.moreInfo-a');
+	//the player is a random object
+	thePlayer = new Object();
+	theData = new Object();
+	thePlayList = new Object();
+	theLoad = new Object(); //load percentage
+	
+	currentPlaying = 0; //a number for use within the playlist
+	
+	//vars
+	var requestString = "users/spawn/tracks/";
+	var additionalParams = "";
+	//elements to control
+	var errors = $(".error");
+	var mainError = $('.main-error');
+	//search elements
+	var mainSearchInput = $('#main-search-input');
+	var submit = $('.submit');
+	//menu elements
+	
+	var homeLink = $('a#home_link');
+	var homeContent = $('#main-content');
+	var profileLink = $("a#profile_link");
+	var profileContent = $('#profile-content');
+	var nowPlayingLink = $("a#playing_link");
+	var nowPlayingContent = $('#playing-content');
+	var searchesLink = $("a#social_link");
+	var searchesContent = $('#social-content');
+	var accountLink = $("a#account_link");
+	var accountContent = $('#account-content');
+	var searchType = $('a#type-a');
+	var searchT;
+	//play elements
+	var repeatBtn = $("#repeat-btn");
+	var volumeBtn = $("#volume-btn");
+	var volumeSlider = $("#volumeSlider");
+	var volumeSliderContainer = $("#volumeSliderContainer");
+	//var playSlider = $("#playSlider");
+	var prevBtn = $('#prev-btn');
+	var nextBtn = $('#next-btn');
+	var playPause = $('a.sc-play');
+	var moreBtn = $('#moreBtn');
+	var lessBtn = $('#lessBtn');
+	var playerContainer = $('#player-container');
+	//window
+	var windowBox = $('#window');
+	
+	var window_head = $('#window-head');
+	var window_body = $('#window-body');
+	var window_a = $('#window-a');
+	//dynamic RHS elements
+	var scTrack = $('a.track-load');
+	
+	//logic vars
+	var prevTrack;
+	var nextTrack;
+	var amount = $("#amount");
+	var mySlider = $("#mySlider");
+	var loading;
+	var playPos;
+	var isLoaded = false;
+	var isPlaying = false;
+	var loadedAmt = 0;
+	var trackDuration;
+	var trackY;
+	var skipTo; //skip to seconds
+	var loadedAmt;
+	var loadedSeconds;
+	var currentTrack;
+	var playList = new Array();
+	var otherPlaylists = new Array();
+	var selectedPlaylist;
+	playList.push("http://api.soundcloud.com/tracks/13964562");
+	var firstPlay = true;
+	var states = new Array();
+	var types = new Array();
+	var selectedType = "";
+	var submenu = $('ul#subMenu');
+	var genreType = $('#genre-type');
+	var artistType = $('#artist-type');
+	var trackType = $('#track-type');
+	var fromSearch = false;
+	var id = 0;
+	//elements to hide
+	errors.hide();
+	volumeSliderContainer.hide();
+	mainError.hide();
+	lessBtn.hide();
+	submenu.hide();
 	//$('ul.subFM').live().hide();
 	//.live('mouseover mouseout', function(event) {
 	function isiPhone(){
@@ -188,7 +276,6 @@ $(document).ready(function() {
   	  			console.log(response);
   	  		$.post('bin/functions.php', {'response[]': response, 'theFB': fb_id }, function(data){
   	  		   // do something with received data!
-   	  		   console.log(data);
   	  		});
   			
   			});
@@ -720,92 +807,7 @@ $(document).ready(function() {
 	 }
 
 	//generic
-		//the player is a random object
-		thePlayer = new Object();
-		theData = new Object();
-		thePlayList = new Object();
-		theLoad = new Object(); //load percentage
 		
-		currentPlaying = 0; //a number for use within the playlist
-		
-		//vars
-		var requestString = "users/spawn/tracks/";
-		var additionalParams = "";
-		//elements to control
-		var errors = $(".error");
-		var mainError = $('.main-error');
-		//search elements
-		var mainSearchInput = $('#main-search-input');
-		var submit = $('.submit');
-		//menu elements
-		
-		var homeLink = $('a#home_link');
-		var homeContent = $('#main-content');
-		var profileLink = $("a#profile_link");
-		var profileContent = $('#profile-content');
-		var nowPlayingLink = $("a#playing_link");
-		var nowPlayingContent = $('#playing-content');
-		var searchesLink = $("a#searches_link");
-		var searchesContent = $('#searches-content');
-		var accountLink = $("a#account_link");
-		var accountContent = $('#account-content');
-		var searchType = $('a#type-a');
-		var searchT;
-		//play elements
-		var repeatBtn = $("#repeat-btn");
-		var volumeBtn = $("#volume-btn");
-		var volumeSlider = $("#volumeSlider");
-		var volumeSliderContainer = $("#volumeSliderContainer");
-		//var playSlider = $("#playSlider");
-		var prevBtn = $('#prev-btn');
-		var nextBtn = $('#next-btn');
-		var playPause = $('a.sc-play');
-		var moreBtn = $('#moreBtn');
-		var lessBtn = $('#lessBtn');
-		var playerContainer = $('#player-container');
-		//window
-		var windowBox = $('#window');
-		
-		var window_head = $('#window-head');
-		var window_body = $('#window-body');
-		var window_a = $('#window-a');
-		//dynamic RHS elements
-		var scTrack = $('a.track-load');
-		
-		//logic vars
-		var prevTrack;
-		var nextTrack;
-		var amount = $("#amount");
-		var mySlider = $("#mySlider");
-		var loading;
-		var playPos;
-		var isLoaded = false;
-		var isPlaying = false;
-		var loadedAmt = 0;
-		var trackDuration;
-		var trackY;
-		var skipTo; //skip to seconds
-		var loadedAmt;
-		var loadedSeconds;
-		var currentTrack;
-		var playList = new Array();
-		playList.push("http://api.soundcloud.com/tracks/13964562");
-		var firstPlay = true;
-		var states = new Array();
-		var types = new Array();
-		var selectedType = "";
-		var submenu = $('ul#subMenu');
-		var genreType = $('#genre-type');
-		var artistType = $('#artist-type');
-		var trackType = $('#track-type');
-		var fromSearch = false;
-		var id = 0;
-		//elements to hide
-		errors.hide();
-		volumeSliderContainer.hide();
-		mainError.hide();
-		lessBtn.hide();
-		submenu.hide();
 		var typeState = function (menuItem) {
 			this.menuItem = menuItem;
 			this.menuItem.bind('click', function(e) {
@@ -875,6 +877,9 @@ $(document).ready(function() {
 							loadTracks();
 						} else if (states[i].wrapElement.attr("id") == "playing-content") {
 							loadPlaylist();
+							loadOtherPlaylist();
+						} else if (states[i].wrapElement.attr("id") == "social-content") {
+							loadFriends();
 						}
 					}
 					
@@ -977,12 +982,7 @@ $(document).ready(function() {
 	  			   	    });
 	  					//alert("data");
 	  					$('div#ajaxTracks').hide();
-	  					var col = "threecol";
-	  					$('body').find('ul.favTracks').empty();
-	  					for (var i = 0, l = data6.length; i < l; i++) {
-	  					console.log(data6[i].name);
-	  							$('body').find('ul.favTracks').append('<li class="favTrack '+i+'"><span class="artistSpan"><div style="background: url(\''+data6[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data6[i].name+'">'+data6[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data6[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data6[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data6[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
-	  					}
+	  					
 	  				}
 	  			});
 		}
@@ -1034,18 +1034,93 @@ $(document).ready(function() {
 		  							 $('body').find('ul.playlist').append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="track-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
 									count ++;
 		 	  					}
+		  						$('body').find('ul.playlist').append('<h3 class="search-class"><a href="#" class="save-playlist">Save Playlist</a></h3>');
 	  						}
 	  						
 	  			   	    });
-	  					/*alert("data");
-	  					$('div#ajaxTracks').hide();
-	  					var col = "threecol";
-	  					$('body').find('ul.favTracks').empty();
-	  					for (var i = 0, l = data6.length; i < l; i++) {
-	  					console.log(data6[i].name);
-	  							$('body').find('ul.favTracks').append('<li class="favTrack '+i+'"><span class="artistSpan"><div style="background: url(\''+data6[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data6[i].name+'">'+data6[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data6[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data6[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data6[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
-	  					}*/
 			}	
+	  			
+		}
+		function loadOtherPlaylist() {
+			$('div#ajaxOtherPlaylist').show();
+			
+			//http://www.thediscoveryapp.com/player/bin/functions.php?playList=1&ip=671360506
+			
+			<?php if ($anon != "") { ?>
+			dataString+="&anon=true";
+			dataString+="&ip=<?php echo $usersIP;  ?>";
+			<?php } else { ?>
+			dataString+="&ip="+fb_id;
+			<?php } ?>
+			urlRequest = "bin/functions.php?callback=?"+dataString+"";
+  			$.getJSON(urlRequest, function(data) {
+
+  				if (data == "") { 
+  					$('div#ajaxOtherPlaylist').hide();
+  					$('body').find('ul.other-playlist').empty().append('<li class="playlistLi"><span>Tracks will appear hear when playlists are made</span></li>');
+  				
+  				} else {
+  					$('body').find('ul.other-playlist').empty();
+					for(var i = 0; i < data.length; i++) {
+						//foreach list make a ul or li for the list
+						var dataName = new Object();
+						if(i == 0) {
+							dataName = data[i]['0'];
+						} else {
+							dataName = data[i]['0']['0'];
+						}
+						//console.log(data[i]['0']['0'].list);
+						$('body').find('ul.other-playlist').append("<h3 class='search-class'>Playlist: "+dataName.name+"</h3>");
+						$('body').find('ul.other-playlist').append("<ul class='list-"+dataName.name+"'></ul>");
+						otherPlaylists.push(dataName.list);
+						var string;
+						//console.log(data[1]);
+						for(var ii = 0; ii < dataName.list.length; ii++) {
+							var i = i;
+							//console.log(data[0][i].list[ii]);
+							if (dataName.list[0] == dataName.list[ii]) {
+								string= dataName.list[ii]+",";
+							} else if (dataName.list[ii] == dataName.list.length) {
+								string+= dataName.list[ii];
+							} else {
+								string+= dataName.list[ii]+",";
+							}
+						}
+						console.log(string);
+						//loop the track like you would on the playlist
+						var newString = "&ids="+string;
+	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
+	  					function doJson () {
+	  					$.getJSON(urlRequest, function(data2) {
+
+	  						if (data2 == "") { 
+	  						} else { 
+	  							var count = 0;
+	  							var purchase;
+		  						for ( keyVar in data2) {
+			  						purchase = "";
+		  							   if (data2[keyVar].purchase_url == null) {
+											purchaseClass = "";
+		  							   } else {
+			  							    purchaseClass = "purchase";
+											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data2[keyVar].purchase_url +'">Purchase Track '+ data2[keyVar].title +'</a></li>';
+		  							   }
+		  							   console.log(data2[keyVar]);
+		  							   var number;
+		  							   number = data2[keyVar].uri;
+		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
+		  							 $('body').find('ul.list-'+dataName.name).append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
+									count ++;
+		 	  					}
+	  						}
+	  						
+	  			   	    }); 
+	  					}
+	  					doJson();
+					}
+					$('div#ajaxOtherPlaylist').hide();
+  				}
+  			});
 	  			
 		}
 		function loadTags() {
@@ -1082,6 +1157,27 @@ $(document).ready(function() {
 	  				
 	  				}
 	  			});
+		}
+		function loadFriends() {
+			searchesState.wrapElement.find('div#ajaxSocial').show();
+			dataString="&getFriends="+fb_id;
+			urlString = "bin/functions.php?callback=?"+dataString+"";
+			$.getJSON(urlString, function(data) {
+				if (data == "") { 
+  					console.log("no data");
+  				} else {
+  					console.log("data");
+  					//alert("data");
+  					$('div#ajaxSocial').hide();
+  					
+  					$('body').find('ul.friends').empty();
+  					for (var i = 0, l = data.length; i < l; i++) {
+  					//http://graph.facebook.com/fb_id/picture http://graph.facebook.com/'+data[i]['id']+'/picture
+  							$('body').find('ul.friends').append('<li class="friend '+i+'"><span class="artistSpan"><img src="http://graph.facebook.com/'+data[i]['id']+'/picture" alt="'+data[i]['name']+'\'s profile picture"></div></span><a class="friends-profile" href="'+data[i]['id']+'">'+data[i]['name']+'</a><ul class="artist-options"><li class="friends-profile '+i+'"><a class="friends-profile" href="'+data[i]['id']+'">'+data[i]['name']+'\'s profile</a></li></ul></li><ul class="profile" id="profile-'+data[i]['id']+'"><li class="empty"><ul class="likes-'+data[i]['id']+'"></ul></li><li class="empty"><ul class="favTracks tracks-'+data[i]['id']+'"></ul></li><li class="empty"><ul class="genres-'+data[i]['id']+'"></ul></li></ul>');
+  						}
+  				
+  				}
+			});
 		}
 		//gets soundcloud results for this artist
 		$('a.artist-search').live('click', function(e) {
@@ -1128,7 +1224,184 @@ $(document).ready(function() {
 			jsonRequest(searchT, search, from);
 			return false;
 		});
-		
+		//profile-+id
+		$('a.friends-profile').live('click', function(e) {
+			e.preventDefault();
+			
+			var id = $(this).attr('href');
+			var name = $(this).html();
+			$('ul.profile-'+id).append('<div class="ajaxLoading" id="ajax'+id+'"><h3 style="text-align:center;" class="search-class2">Loading Friends</h3><div class="wheel"><img alt="loading" src="css/images/loading.gif" style="width:64px; margin:0 auto;"></div></div>');
+
+			function loadAll(id, name) {
+				var name = name;
+				dataString = "";
+				dataString = "&getLikes=true&artist=true";
+				<?php if ($anon != "") { ?>
+				dataString+="&anon=true";
+				dataString+="&ip=<?php echo $usersIP;  ?>";
+				<?php } else { ?>
+				dataString+="&ip="+id;
+				<?php } ?>
+		  		 	urlString = "bin/process.php?callback=?"+dataString+"";
+		  			//only perform when variables have been collected
+		  			//console.log(urlString);
+		  			$.getJSON(urlString,{}, function(data4) {
+		  			
+		  				if (data4 == "") { 
+		  					//alert("no data");
+		  				} else {
+			  				
+		  					$('body').find('ul.likes-'+id).empty();
+		  					$('body').find('ul.likes-'+id).append("<h3 class='search-class'>"+name+": Favourite Artists</h3>");
+		  				for (var i = 0, l = data4.length; i < l; i++) {
+		  					
+			  				
+			  						
+		  							$('body').find('ul.likes-'+id).append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
+		  					}
+		  				
+		  				}
+		  			});
+				dataString = "";
+				dataString = "&getArtists=true&artist=true";
+				<?php if ($anon != "") { ?>
+				dataString+="&anon=true";
+				dataString+="&ip=<?php echo $usersIP;  ?>";
+				<?php } else { ?>
+				dataString+="&ip="+id;
+				<?php } ?>
+		  		 	urlString2 = "bin/process.php?callback=?"+dataString+"";
+		  			//only perform when variables have been collected
+		  			console.log(urlString2);
+		  			$.getJSON(urlString2,{}, function(data6) {
+			  		
+		  				if (data6 == "") { 
+		  					//alert("no data");
+		  				} else {
+		  					//ids
+		  					console.log(data6);
+		  					var newString = "&ids="+data6;
+		  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
+		  					console.log(urlRequest);
+		  					$.getJSON(urlRequest, function(data) {
+
+		  						if (data == "") { 
+		  							$('body').find('ul.tracks-'+id).empty().append('<li>Query Empty</li>');	
+		  						} else { 
+		  							var count = 0;
+		  							var purchase;
+		  							$('body').find('ul.tracks-'+id).empty();
+		  							$('body').find('ul.tracks-'+id).append("<h3 class='search-class'>"+name+" Favourite Tracks</h3>");
+		  			  				
+		  						for ( keyVar in data) {
+			  						purchase = "";
+		  							   if (data[keyVar].purchase_url == null) {
+											purchaseClass = "";
+		  							   } else {
+			  							   purchaseClass = "purchase";
+											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
+		  							   }
+		  							   console.log(data[keyVar]);
+		  							 $('body').find('ul.tracks-'+id).append('<li class="favTrackLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="queueTrack '+count+'"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="unfavTrack last '+count+'"><a class="unfavTrack" href="'+data[keyVar].id+'">Unfavourite this Track '+count+'</a></li></ul></li>');
+									count ++;
+		 	  					}
+		  						}
+		  						
+		  			   	    });
+		  					
+		  				}
+		  			});
+				dataString = "&getGenres=true";
+				<?php if ($anon != "") { ?>
+				dataString+="&anon=true";
+				dataString+="&ip=<?php echo $usersIP;  ?>";
+				<?php } else { ?>
+				dataString+="&ip="+id;
+				<?php } ?>
+		  		 	urlString = "bin/lastfm.php?callback=?"+dataString+"";
+		  		 	
+		  			//only perform when variables have been collected
+		  			//console.log(urlString);
+		  			$.getJSON(urlString,{}, function(data4) {
+		  			
+		  				if (data4 == "") { 
+		  					//alert("no data");
+		  				} else {
+			  				
+		  					$('body').find('ul.genres-'+id).empty();
+		  					$('body').find('ul.genres-'+id).append("<h3 class='search-class'>"+name+": Genres</h3>");
+  			  				
+		  				for (var i = 0, l = data4.length; i < l; i++) {
+		  					var id = data4[i];
+			  				id = id.replace(" ", "_");
+			  				id = id.replace(" ", "_");
+			  				id = id.replace(" ", "_");
+			  				id = id.replace(" ", "_");
+		  							$('body').find('ul.genres-'+id).append('<li class="favGenre '+i+'"><span>'+data4[i]+'</span><ul class="artist-options"><li class="genreSearch '+i+'"><a class="genre-search" href="'+data4[i]+'">songs in genre</a></li><li class="genreSimilar '+i+'"><a class="similar-genre" href="'+data4[i]+'">similar genres</a></li><li class="subFav last '+i+'"><a class="favourite-remove-genre" href="'+data4[i]+'">Unfavourite '+i+'</a></li></ul></li><ul class="related-genres" id="'+id+'"></ul>');
+		  						}
+		  				
+		  				}
+		  			});
+			}
+			loadAll(id, name);
+			$(this).closest("ul.artist-options").empty().append("<li class='up-button'><a href='"+id+"' class='up-button'>close "+name+"'s profile</a></li>");
+
+			//end
+			return false;
+		});
+		// list
+		$('a.save-playlist').live('click', function(e) {
+			e.preventDefault();
+			window_head.find("h1").html("Save Playlist");
+			window_body.find("p.window-p").empty().html("<form action='#' method='post'><input class='textbox' type='text' placeholder='Playlist Name' name='playlistname' id='playlist-name'/></form>");
+			window_body.find("p.window-p").append("<a class='playlist-save' href='#'>save</a>");
+			window_a.hide();
+			window_a.addClass("playlist-save");
+			window_a.addClass("playlist-save");
+			windowBox.fadeIn();
+			
+			
+			return false;
+		});
+		$('a.playlist-save').live('click', function(e) {
+			e.preventDefault();
+			windowBox.fadeOut();
+			window_a.show();
+			var myPlaylist = new Object();
+			myPlaylist = playList;
+			var name = $('input#playlist-name').val();
+			<?php if ($anon != "") { ?>
+			$.post('bin/functions.php', {'playlist[]': myPlaylist, "name" : name, "anon" : true, 'ip': "<?php echo $usersIP;  ?>" }, function(data){
+	  	  		   // do something with received data!
+	  	  		   console.log(data);
+				window_head.find("h1").html("PlayList Saved");
+				window_body.find("p.window-p").empty().html("Playlist was saved to your playlists");
+				windowBox.fadeIn();
+	  	  		});
+			<?php } else { ?>
+			$.post('bin/functions.php', {'playlist[]': playList, "name" : name, 'ip': fb_id }, function(data){
+	  	  		   // do something with received data!
+	  	  		   console.log(data);
+				window_head.find("h1").html("PlayList Saved");
+				window_body.find("p.window-p").empty().html("Playlist was saved to your playlists");
+				windowBox.fadeIn();
+	  	  		});
+			<?php } ?>
+			
+			return false;
+		});
+		$('a.up-button').live('click', function(e) {
+			e.preventDefault();
+			var id = $(this).attr('href');
+			var name = $(this).html();
+			name = name.replace("'s profile", "");
+			$('body').find("ul#likes-"+id).empty();
+			$('body').find("ul#tracks-"+id).empty();
+			$('body').find("ul#genres-"+id).empty();
+			$(this).closest("ul.artist-options").empty().append('<li class="friends-profile"><a class="friends-profile" href="'+id+'">'+name+'\'s profile</a></li>');
+			
+			return false;
+		});
 		function jsonRequest(requestString, additionalParams, from) {
 			
 			$('ul.recom').hide();
@@ -1209,11 +1482,14 @@ $(document).ready(function() {
 
 		$('a.track-load').live('click',function(event){
 			  event.preventDefault();
-			  
-			  if (this.href != playList[playList.length]) {
-				  playList.push(this.href);
+			  if(otherPlaylists == null || otherPlaylists == "") {
+				if (this.href != playList[playList.length]) {
+					playList.push(this.href);
+				}
+			  	thePlayList = playList;
+			  } else {
+				thePlayList = otherPlaylists[selectedPlaylist];
 			  }
-			  thePlayList = playList;
 			  if (playerReady == false) {
 				  fromSearch = true;
 				  playPause.trigger('click');
@@ -1223,8 +1499,27 @@ $(document).ready(function() {
 				  thePlayer.api_load(this.href);
 			  }
 		});
-		
-		
+		//playList-load
+		$('a.playList-load').live('click',function(event){
+			event.preventDefault();
+			var id = $(this).attr('class');
+			id = id.replace("playList-load ", "");
+			var track = $(this).attr('href');
+			//otherPlaylists[id];
+			selectedPlaylist = id;
+			//change theplaylist to relevant other playlist
+			thePlayList = otherPlaylists[selectedPlaylist];
+			
+			  if (playerReady == false) {
+				  fromSearch = true;
+				  playPause.trigger('click');
+				  firstPlay = false;
+			  } else {
+				  currentPlaying ++;
+				  thePlayer.api_load(track);
+			  }
+			  return false;
+		});
 		volumeBtn.click(function (e) {
 			e.preventDefault();
 		    volumeSliderContainer.toggle('fast', function() {
@@ -1483,7 +1778,7 @@ $(document).ready(function() {
 					<li class=""><span><a class="single" id="home_link" href="#main-content">home</a></span></li>
 					<li class=""><span><a class="single" id="profile_link" href="#profile-content">profile</a></span></li>
 					<li class=""><span><a id="playing_link" href="#playing-content">now playing</a></span></li>
-					<li class=""><span><a class="single" id="searches_link" href="#searches-content">searches</a></span></li>
+					<li class=""><span><a class="single" id="social_link" href="#social-content">social</a></span></li>
 					<li class=""><span><a class="single" id="account_link" href="#account-content">account</a></span></li>
 					<li class="last"><span><a class="single" id="logout_link" href="logout.php?<?php if ($anon != "") { echo "anon=1"; }?>">Logout</a></span></li>
 			</ul>
@@ -1557,13 +1852,17 @@ $(document).ready(function() {
 	</div>
 	</div>
 	</section>
-	<section id="searches-content" class="twelvecol last menu-inner">
+	<section id="social-content" class="twelvecol last menu-inner">
 	<div class="the-content">
 	<div class="content-header">
-	<h1 class="header">Searches</h1>
+	<h1 class="header">Social</h1>
 	
 	</div>
 	<div class="wrap">
+	<h3 class="search-class">Friends on Discovery</h3>
+	<div id="ajaxSocial" class="ajaxLoading"><h3 class="search-class2" style="text-align:center;">Loading Friends</h3><div class="wheel"><img style="width:64px; margin:0 auto;" src="css/images/loading.gif" alt="loading" /></div></div>
+	<ul class="friends">
+	</ul>
 	</div>
 	</div>
 	</section>
