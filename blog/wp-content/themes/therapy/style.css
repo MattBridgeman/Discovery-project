@@ -1,9 +1,6 @@
 /*  
 Matt Bridgeman: The Discovery App Blog
 */
-
-@import url("../../../../css/webfontkit/stylesheet.css");
-
 img {
 	border:0 none;
 }
@@ -11,18 +8,17 @@ img {
 a {
 	outline: none;
 	text-decoration:none;
-	color:black;
+	color: #444;
 }
 a:hover {
 	text-decoration:underline;
 }
 body  {
-	background-image:url('../../../../css/images/bg-body.gif');
+	background-image:url("../../../../player/css/images/bg-pattern.png");
 	background-repeat:repeat;
 	font-size: 18px;
-    font-family: 'DroidSerifRegular', serif;
+    font-family: helvetica,arial, sans-serif;
 	font-size-adjust: 0.55;
-	font-weight: lighter;
 	font-style: normal;
 	line-height:normal;
 	color: #444;
@@ -31,62 +27,120 @@ body  {
 	margin:0;
 	text-shadow:#fff 1px 1px 1px;
 }
-
 .container {
-	width:850px;
+	width:1000px;
 	margin: 0 auto;
 }
 #mainHead {
 	display:block;
-	width:380px;
-	float:left;
-	margin-top: 75px;
+	background: white;
+	height: 105px;
+	margin: 0;
+	padding: 0;
+}
+#macs {
+	display: block;
+    font-size: 3.5em;
+    font-weight: bold;
+    height: 109px;
+    padding: 36px 0;
+    position: absolute;
+    text-shadow: none;
+    width: 551px;
 }
 #mainHead h1 {
-	background-image: url('../../../../css/images/discovery-main.png');
-	background-position: top left;
-	background-repeat:none;
-	display:block;
-	width:330px;
-	height:460px;
-	text-indent: -9999px;
-	margin-bottom: 0;
+	background-image: url('../../../../css/images/logo.jpg');
+background-position: top left;
+background-repeat: none;
+width: 367px;
+height: 105px;
+text-indent: -9999px;
+margin: 0;
+float: left;
 }
 #mainHead h1 a {
 	display:block;
-	height:100%;
+	height: 105px;
+}
+
+ul#mainMenu {
+	list-style: none;
+	float: left;
+	margin-top: 33px;
+	margin-left: 305px;
+}
+ul#mainMenu li {
+	text-indent:-9999px;
+	float:left;
+	margin-left:30px;
+}
+ul#mainMenu li a {
+	display:block;
+}
+ul#mainMenu li.liHome {
+	background:url('../../../../css/images/home.jpg') no-repeat top left scroll transparent;
+	height:28px;
+	width: 56px;
+}
+ul#mainMenu li.liBlog {
+	background:url('../../../../css/images/blog.jpg') no-repeat top left scroll transparent;
+	height:28px;
+	width: 48px;
+}
+ul#mainMenu li.liGit {
+	background:url('../../../../css/images/github.jpg') no-repeat top left scroll transparent;
+	height:28px;
+	width: 74px;
 }
 #mainSection {
-	float: left;
 	display: block;
-	width: 470px;
-	margin-top: 62px;
-	border-bottom: 2px dotted #72655E;
-	padding-bottom: 20px;
+	height: 355px;
+	background: url('../../../../css/images/bg.jpg') no-repeat top center scroll #FFAD00;
 }
 #mainSection h1 {
-	border-bottom: 2px dotted #72655E;
-	margin-bottom: 20px;
+	left: -9999px;
+    position: absolute;
+    text-indent: -9999px;
+    top: 0;
+}
+#macs h1 {
+	text-indent:0;
+	display:inline;
+	position: initial;
+	font-size: 1.5em;
+}
+#mainText {
+	text-indent: -9999px;
+	background: url('../../../../css/images/blog-description.png') no-repeat center right scroll transparent;
+	float: left;
+	width: 800px;
+	height: 355px;
 }
 a#facebookBtn {
+	background-image:url('../../../../css/images/facebook-btn.png');
+}
+a#anonBtn {
+	background-image:url('../../../../css/images/anon.png');
+	margin-top: 20px!important;
+}
+a#facebookBtn, a#anonBtn {
 	display:block;
 	width:251px;
 	height:48px;
-	background-image:url('../../../../css/images/facebook-btn.png');
 	background-repeat:none;
 	background-position:top left;
 	margin:0 auto;
 	text-indent:-9999px;
 }
 #mainAside {
-	
+	float: left;
+    margin-left: 400px;
+    min-height: 300px;
+    width: 600px;
 }
-
-h1, h2, h3, h4, h5, h6  {
-	
-}
-.blog-article {
-	border-top: 2px dotted #72655E;
+#mainAside h2 {
+	font-weight: bold;
+	font-size: 2em;
 }
 
 /* http://sonspring.com/journal/clearing-floats */

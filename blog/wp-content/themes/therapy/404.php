@@ -1,4 +1,10 @@
 <?php get_header(); ?>
+<section id="mainSection" style="height: 212px;">
+<div class="container">
+<div id="macs"><h1>Page not found</h1></div>
+</div>
+</section>
+<div class="container">
 <section id="mainSection">
 <?php if ( function_exists('yoast_breadcrumb') && (!(is_front_page()))) {
 			yoast_breadcrumb('<p id="breadcrumbs">','</p>');
@@ -8,8 +14,5 @@
 <?php _e('Sorry, no posts matched you criteria. Please try again.',woothemes); ?>
 </article>
 </section>
-<aside id="mainAside">
-
-</aside>
 </div>    	
 <?php get_footer(); ?>

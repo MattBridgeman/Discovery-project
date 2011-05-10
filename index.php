@@ -23,7 +23,7 @@ $pageURL = curPageURL();
 $array;
 if (count($array = explode("www", $pageURL)) > 1) {
 } else {
-	header("Location: http://www.".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]);
+	//header("Location: http://www.".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]);
 }
 function getMessage () {
 	if ($_GET['message'] == "thankyou") {
@@ -56,7 +56,7 @@ $facebook = new Facebook(array(
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Discovery App v2.9 | Music Discovery</title>
+<title>The Discovery App v3.0 | Music Discovery</title>
 <meta name="keywords" content="music, discovery, app, soundcloud api, matt bridgeman">
 <meta name="description" content="The Discovery Application is a music discovery service based on the soundcloud API">
 <meta name="author" content="Matthew Bridgeman">
@@ -118,22 +118,31 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<div class="container">
-<header id="mainHead">
-	<h1>The Discovery Application</h1>
-	<aside><p><a href="http://www.thediscoveryapp.com">Home</a> &#47; <a href="http://www.thediscoveryapp.com/blog">Dev Blog</a></p></aside>
-</header>
-<section id="mainSection">
-<h1>Welcome to<br/>the Discovery App v2.9</h1>
-<p>The Discovery App is a music streaming service designed to provide innovative ways to interact with new and unheard music.</p>
-<p>This is Beta release version 2.9</p>
-<p>It was released early to show you just what's instore and to get valuable feedback.</p>
-<p>Login via Facebook below and have a go!</p>
-<a href="#" id="facebookBtn" title="link-to-authorize-discovery">Login via Facebook</a>
-<a href="/player?anon=1" id="anonBtn" title="link-to-authorize-discovery">Login anonymously</a>
-</section>
-<aside id="mainAside">
 
+<header id="mainHead">
+<div class="container">
+	<h1><a href="http://www.thediscoveryapp.com">The Discovery Application</a></h1>
+	<nav><ul id="mainMenu"><li class="liHome"><a href="http://www.thediscoveryapp.com">Home</a></li><li class="liBlog"><a href="http://www.thediscoveryapp.com/blog">Dev Blog</a></li><li class="liGit"><a href="https://github.com/MattBridgeman/Discovery-project">Git Hub</a></li></ul></nav>
+</div>
+</header>
+
+<section id="mainSection">
+<div class="container">
+<div id="macs">Mac screens</div>
+<div id="mainText">
+	<h1>Welcome to<br/>the Discovery App v2.9</h1>
+	<p>The Discovery App is a music streaming service designed to provide innovative ways to interact with new and unheard music.</p>
+	<p>This is Beta release version 3.0</p>
+	<p>It was released early to show you just what's instore and to get valuable feedback.</p>
+	<p>Login via Facebook below and have a go!</p>
+	</div>
+</div>
+</section>
+<div class="container">
+<aside id="mainAside">
+<h2>Login Below</h2>
+<a href="#" id="facebookBtn" title="link-to-authorize-discovery">Login via Facebook</a>
+	<a href="/player?anon=1" id="anonBtn" title="link-to-authorize-discovery">Login anonymously</a>
 </aside>
 </div>
 <div id="fb-root"></div>

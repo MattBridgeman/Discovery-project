@@ -1,5 +1,11 @@
 <?php get_header(); ?>
-<section id="mainSection">
+<section id="mainSection" style="height: 212px;">
+<div class="container">
+<div id="macs"><h1>Post</h1></div>
+</div>
+</section>
+<div class="container">
+<section id="mainAside">
 <?php if ( function_exists('yoast_breadcrumb') && (!(is_front_page()))) {
 			yoast_breadcrumb('<p id="breadcrumbs">','</p>');
 	} ?>
@@ -26,8 +32,5 @@
 <?php } ?>
 
 </section>
-<aside id="mainAside">
-
-</aside>
 </div>    	
 <?php get_footer(); ?>

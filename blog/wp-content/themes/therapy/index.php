@@ -1,5 +1,18 @@
 <?php get_header(); ?>
 <section id="mainSection">
+<div class="container">
+<div id="macs"><h1>Blog</h1></div>
+<div id="mainText">
+	<h1>Welcome to<br/>the Discovery App v2.9</h1>
+	<p>The Discovery App is a music streaming service designed to provide innovative ways to interact with new and unheard music.</p>
+	<p>This is Beta release version 3.0</p>
+	<p>It was released early to show you just what's instore and to get valuable feedback.</p>
+	<p>Login via Facebook below and have a go!</p>
+	</div>
+</div>
+</section>
+<div class="container">
+<section id="mainAside">
 <?php if ( function_exists('yoast_breadcrumb') && (!(is_front_page()))) {
 			yoast_breadcrumb('<p id="breadcrumbs">','</p>');
 	} ?>
@@ -27,10 +40,6 @@
 	<div class="next"><?php next_posts_link(__(' Older Entries &raquo;',woothemes)) ?></div>
 	<div class="clear"></div>
 <?php } ?>
-
 </section>
-<aside id="mainAside">
-
-</aside>
-</div>    	
+</div>
 <?php get_footer(); ?>

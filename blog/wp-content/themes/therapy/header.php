@@ -42,9 +42,9 @@
 	</script>
 </head>
 <body>
-<div class="container">
 <header id="mainHead">
-	<h1><a href="<?php bloginfo('url'); ?>">The Discovery Application Blog</a></h1>
-	<aside><p><a href="http://www.thediscoveryapp.com">Home</a> &#47; <a href="<?php bloginfo('url'); ?>">Dev Blog</a></p></aside>
-	<div class="clear"></div>
+<div class="container">
+	<h1><a href="http://www.thediscoveryapp.com">The Discovery Application</a></h1>
+	<nav><ul id="mainMenu"><li class="liHome"><a href="http://www.thediscoveryapp.com">Home</a></li><li class="liBlog"><a href="<?php bloginfo('url'); ?>">Dev Blog</a></li><li class="liGit"><a href="https://github.com/MattBridgeman/Discovery-project">Git Hub</a></li></ul></nav>
+</div>
 </header>

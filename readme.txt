@@ -54,5 +54,7 @@ anonymous login bug fixes
 - feature added: anonymous playlist save
 - feature added: anonymous track favourites save
 - feature added: notification window fixes
-
+3.0 10th May
+homepage update
+blog updated
 
