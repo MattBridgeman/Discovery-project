@@ -13,7 +13,11 @@ function curPageURL() {
  }
  return $pageURL;
 }
-
+function SetCookieLive($name, $value='', $expire = 0, $path = '', $domain='', $secure=false, $httponly=false) 
+	    { 
+	        $_COOKIE[$name] = $value; 
+	        return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly); 
+	    }
 require_once '../facebook-php-sdk/src/facebook.php';
 
 $app_id = 154550127940245;
@@ -30,6 +34,45 @@ $facebook = new Facebook(array(
 ));
 if(isset($_GET['anon'])) {
 	$anon = $_GET['anon'];
+$today = date("d.m.y");
+$cookie = $_COOKIE["discovery-ip"];
+if ($cookie != null || $cookie != "") {
+		//they have logged in before
+		/*echo $cookie;
+		$sql = "SELECT * FROM users WHERE ip='$cookie'";
+		$send = $database->query($sql);
+		while($row = mysql_fetch_array($send)) {
+			$ip = $row['ip'];
+		}*/
+		$ip = $cookie;
+		$highest = 0;
+	} else {
+		$sql = "SELECT * FROM users";
+		$number = array();
+		$send = $database->query($sql);
+		while($row = mysql_fetch_array($send)) {
+			if ($row['ip'] != "") {
+				array_push($number, $row['ip']);
+			}
+		}
+		for ($i = 0; $i < count($number); $i++) {
+			if ($i == 0) {
+				
+			} else if ($i == 1) {
+				$highest = $number[1];
+			} else {
+				//if this number is bigger than the number before make it $highest
+				if ($number[$i] > $number[$i-1]) {
+					$highest = $number[$i];
+					echo $highest;
+				}
+			}
+		}
+		$value = $highest+1;
+		setcookie("discovery-ip", $value, time()+60*60*24*365, "", ".thediscoveryapp.com");
+	    $ip = $value;
+	}
+	
 } else {
 	if(empty($code)) {
 		$dialog_url = "http://www.facebook.com/dialog/oauth?client_id=" 
@@ -188,7 +231,9 @@ $(document).ready(function() {
 	var playList = new Array();
 	var otherPlaylists = new Array();
 	var selectedPlaylist;
+	var fromPlayLoad = false;
 	playList.push("http://api.soundcloud.com/tracks/13964562");
+	var theNewPlayer = new Object();
 	var firstPlay = true;
 	var states = new Array();
 	var types = new Array();
@@ -251,11 +296,11 @@ $(document).ready(function() {
   				
 				//only perform when variables have been collected
 				urlString = "bin/process.php?callback=?"+dataString+"";
-				console.log(urlString);
+				////console.log(urlString);
 		  			//only perform when variables have been collected
 		  			//console.log(urlString);
 		  			$.getJSON(urlString,{}, function(msg) {
-		  				console.log(msg);
+		  				//console.log(msg);
 		  			});
   			  
   	  		});
@@ -273,7 +318,7 @@ $(document).ready(function() {
   			});
 			FB.api('/me/friends', function(response) {
   	  			//take entire response and place it in process.php
-  	  			console.log(response);
+  	  			//console.log(response);
   	  		$.post('bin/functions.php', {'response[]': response, 'theFB': fb_id }, function(data){
   	  		   // do something with received data!
   	  		});
@@ -295,6 +340,11 @@ $(document).ready(function() {
 		  			
 		  				if (data2 == "") { 
 		  					//alert("no data");
+		  					if (isEmpty(data2)) {
+	  						$('body').find('ul.recom').empty();
+	  						$('body').find('ul.recom').append('<li class="favArtLi"><span class="emptyspan">Query Empty</span></li>');
+	  						$('div.ajaxLoading').hide();
+							}
 		  				} else {
 		  					//alert("data");
 		  					$('div.ajaxLoading').hide();
@@ -332,25 +382,29 @@ $(document).ready(function() {
   	    document.getElementById('fb-root').appendChild(e);
   	  }());
 	 <?php } else {
-	 	$usersIP = strval($_SERVER["REMOTE_ADDR"]);
+	 	$usersIP = $ip;
 	 ?>
-	 	dataString = "&ip=<?php echo $usersIP;  ?>"+"";
+	 	dataString = "&ip=<?php echo $usersIP;  ?>"+"&anon=1";
 	 	
 	 	urlString = "bin/process.php?callback=?"+dataString+"";
 		//only perform when variables have been collected
-		console.log(urlString);
+		//console.log(urlString);
 		$.getJSON(urlString,{}, function(data) {
 		
 			if (data == "") { 
 				//alert("no data");
 			} else {
 				//alert("data");
-				console.log(data);
+				//console.log(data);
 				info = data;
 				loop_info(info);
 			}
 		});
 	 <?php } ?>
+	 function isEmpty(ob){
+		   for(var i in ob){ return false;}
+		  return true;
+		}
 	//last.fm recommendations
 		$('a.similar-search').live('click', function(e) {
 			e.preventDefault();
@@ -360,7 +414,7 @@ $(document).ready(function() {
 			$('body').find('ul.others').fadeOut();
 			$('body').find('div.ajaxLoading').show();
 			search = $(this).attr('href');
-			console.log(search);
+			//console.log(search);
 			dataString+=search;
 	  		 	urlString = "bin/process.php?callback=?"+dataString+"";
 	  			//only perform when variables have been collected
@@ -440,12 +494,12 @@ $(document).ready(function() {
 			<?php } else { ?>
 			dataString+="&ip="+fb_id;
 			<?php } ?>
-			console.log(dataString);
+			//console.log(dataString);
 	  		urlString = "bin/process.php?callback=?"+dataString+"";
 	  			$.getJSON(urlString,{}, function(data) {
 	  				if (data == "") {
 	  				} else {
-		  				console.log(data);
+		  				//console.log(data);
 	  					if (data.error == "unforeseen error") {
 	  						window_head.find("h1").html("Error");
 	  						window_body.find("p.window-p").empty().html("There was an issue adding your favourite");
@@ -469,7 +523,7 @@ $(document).ready(function() {
 			name = $(this).attr('href');
 			var id = $(this).html();
 			id = id.replace("Unfavourite ", "");
-			console.log("id: "+id);
+			//console.log("id: "+id);
 			
 			dataString = "&unfavourite=";
 			dataString+=name;
@@ -485,7 +539,7 @@ $(document).ready(function() {
 	  			$.getJSON(urlString,{}, function(data) {
 	  				if (data == "") {
 	  				} else {
-		  				console.log(data);
+		  				//console.log(data);
 	  					if (data.error == "unforeseen error") {
 	  						window_head.find("h1").html("Error");
 	  						window_body.find("p.window-p").empty().html("There was an issue removing your favourite");
@@ -528,7 +582,7 @@ $(document).ready(function() {
 	  			$.getJSON(urlString,{}, function(data6) {
 	  				if (data6 == "") {
 	  				} else {
-		  				console.log(data6);
+		  				//console.log(data6);
 	  					if (data6.error == "unforeseen error") {
 	  						window_head.find("h1").html("Genre Error");
 	  						window_body.find("p.window-p").empty().html("There was an issue removing your favourite genre");
@@ -575,7 +629,7 @@ $(document).ready(function() {
 			dataString+="&track="+name;
 			dataString+="&artist=true";
 	  		urlString = "bin/process.php?callback=?"+dataString+"";
-	  		console.log(urlString);
+	  		//console.log(urlString);
 	  			$.getJSON(urlString,{}, function(data7) {
 	  				if (data7 == "") {
 	  				} else {
@@ -584,7 +638,7 @@ $(document).ready(function() {
 	  						window_body.find("p.window-p").empty().html("This track has already been added to favourites");
 	  						windowBox.fadeIn();
 	  					} else {
-		  					console.log(data7);
+		  					//console.log(data7);
 	  						window_head.find("h1").html("Favourite added");
 	  						window_body.find("p.window-p").empty().html("Track was added to your favourites");
 	  						windowBox.fadeIn();
@@ -609,7 +663,7 @@ $(document).ready(function() {
 			dataString+="&unfavtrack="+name;
 			dataString+="&artist=true";
 	  		urlString = "bin/process.php?callback=?"+dataString+"";
-	  		console.log(urlString);
+	  		//console.log(urlString);
 	  			$.getJSON(urlString,{}, function(data8) {
 	  				if (data8 == "") {
 	  				} else {
@@ -639,21 +693,34 @@ $(document).ready(function() {
 			 var name = $(this).attr('href');
 			var id = $(this).html();
 			id = id.replace("Delete this Track ", "");
-			for (var i in playList) {
-				playList[i] = playList[i].replace("http://api.soundcloud.com/tracks/", "");
-				playList[i] = playList[i]+'';
-				name = name+'';
-				if (playList[i] == name) {
-					playList.splice(i, 1);
+			var listname;
+			listname = $(this).closest('ul.list').attr('id');
+			if (listname != null) {
+				listname = listname.replace("list-", "");
+				for (var i in otherPlaylists[listname]) {
+					otherPlaylists[listname][i] = otherPlaylists[listname][i].replace("http://api.soundcloud.com/tracks/", "");
+					otherPlaylists[listname][i] = otherPlaylists[listname][i]+'';
+					name = name+'';
+					if (otherPlaylists[listname][i] == name) {
+						otherPlaylists[listname].splice(i, 1);
+					}
+				}
+			} else {
+				for (var i in playList) {
+					playList[i] = playList[i].replace("http://api.soundcloud.com/tracks/", "");
+					playList[i] = playList[i]+'';
+					name = name+'';
+					if (playList[i] == name) {
+						playList.splice(i, 1);
+						//console.log("spliced "+i);
+					}
 				}
 			}
 			
-  						$('body').find('ul.playlist').children('li').each(function (i) {
-							if($(this).hasClass(id)) {
-								$(this).fadeOut();
-								$(this).remove();
-							}
-  						}); 
+			
+  						$(this).closest('li.playlistLi').fadeOut().remove();
+  						
+  						
   						window_head.find("h1").html("Track removed from playlist");
   						window_body.find("p.window-p").empty().html("Track was removed from playlist");
   						windowBox.fadeIn();
@@ -728,7 +795,7 @@ $(document).ready(function() {
 					lastField.inputBox.val(last_n);
 				}
 				if (nick_n != null && nick_n != "") {
-					console.log(true);
+					//console.log(true);
 					nameField.inputBox.val(nick_n);
 				}
 				if (email_n != null && email_n != "") {
@@ -736,7 +803,7 @@ $(document).ready(function() {
 				}
 			}
 	 }
-	 console.log("<?php echo $code; ?>");
+	 //console.log("<?php echo $code; ?>");
 	 account_submit.click(function(e) {
 			e.preventDefault();
 			account_info();
@@ -766,7 +833,7 @@ $(document).ready(function() {
 			dataString = "";
 			dataString = "&nickname=" + nameField.inputBox.val() + "&email=" + emailField.inputBox.val() + "&first_name=" + firstField.inputBox.val() + "&last_name=" + lastField.inputBox.val() + "<?php echo "&login="; if ($anon != ""){ echo $usersIP; echo "&anon=1"; echo "\""; } else { echo "\""; ?>+fb_id<?php }?>;
 			urlString = "bin/process.php?callback=?"+dataString;
-			console.log(urlString);
+			//console.log(urlString);
 			//only perform when variables have been collected
 			$.getJSON(urlString,{}, function(data) {
 			
@@ -774,25 +841,15 @@ $(document).ready(function() {
 					//alert("no data");
 				} else {
 					//alert("data");
-					console.log(data);
+					//console.log(data);
 				}
 			});
 		}
 	 }
 	 function ajax_query(dataString) {
 		 var ret;
-		 /* $.ajax({
-			      type: "POST",
-			      url: "bin/process.php",
-			      data: "?callback=?&"+dataString,
-			      success: function(msg) {
-			    	 ret=msg;
-			    	 console.log(msg);
-		          }
-		     }); */
-
 		     urlString = "bin/process.php?callback=?"+dataString;
-		     console.log(urlString);
+		     //console.log(urlString);
 				//only perform when variables have been collected
 				$.getJSON(urlString,{}, function(data) {
 				
@@ -800,7 +857,7 @@ $(document).ready(function() {
 						//alert("no data");
 					} else {
 						//alert("data");
-						console.log(data);
+						//console.log(data);
 					}
 				});
 	     return ret;
@@ -917,17 +974,19 @@ $(document).ready(function() {
 	  			
 	  				if (data4 == "") { 
 	  					//alert("no data");
+	  					if (isEmpty(data4)) {
+	  						$('body').find('ul.favArtists').empty();
+	  						$('body').find('ul.favArtists').append('<li class="favArtLi"><span class="emptyspan">Discovered Artists will appear here</span></li>');
+								$('#ajaxArtists').hide();
+							}
 	  				} else {
 		  				
 	  					//alert("data");
 	  					$('div#ajaxArtists').hide();
 	  					var col = "threecol";
 	  					$('body').find('ul.favArtists').empty();
-	  				for (var i = 0, l = data4.length; i < l; i++) {
-	  					
-		  				
-		  						
-	  							$('body').find('ul.favArtists').append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
+	  					for (var i = 0, l = data4.length; i < l; i++) {
+	  						$('body').find('ul.favArtists').append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
 	  					}
 	  				
 	  				}
@@ -945,22 +1004,29 @@ $(document).ready(function() {
 			<?php } ?>
 	  		 	urlString2 = "bin/process.php?callback=?"+dataString+"";
 	  			//only perform when variables have been collected
-	  			console.log(urlString2);
+	  			//console.log(urlString2);
 	  			$.getJSON(urlString2,{}, function(data6) {
 		  		
 	  				if (data6 == "") { 
 	  					//alert("no data");
+	  					if (isEmpty(data6)) {
+	  						$('body').find('ul.favTracks').empty();
+	  						$('body').find('ul.favTracks').append('<li class="favTrackLi"><span class="emptyspan">Discovered Tracks will appear here</span></li>');
+								$('#ajaxTracks').hide();
+							}
 	  				} else {
 	  					//ids
-	  					console.log(data6);
+	  					//console.log(data6);
 	  					var newString = "&ids="+data6;
 	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
-	  					console.log(urlRequest);
+	  					//console.log(urlRequest);
 	  					$.getJSON(urlRequest, function(data) {
 
 	  						if (data == "") { 
-	  							$('div#ajaxTracks').hide();
-	  							$('body').find('ul.favTracks').empty().append('<li>Query Empty</li>');	
+	  							if (isEmpty(data4)) {
+	  		  						$('body').find('ul.favTracks').append('<li clas="favTrackLi"><span class="emptyspan">Discovered Tracks will appear here</span></li>');
+	  									$('#ajaxTracks').hide();
+	  								}
 	  						} else { 
 	  							var count = 0;
 	  							var purchase;
@@ -973,7 +1039,7 @@ $(document).ready(function() {
 		  							   purchaseClass = "purchase";
 										purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
 	  							   }
-	  							   console.log(data[keyVar]);
+	  							   //console.log(data[keyVar]);
 	  							 $('body').find('ul.favTracks').append('<li class="favTrackLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="queueTrack '+count+'"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="unfavTrack last '+count+'"><a class="unfavTrack" href="'+data[keyVar].id+'">Unfavourite this Track '+count+'</a></li></ul></li>');
 								count ++;
 	 	  					}
@@ -988,6 +1054,8 @@ $(document).ready(function() {
 		}
 		function loadPlaylist() {
 			$('div#ajaxPlaylist').show();
+
+			//sets up a string to query soundcloud
 			var string;
 			for (var i in playList) {
 				playList[i] = playList[i].replace("http://api.soundcloud.com/tracks/", "");
@@ -1007,7 +1075,6 @@ $(document).ready(function() {
 						var table = new Array();
 	  					var newString = "&ids="+string;
 	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
-	  					console.log(urlRequest);
 	  					$.getJSON(urlRequest, function(data) {
 
 	  						if (data == "") { 
@@ -1026,12 +1093,11 @@ $(document).ready(function() {
 			  							    purchaseClass = "purchase";
 											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
 		  							   }
-		  							   console.log(data[keyVar]);
 		  							   var number;
 		  							   number = data[keyVar].uri;
-		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="track-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
+		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="play-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="play-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
 		  							   table[number] = string;
-		  							 $('body').find('ul.playlist').append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="track-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
+		  							 $('body').find('ul.playlist').append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="play-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="play-load" href="'+ data[keyVar].uri +'">play track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
 									count ++;
 		 	  					}
 		  						$('body').find('ul.playlist').append('<h3 class="search-class"><a href="#" class="save-playlist">Save Playlist</a></h3>');
@@ -1044,7 +1110,9 @@ $(document).ready(function() {
 		function loadOtherPlaylist() {
 			$('div#ajaxOtherPlaylist').show();
 			
-			//http://www.thediscoveryapp.com/player/bin/functions.php?playList=1&ip=671360506
+			if (!isEmpty(otherPlaylists)) {
+				 for(var i in otherPlaylists) { delete otherPlaylists.i; }
+			}
 			
 			<?php if ($anon != "") { ?>
 			dataString+="&anon=true";
@@ -1057,17 +1125,17 @@ $(document).ready(function() {
 
   				if (data == "") { 
   					$('div#ajaxOtherPlaylist').hide();
-  					$('body').find('ul.other-playlist').empty().append('<li class="playlistLi"><span>Tracks will appear hear when playlists are made</span></li>');
+  					$('body').find('ul.other-playlist').empty().append('<li class="playlistLi"><span class="emptyspan">Playlists will appear hear when playlists are made</span></li>');
   				
   				} else {
   					$('body').find('ul.other-playlist').empty();
-  					function doJson (dataName) {
+  					function doJson (dataName, i) {
 						var dataName = dataName;
+						var i = i;
 	  					$.getJSON(urlRequest, function(data2) {
 
 	  						if (data2 == "") { 
-	  						} else { 
-		  						console.log(data2);
+	  						} else {
 	  							var count = 0;
 	  							var purchase;
 		  						for ( keyVar in data2) {
@@ -1078,11 +1146,10 @@ $(document).ready(function() {
 			  							    purchaseClass = "purchase";
 											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data2[keyVar].purchase_url +'">Purchase Track '+ data2[keyVar].title +'</a></li>';
 		  							   }
-		  							   console.log(data2[keyVar]);
 		  							   var number;
 		  							   number = data2[keyVar].uri;
-		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
-		  							 $('body').find('ul.list-'+dataName.name).append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
+		  							 var string = '<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>'
+		  							 $('body').find('ul.list-'+dataName.name).append('<li class="playlistLi '+count+'"><span class="artistSpan"><div style="background: url('+data2[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'" >'+ data2[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="playTrack '+count+'"><a class="playList-load '+i+'" href="'+ data2[keyVar].uri +'">play track '+ data2[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data2[keyVar].user_id+'">'+data2[keyVar].user_id+'</a></li><li class="playListDelete last '+count+'"><a class="playListDelete" href="'+data2[keyVar].id+'">Delete this Track '+count+'</a></li></ul></li>');
 									count ++;
 		 	  					}
 	  						}
@@ -1097,15 +1164,13 @@ $(document).ready(function() {
 						} else {
 							dataName = data[i]['0']['0'];
 						}
-						//console.log(data[i]['0']['0'].list);
 						$('body').find('ul.other-playlist').append("<h3 class='search-class'>Playlist: "+dataName.name+"</h3>");
-						$('body').find('ul.other-playlist').append("<ul class='list-"+dataName.name+"'></ul>");
+						$('body').find('ul.other-playlist').append("<ul id='list-"+i+"' class='list list-"+dataName.name+"'></ul>");
 						otherPlaylists.push(dataName.list);
+						
 						var string;
-						//console.log(data[1]);
 						for(var ii = 0; ii < dataName.list.length; ii++) {
 							var i = i;
-							//console.log(data[0][i].list[ii]);
 							if (dataName.list[0] == dataName.list[ii]) {
 								string= dataName.list[ii]+",";
 							} else if (dataName.list[ii] == dataName.list.length) {
@@ -1114,14 +1179,13 @@ $(document).ready(function() {
 								string+= dataName.list[ii]+",";
 							}
 						}
-						console.log(string);
 						//loop the track like you would on the playlist
 						var newString = "&ids="+string;
 	  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
 	  					
-	  					doJson(dataName);
+	  					doJson(dataName, i);
 					}
-					
+					//console.log(otherPlaylists)
 					$('div#ajaxOtherPlaylist').hide();
   				}
   			});
@@ -1139,11 +1203,16 @@ $(document).ready(function() {
 	  		 	urlString = "bin/lastfm.php?callback=?"+dataString+"";
 	  		 	
 	  			//only perform when variables have been collected
-	  			//console.log(urlString);
+	  			////console.log(urlString);
 	  			$.getJSON(urlString,{}, function(data4) {
 	  			
 	  				if (data4 == "") { 
 	  					//alert("no data");
+	  					if (isEmpty(data4)) {
+	  						$('body').find('ul.favGenres').empty();
+	  						$('body').find('ul.favGenres').append('<li class="favGenre"><span class="emptyspan">Genre Tags will be generated through your artist likes</span></li>');
+								$('#ajaxTags').hide();
+							}
 	  				} else {
 		  				
 	  					//alert("data");
@@ -1168,9 +1237,9 @@ $(document).ready(function() {
 			urlString = "bin/functions.php?callback=?"+dataString+"";
 			$.getJSON(urlString, function(data) {
 				if (data == "") { 
-  					console.log("no data");
+  					//console.log("no data");
   				} else {
-  					console.log("data");
+  					//console.log("data");
   					//alert("data");
   					$('div#ajaxSocial').hide();
   					
@@ -1192,7 +1261,7 @@ $(document).ready(function() {
 			search = $(this).attr('href');
 			search.replace("#", "");
 			search.replace("%27", "/'");
-			console.log(search);
+			//console.log(search);
 			searchT = "tracks";
 			from = "artist-search";
 			jsonRequest(searchT, search, from);
@@ -1222,7 +1291,7 @@ $(document).ready(function() {
 			search.replace("#", "");
 			search.replace("%27", "/'");
 			search += "&order=hotness";
-			console.log(search);
+			//console.log(search);
 			searchT = "tracks";
 			from = "genre";
 			jsonRequest(searchT, search, from);
@@ -1248,20 +1317,23 @@ $(document).ready(function() {
 				<?php } ?>
 		  		 	urlString = "bin/process.php?callback=?"+dataString+"";
 		  			//only perform when variables have been collected
-		  			//console.log(urlString);
+		  			////console.log(urlString);
 		  			$.getJSON(urlString,{}, function(data4) {
 		  			
 		  				if (data4 == "") { 
 		  					//alert("no data");
+		  					if (isEmpty(data4)) {
+		  						$('body').find('ul.likes-'+id).empty();
+								$('body').find('ul.likes-'+id).append('<li class="favArtLi"><span class="emptyspan">Query Empty</span></li>');
+								$('#ajax'+id).hide();
+							}
 		  				} else {
 			  				
 		  					$('body').find('ul.likes-'+id).empty();
 		  					$('body').find('ul.likes-'+id).append("<h3 class='search-class'>"+name+": Favourite Artists</h3>");
-		  				for (var i = 0, l = data4.length; i < l; i++) {
-		  					
-			  				
-			  						
-		  							$('body').find('ul.likes-'+id).append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-remove" href="'+data4[i].name+'">Unfavourite '+i+'</a></li></ul></li>');
+							
+		  					for (var i = 0, l = data4.length; i < l; i++) {
+		  						$('body').find('ul.likes-'+id).append('<li class="favArtLi '+i+'"><span class="artistSpan"><div style="background: url(\''+data4[i].image+'\');height:40px;"></div></span><a class="artist-search" href="'+data4[i].name+'">'+data4[i].name+'</a><ul class="artist-options"><li class="subSearch '+i+'"><a class="artist-search" href="'+data4[i].name+'">artist\'s songs</a></li><li class="subSimilar '+i+'"><a class="similar-search" href="'+data4[i].name+'">similar artists</a></li><li class="subFav '+i+'"><a class="favourite-add" href="'+data4[i].name+'">favourite '+i+'</a></li></ul></li>');
 		  					}
 		  				
 		  				}
@@ -1276,21 +1348,31 @@ $(document).ready(function() {
 				<?php } ?>
 		  		 	urlString2 = "bin/process.php?callback=?"+dataString+"";
 		  			//only perform when variables have been collected
-		  			console.log(urlString2);
+		  			//console.log(urlString2);
 		  			$.getJSON(urlString2,{}, function(data6) {
 			  		
 		  				if (data6 == "") { 
 		  					//alert("no data");
+		  					if (isEmpty(data6)) {
+		  						$('body').find('ul.tracks-'+id).empty();
+								$('body').find('ul.tracks-'+id).append('<li class="favArtLi"><span class="emptyspan">Query Empty</span></li>');
+								$('#ajax'+id).hide();
+							}
 		  				} else {
 		  					//ids
-		  					console.log(data6);
+		  					//console.log(data6);
 		  					var newString = "&ids="+data6;
 		  					var urlRequest = "http://api.soundcloud.com/tracks.json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
-		  					console.log(urlRequest);
+		  					//console.log(urlRequest);
 		  					$.getJSON(urlRequest, function(data) {
 
 		  						if (data == "") { 
-		  							$('body').find('ul.tracks-'+id).empty().append('<li>Query Empty</li>');	
+		  							
+		  							if (isEmpty(data)) {
+		  								$('body').find('ul.likes-'+id).empty();
+										$('body').find('ul.likes-'+id).append('<li class="favArtLi"><span class="emptyspan">Query Empty</span></li>');
+										$('#ajax'+id).hide();
+									}	
 		  						} else { 
 		  							var count = 0;
 		  							var purchase;
@@ -1305,8 +1387,8 @@ $(document).ready(function() {
 			  							   purchaseClass = "purchase";
 											purchase = '<li class="purchaseTrack"><a target="_blank" class="purchaseTrack" href="'+ data[keyVar].purchase_url +'">Purchase Track '+ data[keyVar].title +'</a></li>';
 		  							   }
-		  							   console.log(data[keyVar]);
-		  							 $('body').find('ul.tracks-'+id).append('<li class="favTrackLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="queueTrack '+count+'"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="unfavTrack last '+count+'"><a class="unfavTrack" href="'+data[keyVar].id+'">Unfavourite this Track '+count+'</a></li></ul></li>');
+		  							   //console.log(data[keyVar]);
+		  							 $('body').find('ul.tracks-'+id).append('<li class="favTrackLi '+count+'"><span class="artistSpan"><div style="background: url('+data[keyVar].artwork_url+');-o-background-size:100%; -webkit-background-size:100%; -khtml-background-size:100%;  -moz-background-sizewidth:100%;height:40px;"></div></span><a class="track-load" href="'+ data[keyVar].uri +'" >'+ data[keyVar].title +'</a><ul class="artist-options '+purchaseClass+'">'+purchase+'<li class="queueTrack '+count+'"><a class="queueTrack" href="'+ data[keyVar].uri +'">queue track '+ data[keyVar].title +'</a></li><li class="artistsTracks"><a class="artistsTracks" href="'+data[keyVar].user_id+'">'+data[keyVar].user_id+'</a></li><li class="favTrack last '+count+'"><a class="favTrack" href="'+data[keyVar].id+'">Favourite this Track '+count+'</a></li></ul></li>');
 									count ++;
 		 	  					}
 		  						}
@@ -1325,11 +1407,16 @@ $(document).ready(function() {
 		  		 	urlString = "bin/lastfm.php?callback=?"+dataString+"";
 		  		 	
 		  			//only perform when variables have been collected
-		  			//console.log(urlString);
+		  			////console.log(urlString);
 		  			$.getJSON(urlString,{}, function(data4) {
 		  			
 		  				if (data4 == "") { 
 		  					//alert("no data");
+		  					if (isEmpty(data4)) {
+		  						$('body').find('ul.genres-'+id).empty();
+								$('body').find('ul.genres-'+id).append('<li class="favArtLi"><span class="emptyspan">Query Empty</span></li>');
+								$('#ajax'+id).hide();
+							}
 		  				} else {
 			  				
 		  					$('body').find('ul.genres-'+id).empty();
@@ -1360,8 +1447,6 @@ $(document).ready(function() {
 			window_body.find("p.window-p").empty().html("<form action='#' method='post'><input class='textbox' type='text' placeholder='Playlist Name' name='playlistname' id='playlist-name'/></form>");
 			window_body.find("p.window-p").append("<a class='playlist-save' href='#'>save</a>");
 			window_a.hide();
-			window_a.addClass("playlist-save");
-			window_a.addClass("playlist-save");
 			windowBox.fadeIn();
 			
 			
@@ -1377,7 +1462,7 @@ $(document).ready(function() {
 			<?php if ($anon != "") { ?>
 			$.post('bin/functions.php', {'playlist[]': myPlaylist, "name" : name, "anon" : true, 'ip': "<?php echo $usersIP;  ?>" }, function(data){
 	  	  		   // do something with received data!
-	  	  		   console.log(data);
+	  	  		   //console.log(data);
 				window_head.find("h1").html("PlayList Saved");
 				window_body.find("p.window-p").empty().html("Playlist was saved to your playlists");
 				windowBox.fadeIn();
@@ -1385,7 +1470,7 @@ $(document).ready(function() {
 			<?php } else { ?>
 			$.post('bin/functions.php', {'playlist[]': playList, "name" : name, 'ip': fb_id }, function(data){
 	  	  		   // do something with received data!
-	  	  		   console.log(data);
+	  	  		   //console.log(data);
 				window_head.find("h1").html("PlayList Saved");
 				window_body.find("p.window-p").empty().html("Playlist was saved to your playlists");
 				windowBox.fadeIn();
@@ -1399,9 +1484,9 @@ $(document).ready(function() {
 			var id = $(this).attr('href');
 			var name = $(this).html();
 			name = name.replace("'s profile", "");
-			$('body').find("ul#likes-"+id).empty();
-			$('body').find("ul#tracks-"+id).empty();
-			$('body').find("ul#genres-"+id).empty();
+			$('body').find("ul.likes-"+id).empty();
+			$('body').find("ul.tracks-"+id).empty();
+			$('body').find("ul.genres-"+id).empty();
 			$(this).closest("ul.artist-options").empty().append('<li class="friends-profile"><a class="friends-profile" href="'+id+'">'+name+'\'s profile</a></li>');
 			
 			return false;
@@ -1417,7 +1502,7 @@ $(document).ready(function() {
 			
 			var newString = "&q=" + additionalParams;
 			var urlRequest = "http://api.soundcloud.com/"+ requestString + ".json?consumer_key=KrpXtXb1PQraKeJETJL7A"+ newString;
-			console.log(urlRequest);
+			//console.log(urlRequest);
 			$.getJSON(urlRequest, function(data) {
 
 				if (data == "") { 
@@ -1486,41 +1571,80 @@ $(document).ready(function() {
 
 		$('a.track-load').live('click',function(event){
 			  event.preventDefault();
-			  if(otherPlaylists == null || otherPlaylists == "") {
-				if (this.href != playList[playList.length]) {
-					playList.push(this.href);
+			  var name = $(this).attr('href');
+			  var id = name.replace("http://api.soundcloud.com/tracks/", "");
+			  //console.log("name: "+name);
+				if (id != playList[playList.length]) {
+					playList.push(id);
+					currentPlaying = playList.length-1;
+					fromPlayLoad = true;
+				  	thePlayList = playList;
+				  	//console.log("track pushed: "+currentPlaying);
+				}
+			  if (playerReady == false) {
+				  playPause.trigger('click');
+				  firstPlay = false;
+			  } else {
+				  theNewPlayer.api_load(name);
+				  theNewPlayer.api_play();
+			  }
+		});
+		$('a.play-load').live('click',function(event){
+			  event.preventDefault();
+			  fromPlayLoad = true;
+			  var name = $(this).attr('href');
+			  var id = name.replace("http://api.soundcloud.com/tracks/", "");
+			  //console.log("name: "+name);
+			  for (var i in playList) {
+					playList[i] = playList[i].replace("http://api.soundcloud.com/tracks/", "");
+					playList[i] = playList[i]+'';
+					id = id+'';
+					if (playList[i] == id) {
+						//set currentPlaying to the 
+						currentPlaying = i;
+					}
 				}
 			  	thePlayList = playList;
-			  } else {
-				thePlayList = otherPlaylists[selectedPlaylist];
-			  }
 			  if (playerReady == false) {
 				  fromSearch = true;
 				  playPause.trigger('click');
 				  firstPlay = false;
 			  } else {
-				  currentPlaying ++;
-				  thePlayer.api_load(this.href);
+				  //console.log("playerReady: "+playerReady);
+				  theNewPlayer.api_load(name);
+				  theNewPlayer.api_play();
 			  }
 		});
 		//playList-load
 		$('a.playList-load').live('click',function(event){
 			event.preventDefault();
+			fromPlayLoad = true;
 			var id = $(this).attr('class');
 			id = id.replace("playList-load ", "");
 			var track = $(this).attr('href');
+			var name = track.replace('http://api.soundcloud.com/tracks/', '');
 			//otherPlaylists[id];
 			selectedPlaylist = id;
 			//change theplaylist to relevant other playlist
-			thePlayList = otherPlaylists[selectedPlaylist];
 			
+			for (var i in otherPlaylists[selectedPlaylist]) {
+				otherPlaylists[selectedPlaylist][i] = otherPlaylists[selectedPlaylist][i].replace("http://api.soundcloud.com/tracks/", "");
+				otherPlaylists[selectedPlaylist][i] = otherPlaylists[selectedPlaylist][i]+'';
+				id = id+'';
+				if (otherPlaylists[selectedPlaylist][i] == name) {
+					//set currentPlaying to the 
+					currentPlaying = i;
+					//console.log("currentPlaying: "+currentPlaying);
+				}
+			}
+			thePlayList = otherPlaylists[selectedPlaylist];
 			  if (playerReady == false) {
 				  fromSearch = true;
 				  playPause.trigger('click');
 				  firstPlay = false;
 			  } else {
-				  currentPlaying ++;
-				  thePlayer.api_load(track);
+				  theNewPlayer.api_load(track);
+				  theNewPlayer.api_play();
 			  }
 			  return false;
 		});
@@ -1578,34 +1702,24 @@ $(document).ready(function() {
 		      min: 0,
 		      max: 100,
 		      step: 1,
-		      value: thePlayer.trackPosition,
+		      value: theNewPlayer.trackPosition,
 		      slide: function(event, playUi) {
 		          skipFunct(playUi.value);
 		      }
 		 });
 		
-		/* homeLink.click(function() {
-			 $.ajax({
-			      type: "GET",
-			      url: "main-search.php",
-			      success: function(data) {
-			    	  $('#the-content').replaceWith(data);
-			        }
-			     });
-			  
-			}); */
 		submit.click(function() {
 			
 			 if ((mainSearchInput.val()) == "") {
 				mainError.show();
 			 } else {
 				 var search = mainSearchInput.val();
-				 console.log(search);
+				 //console.log(search);
 				 searchT = "tracks";
 				 if (selectedType == "artists") {
 					 searchT = "users";
 				 }
-				 console.log(searchT);
+				 //console.log(searchT);
 				 jsonRequest(searchT, search, "");
 			 }
 			 var justSearched = mainSearchInput.val();
@@ -1621,33 +1735,36 @@ $(document).ready(function() {
 				if (prevTrack < 0) {
 					prevTrack = 0;
 				}
-				thePlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[prevTrack]);
+				theNewPlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[prevTrack]);
 				currentPlaying --;
 				
 			}
 			 return false;
 		});
-		nextBtn.click(function() {
+		nextBtn.click(function(e) {
 			e.preventDefault();
 			if(thePlayList) {
 				
 				nextTrack = currentPlaying + 1;
-				
-				thePlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[nextTrack]);
-				//var nextTrack = currentPlaying + 1;
-				currentPlaying ++;
-				
+				if (nextTrack > thePlayList.length-1) {
+					window_head.find("h1").html("Error");
+					window_body.find("p.window-p").empty().html("No More Tracks in the Playlist");
+					windowBox.fadeIn();
+				} else {
+					theNewPlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[nextTrack]);
+					currentPlaying ++;
+				}
 			}
 			 return false;
 		});
 		
 		function volumeFunct (volume) {
 			//sets
-			thePlayer.api_setVolume(volume);
+			theNewPlayer.api_setVolume(volume);
 		}
 		function skipFunct (skip) {
 			//sets play
-			trackDuration = thePlayer.api_getTrackDuration();
+			trackDuration = theNewPlayer.api_getTrackDuration();
 			var trackY = trackDuration / 100;
 			var skipTo = skip * trackY; //skip to seconds
 			var loadedAmt = theLoad;
@@ -1655,7 +1772,7 @@ $(document).ready(function() {
 			if (skipTo > loadedSeconds) {
 				skipTo = loadedSeconds;
 			}
-			thePlayer.api_seekTo(skipTo);
+			theNewPlayer.api_seekTo(skipTo);
 		}
 		
 		amount.val(mySlider.slider("value"));
@@ -1685,7 +1802,7 @@ $(document).ready(function() {
 	});
 
 	soundcloud.addEventListener('onMediaSeek', function(player, data) {
-		  console.log('seeking in the track!');
+		  //console.log('seeking in the track!');
 	});
 
 	//when it's buffering
@@ -1696,59 +1813,76 @@ $(document).ready(function() {
 	soundcloud.addEventListener('onMediaDoneBuffering', function(player, data) {
 		  isLoaded = true;
 	});
-
+	function doHighlist(name) {
+		var name = name;
+		$('body').find("li.playlistLi").each(function (i) {
+			var theHref = $(this).child("a.play-load").attr("href");
+			//console.log("name: "+name+", theHref: "+theHref);
+			if(theHref == name) {
+				
+				$(this).css({"background" : "#cafdee"});
+			} else {
+				$(this).css({"background" : "url(images/ulLight.png) repeat scroll top white"});
+			}
+		}); 
+	}
 	soundcloud.addEventListener('onMediaStart', function(player, data) {
+		//console.log("data"+data);
+		doHighlist(data.mediaUri);
+		theNewPlayer = soundcloud.getPlayer('scPlayerEngine');
 	});
 
-
+	
 	//handles what to do when the song is ready
 	soundcloud.addEventListener('onPlayerReady', function(player, data) {
-			playerReady = true;
+		
+		if (playerReady) {
+			fromPlayLoad = false;
+		}
+		theNewPlayer = soundcloud.getPlayer('scPlayerEngine');
+		//console.log(theNewPlayer);
 			player.api_play();
-			//the player object equals whatever the player is
-			thePlayer = player;
 			theData = data;
 			currentTrack = data.mediaUri;
-			/* if (fromSearch) {
-				console.log("fromSearch");
-				playList.push($('a.track-load').attr('href'));
-				fromSearch = false;
-			} */
-			
-			thePlayList = playList;
-			
 			
 	});
-
+	
 	//handles the event of the song finishing
 	soundcloud.addEventListener('onMediaEnd', function(player, data) {
-		var playCounter = 0;
-		for (var i in thePlaylist) {
+		playerReady = true;
+		//if fromPlayload, the currentPlaying is the right number
+		theNewPlayer = soundcloud.getPlayer('scPlayerEngine');
+		if (fromPlayLoad) {
+			//console.log(thePlayList[currentPlaying]);
+			var string = "http://api.soundcloud.com/tracks/"+thePlayList[currentPlaying];
+			fromPlayLoad = false;
+			theNewPlayer.api_load(string);
+			theNewPlayer.api_play();
+		} else {
+			//console.log("not fromPlayLoad");
+			//console.log(thePlayList[currentPlaying+1]);
+			if (thePlayList.length >= thePlayList[currentPlaying+1]) {
+				//console.log("next track");
+				theNewPlayer.api_load("http://api.soundcloud.com/tracks/"+thePlayList[currentPlaying+1]);
+			}
+		}
+		for (var i in thePlayList) {
 			playCounter++;
 			//returns playlist length
-			console.log(playCounter);
+			//console.log(playCounter);
 		}
-		console.log(playList.length);
+		//console.log(playList.length);
 		if (repeatBtn.hasClass('on')) {
 			player.api_load(currentTrack);
 			soundcloud.addEventListener('onPlayerReady', function(player, data) {
 			player.api_play();
 			});
-			console.log("repeat");
+			//console.log("repeat");
 		}
-		if (playCounter > currentPlaying) {
-		player.api_load(thePlaylist[currentTrack+1]);
-		}
+		
 	});
 });
 </script>
-<!-- soundcloud controls 
-
-<script src="js/jquery-soundcloud-controls.js" type="text/javascript"></script>
--->
-
-
-
 <script type="text/javascript">    
 	var _gaq = _gaq || [];
 	_gaq.push(['_setAccount', 'UA-22230288-1']);

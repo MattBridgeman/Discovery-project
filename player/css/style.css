@@ -173,7 +173,7 @@ a:link.sc-player, a:link.sc-player , a:visited.sc-player {
 	border:1px solid #999999;
 	color:#444444;
 	font-family:helvetica neue;
-	font-size:20px;
+	font-size:1.1em;
 	height:39px;
 	padding: 5px 5px 6px;
 	width:66%;
@@ -259,7 +259,7 @@ ul#subMenu li a {
 	border: 1px solid #999;
 	color: #444;
 	font-family: helvetica neue;
-	font-size: 20px;
+	font-size: 1.1em;
 	height: 52px;
 	padding: 0 5px;
 	text-indent: -9999px;
@@ -319,7 +319,7 @@ ul.ul-float, .the-content ul.ul-float {
 	min-width: 87px;
 }
 .the-content a {
-	font: bold 16px/20px helvetica, arial;
+	font: bold 1em helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 20px 10px 8px 20px;
 	color: white;
@@ -398,7 +398,7 @@ li.playListDelete a {
 	
 }
 li.subSearch a, li.subSimilar a, li.subFav a {
-font: bold 16px/20px helvetica, arial;
+font: bold 1em helvetica, arial;
 text-shadow: black 0 0 3px;
 padding: 12px 10px 8px 20px;
 color: white;
@@ -440,7 +440,7 @@ ul.related-genres li.favGenre:nth-child(even) {
 	background: url(images/ul.png) repeat scroll bottom white;
 }
 li.favGenre span {
-	font: bold 16px/20px helvetica, arial;
+	font: bold 1em helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 18px 10px 8px 24px;
 	color: white;
@@ -453,8 +453,8 @@ li.favGenre span {
 .the-content ul.new li:hover {
 	background:none repeat scroll 0 0 #cafdee;
 }
-li.favArtLi a, ul.new li a, ul.favTracks li a.track-load, ul.playlist li a.track-load, ul.friends li a.friends-profile, ul.other-playlist li a.track-load {
-	font: bold 16px/20px helvetica, arial;
+li.favArtLi a, ul.new li a, ul.favTracks li a.track-load, ul.playlist li a.play-load, ul.friends li a.friends-profile, ul.other-playlist li a.track-load, ul.other-playlist li a.playList-load {
+	font: bold 1em helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 18px 10px 8px 72px;
 	color: white;
@@ -505,7 +505,7 @@ ul.playlist li ul.purchase {
 ul.new li ul.artist-options li.queueTrack a, ul.favTracks li ul a.queueTrack {
 	background:url('images/queue.png') center scroll;
 }
-ul.new li ul.artist-options li.favTrack a {
+ul.new li ul.artist-options li.favTrack a, li.favTrack a.favTrack {
 	background: url('images/favTrack.png') center scroll;
 }
 ul.friends li.friend ul.artist-options li.friends-profile a {
@@ -525,7 +525,7 @@ li.favArtLi ul li.subSearch a, a.artistsTracks {
 li.favArtLi ul li.subSimilar a {
 	background:url('images/artist-similar.png') center scroll;
 }
-li.favArtLi ul li.subFav, li.favGenre ul li.subFav, ul.favTracks li.favTrackLi ul li.unfavTrack {
+li.favArtLi ul li.subFav, li.favGenre ul li.subFav, ul.favTracks li.favTrackLi ul li.unfavTrack, ul.favTracks li.favTrackLi ul li.favTrack {
 	width: 30px;
 	height: 30px;
 	text-indent: -9999px;
@@ -534,6 +534,9 @@ li.favArtLi ul li.subFav, li.favGenre ul li.subFav, ul.favTracks li.favTrackLi u
 }
 li.favArtLi ul li.subFav a, li.favGenre ul li.subFav a.favourite-remove-genre, a.unfavTrack {
 	background:url('images/artist-unfav.png') center scroll;
+}
+li.favArtLi ul li.subFav a.favourite-add {
+	background:url('images/favTrack.png') center scroll;
 }
 li.favGenre ul li a.genre-search {
 	background:url('images/genre-search.png') center scroll;
@@ -548,7 +551,7 @@ a.purchaseTrack, li.purchaseTrack a.purchaseTrack {
 	background:url('images/buy.png') center scroll;
 }
 li.favArtLi ul li.subSearch a,li.favArtLi ul li.subSimilar a, li.favArtLi ul li.subFav a, li.favGenre ul li a,ul.new li ul.artist-options li a, li.favTrackLi ul li a, ul.new li ul.new li a, ul.playlist li ul.artist-options li a, ul.playlist li ul.purchase li a,ul.friends li ul.artist-options li a.friends-profile, ul.other-playlist li ul.artist-options li a, ul.other-playlist li ul.purchase li a, a.up-button {
-	font: bold 16px/20px helvetica, arial;
+	font: bold 1em helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 0;
 	color: white;
@@ -636,7 +639,7 @@ text-shadow: none;
 	border: 1px solid black;
 	border-bottom: 0;
 }
-#window-a, a.playlist-save {
+#window-a {
 	padding: 6px;
 	color: white;
 	background: #999;
@@ -648,6 +651,30 @@ text-shadow: none;
 	display: block;
 	width: 20%;
 	text-align: center;
+}
+a.playlist-save {
+	width: 100%;
+	padding: 10px 0;
+	-webkit-border-radius: 0;
+	border: 1px solid #999;
+	background: url(images/ulLight.png) bottom;
+	font: bold 1.4em helvetica, arial white;
+	text-shadow: black 0 0 3px;
+	display: block;
+	clear: both;
+	text-align: center;
+	color: white;
+}
+span.emptyspan {
+	color: white;
+    display: inline;
+    font: bold 1em helvetica,arial;
+    height: 30px;
+    overflow: hidden;
+    padding: 18px 10px 8px 72px;
+    position: absolute;
+    text-shadow: 0 0 3px black;
+    width: 64%;
 }
 #window-a:hover {
 	background:#333;
@@ -680,7 +707,7 @@ ul#mainMenu li.last {
 }
 a#home_link, a#profile_link, a#playing_link, a#social_link, a#account_link, a#logout_link {
 	background-position: left center;
-	font: bold 16px/20px helvetica, arial;
+	font: bold 1em helvetica, arial;
 	text-shadow: black 0 0 3px;
 	color: white;
 	text-indent: 0;
@@ -708,7 +735,7 @@ ul.black li:hover {
 	background-position: bottom;
 }
 ul.black li a {
-	font: bold 16px/20px helvetica, arial;
+	font: bold 1em helvetica, arial;
 	text-shadow: black 0 0 3px;
 	padding: 20px 10px 20px 10px;
 	color: white;

@@ -44,14 +44,28 @@ WHERE fb_id = '$fb_id'";
   		$message = $json;
   		echo $_GET['callback'] . ' (' . $message . ');';
 } else if(isset($_GET['ip']) && (!isset($_GET['artist']))) {
-	$ip = $_GET['ip'];
+	
+	$ip = $_GET["ip"];
+
+	if ($cookie != null || $cookie != "" && (isset($_GET['anon']))) {
+		$ip = $_COOKIE["discovery-ip"];
+	}
 	if(isset($_GET['anon'])) {
-		$sql = "SELECT * FROM users WHERE ip='$ip'";
+		$str = 'ip';
+		$sql = "SELECT * FROM users WHERE ip={$ip}";
 	} else {
+		$str = 'fb_id';
 		$sql = "SELECT * FROM users WHERE fb_id='$ip'";
 	}
 	$send = $database->query($sql);
-	if(mysql_num_rows($send) < 1) {
+	$highest = 0;
+	$number = array();
+	while($row = mysql_fetch_array($send)) {
+		if ($row["{$str}"] != "") {
+			array_push($number, $row["{$str}"]);
+		}
+	}
+	if(count($number) < 1) {
 		$sql = "INSERT INTO users (ip, date_added)
 		VALUES ('$ip', '$today')";
 			$send = $database->query($sql);
@@ -76,6 +90,13 @@ WHERE fb_id = '$ip'";
 				$message = "false ip";
 			}
   		}
+		if(isset($_GET['anon'])) {
+			$str = 'ip';
+			$sql = "SELECT * FROM users WHERE ip='$ip'";
+		} else {
+			$str = 'fb_id';
+			$sql = "SELECT * FROM users WHERE fb_id='$ip'";
+		}
   		$json = $database->while_query($sql);
   		$json = json_encode($json);
   		$message = $json;
@@ -368,17 +389,19 @@ $resultsArr = array();
 	$array = array();
 	$lastFM = array();
 	if (isset($_GET['anon'])) {
-  		$sql = "SELECT favourites FROM users WHERE ip = '$ip'";
+  		$sql = "SELECT favourites FROM users WHERE ip = {$ip}";
   	} else {
   		$sql = "SELECT favourites FROM users WHERE fb_id = '$ip'";
   	}
   	$send = $database->query($sql);
 	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
 		$unserialized = unserialize($row['favourites']);
-		foreach ($unserialized as $v1) {
-			array_push($array, $v1);
-			if ($v1 == $fav) {
-				$already = true;
+		if(is_array($unserialized)) {
+			foreach ($unserialized as $v1) {
+				array_push($array, $v1);
+				if ($v1 == $fav) {
+					$already = true;
+				}
 			}
 		}
   	}
@@ -544,6 +567,7 @@ $resultsArr = array();
   	echo $_GET['callback'] . ' (' . $message . ');';
 } else if(isset($_GET['unfavtrack'])) {
 	$track = $_GET['unfavtrack'];
+	
 	$ip = $_GET['ip'];
 	$already = false;
 	$array = array();

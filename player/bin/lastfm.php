@@ -10,7 +10,7 @@ header('Access-Control: *');
 header('Access-Control-Allow-Origin: *');
 $today = date("d.m.y");
 if(isset($_GET['getGenres'])) {
-	$ip = $_GET['ip'];
+	$ip = $_COOKIE["discovery-ip"];
 	$already = false;
 	$array = array();
 	$lastFM = array();
@@ -24,8 +24,10 @@ if(isset($_GET['getGenres'])) {
   	$send = $database->query($sql);
 	while($row = mysql_fetch_array($send, MYSQL_ASSOC)) {
 		$unserialized = unserialize($row['favourites']);
+		if (is_array($unserialized)) {
 		foreach ($unserialized as $v1) {
 			array_push($array, $v1);
+		}
 		}
   	}
   	

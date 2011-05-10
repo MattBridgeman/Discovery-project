@@ -102,7 +102,7 @@ WHERE fb_id = '$ip'";
 	$friendIDs = array();
 	$createPlaylist = array();
 	if (isset($_POST['anon'])) {
-		$sql = "SELECT playlists FROM users WHERE ip = {$ip}";
+		$sql = "SELECT playlists FROM users WHERE ip = '$ip'";
 	} else {
 		$sql = "SELECT playlists FROM users WHERE fb_id = {$ip}";
 	}
@@ -119,14 +119,14 @@ WHERE fb_id = '$ip'";
 	}
 	//serialize and update the database
 	$serialized = base64_encode(serialize($array));
-	if(isset($_GET['anon'])) {
+	if(isset($_POST['anon'])) {
 			$sql2 = "UPDATE users SET playlists = '".$serialized."' WHERE ip = '$ip'";
 		} else {
 			$sql2 = "UPDATE users SET playlists = '".$serialized."' WHERE fb_id = '$ip'";
 		}
   		$send = $database->query($sql2);
 	if (isset($_POST['anon'])) {
-		$sql = "SELECT playlists FROM users WHERE ip = {$ip}";
+		$sql = "SELECT playlists FROM users WHERE ip = '$ip'";
 	} else {
 		$sql = "SELECT playlists FROM users WHERE fb_id = {$ip}";
 	}
