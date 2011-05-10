@@ -97,6 +97,18 @@ ul#mainMenu li.liGit {
 	background: url('images/bg.jpg') no-repeat top center scroll #FFAD00;
 }
 #mainSection h1 {
+	left: -9999px;
+    position: absolute;
+    text-indent: -9999px;
+    top: 0;
+}
+#mainFooter {
+	background: url(images/bu.png) bottom right no-repeat scroll;
+
+}
+#mainFooter p {
+	margin: 0px;
+	padding: 0px;
 }
 #mainText {
 	text-indent: -9999px;

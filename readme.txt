@@ -1,5 +1,5 @@
 Discovery Project Site Directory
-beta v2.9
+beta v3.0
 
 /* Change Log */
 2.5

@@ -23,7 +23,7 @@ $pageURL = curPageURL();
 $array;
 if (count($array = explode("www", $pageURL)) > 1) {
 } else {
-	//header("Location: http://www.".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]);
+	header("Location: http://www.".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]);
 }
 function getMessage () {
 	if ($_GET['message'] == "thankyou") {
@@ -144,6 +144,7 @@ $(document).ready(function() {
 <a href="#" id="facebookBtn" title="link-to-authorize-discovery">Login via Facebook</a>
 	<a href="/player?anon=1" id="anonBtn" title="link-to-authorize-discovery">Login anonymously</a>
 </aside>
+<footer id="mainFooter"><p>Matt Bridgeman 2011</p><p><img src="http://i.creativecommons.org/l/by/3.0/88x31.png" alt="creative-commons-license"/></p></footer>
 </div>
 <div id="fb-root"></div>
 </body>
