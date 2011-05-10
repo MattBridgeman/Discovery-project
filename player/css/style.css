@@ -611,6 +611,7 @@ a#logout_link {
 	display: block;
 	position: fixed;
 	top: 0;
+	z-index: 999;
 }
 #window-wrapper {
 width: 75%;

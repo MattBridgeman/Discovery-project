@@ -141,8 +141,8 @@ WHERE fb_id = '$ip'";
   		echo $_GET['callback'] . ' (' . $message . ');';
 } else if(isset($_GET['ip'])) {
 	$ip = $_GET['ip'];
-	if (isset($_POST['anon'])) {
-		$sql = "SELECT playlists FROM users WHERE ip = {$ip}";
+	if (isset($_GET['anon'])) {
+		$sql = "SELECT playlists FROM users WHERE ip = '$ip'";
 	} else {
 		$sql = "SELECT playlists FROM users WHERE fb_id = {$ip}";
 	}

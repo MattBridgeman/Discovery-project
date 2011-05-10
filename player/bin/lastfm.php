@@ -10,7 +10,7 @@ header('Access-Control: *');
 header('Access-Control-Allow-Origin: *');
 $today = date("d.m.y");
 if(isset($_GET['getGenres'])) {
-	$ip = $_COOKIE["discovery-ip"];
+	$ip = $_GET["ip"];
 	$already = false;
 	$array = array();
 	$lastFM = array();

@@ -49,6 +49,10 @@ feature added: Save playlists
 feature added: playlist play/switch
 feature added: playlist delete item
 anonymous login updated
-
+2.9.9.1 may 10th
+anonymous login bug fixes
+- feature added: anonymous playlist save
+- feature added: anonymous track favourites save
+- feature added: notification window fixes
 
 

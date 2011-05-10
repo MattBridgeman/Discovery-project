@@ -35,8 +35,10 @@ $facebook = new Facebook(array(
 if(isset($_GET['anon'])) {
 	$anon = $_GET['anon'];
 $today = date("d.m.y");
+
+//setcookie("discovery-ip", "");
 $cookie = $_COOKIE["discovery-ip"];
-if ($cookie != null || $cookie != "") {
+if ($cookie != null && $cookie != "") {
 		//they have logged in before
 		/*echo $cookie;
 		$sql = "SELECT * FROM users WHERE ip='$cookie'";
@@ -45,11 +47,11 @@ if ($cookie != null || $cookie != "") {
 			$ip = $row['ip'];
 		}*/
 		$ip = $cookie;
-		$highest = 0;
 	} else {
 		$sql = "SELECT * FROM users";
 		$number = array();
 		$send = $database->query($sql);
+		$highest = 0;
 		while($row = mysql_fetch_array($send)) {
 			if ($row['ip'] != "") {
 				array_push($number, $row['ip']);
@@ -64,7 +66,7 @@ if ($cookie != null || $cookie != "") {
 				//if this number is bigger than the number before make it $highest
 				if ($number[$i] > $number[$i-1]) {
 					$highest = $number[$i];
-					echo $highest;
+					$highest;
 				}
 			}
 		}
@@ -122,6 +124,7 @@ if ($cookie != null || $cookie != "") {
 <script src="js/jquery-ui-1.8.6.custom.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="js/soundcloud.player.api.js"></script>
 <script src="js/sc-player.js" type="text/javascript"></script>
+<script src="js/hash.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	var redirect = '<?php echo $dialog_url; ?>';
@@ -161,7 +164,6 @@ $(document).ready(function() {
 	var recom_image = $('li.recom-image');
 	var moreInfo = $('a.moreInfo-a');
 	//the player is a random object
-	thePlayer = new Object();
 	theData = new Object();
 	thePlayList = new Object();
 	theLoad = new Object(); //load percentage
@@ -302,7 +304,6 @@ $(document).ready(function() {
 		  			$.getJSON(urlString,{}, function(msg) {
 		  				//console.log(msg);
 		  			});
-  			  
   	  		});
   			FB.api('/me/likes', function(response) {
   	  			
@@ -890,10 +891,27 @@ $(document).ready(function() {
 			if (children) {
 				menuItem.children().hide();
 			}
+			var theWrap = this.wrapElement.attr("id");
 			var stateID = this.id;
 			this.menuItem.bind('click', function(e) {
 				e.preventDefault();
-				changeState(wrapElement);
+				
+				if (Modernizr.history) {
+					  // history management works!
+					  var check_i = 0;
+				for (var i = 0; i < states.length; i++) {
+					if (states[i].wrapElement.attr("id") == theWrap) {
+						check_i = i;
+					}
+				}
+					history.pushState(check_i, theWrap, "#"+theWrap);
+					
+					} else {
+					  // no history support :(
+					  // fall back to a scripted solution like History.js
+						
+					}
+				changeState(theWrap);
 				return false;
 			});
 		}
@@ -918,10 +936,26 @@ $(document).ready(function() {
 				states[i].menuItem.addClass("selected");
 			}
 		}
-		
+		$(window).hashchange( function(){
+			var hash = location.hash;
+			hash = hash.replace("#", "");
+			changeState(hash);
+			console.log(hash);
+		});
+		window.onpopstate = function(event) {
+			  //alert("location: " + document.location + ", state: " + JSON.stringify(event.state));
+			//console.log(event);
+			var hash = location.hash;
+			hash = hash.replace("#", "");
+			changeState(hash);
+		};
+					
 		function changeState(state) {
+			var hashNumber = 0;
 			for (var i = 0; i < states.length; i++) {
-				if (states[i].wrapElement == state) {
+				if (states[i].wrapElement.attr("id") == state) {
+					hashNumber++;
+					
 					//change the class to on and it's wrapElement to on, if children is equal to true turn them on
 					states[i].menuItem.addClass("selected");
 					states[i].selected = true;
@@ -955,7 +989,14 @@ $(document).ready(function() {
 						states[i].children().hide();
 					}
 				}
+				if (state == "") {
+					homeState.menuItem.addClass("selected");
+					homeState.selected = true;
+					homeState.menuItem.removeClass("unselected");
+					homeState.wrapElement.show();
+				}
 			}
+			
 		}
 		function loadGenres() {
 			profileState.wrapElement.find('div.ajaxLoading').show();
@@ -1113,7 +1154,7 @@ $(document).ready(function() {
 			if (!isEmpty(otherPlaylists)) {
 				 for(var i in otherPlaylists) { delete otherPlaylists.i; }
 			}
-			
+			dataString="&something=true";
 			<?php if ($anon != "") { ?>
 			dataString+="&anon=true";
 			dataString+="&ip=<?php echo $usersIP;  ?>";
@@ -1206,7 +1247,7 @@ $(document).ready(function() {
 	  			////console.log(urlString);
 	  			$.getJSON(urlString,{}, function(data4) {
 	  			
-	  				if (data4 == "") { 
+	  				if (data4 == "") {
 	  					//alert("no data");
 	  					if (isEmpty(data4)) {
 	  						$('body').find('ul.favGenres').empty();
@@ -1217,7 +1258,6 @@ $(document).ready(function() {
 		  				
 	  					//alert("data");
 	  					$('div#ajaxTags').hide();
-	  					var col = "threecol";
 	  					$('body').find('ul.favGenres').empty();
 	  				for (var i = 0, l = data4.length; i < l; i++) {
 	  					var id = data4[i];
@@ -1435,7 +1475,7 @@ $(document).ready(function() {
 		  			});
 			}
 			loadAll(id, name);
-			$(this).closest("ul.artist-options").empty().append("<li class='up-button'><a href='"+id+"' class='up-button'>close "+name+"'s profile</a></li>");
+			$(this).closest("ul.artist-options").empty().append("<li class='up-button'><a href='"+id+"' class='up-button'>"+name+"'s profile</a></li>");
 
 			//end
 			return false;
